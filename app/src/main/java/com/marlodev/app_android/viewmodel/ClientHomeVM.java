@@ -53,6 +53,7 @@ public class ClientHomeVM extends ViewModel {
         this.bannerRepository = bannerRepository;
 
         loadInitialData();
+
     }
 
     public void loadInitialData() {
@@ -90,22 +91,32 @@ public class ClientHomeVM extends ViewModel {
         long startTime = System.currentTimeMillis();
         uiLiveData.setValue(skeletonProvider.create(5)); // 1. Emitir esqueletos inmediatamente
 
-        AtomicBoolean dataArrived = new AtomicBoolean(false);
+        AtomicBoolean isInitialDataArrived = new AtomicBoolean(false);
 
         uiLiveData.addSource(repoLiveData, realData -> {
-            // CORRECCIÓN CRÍTICA: Ignorar la data nula O VACÍA para evitar la condición de carrera.
-            if (realData == null || realData.isEmpty() || dataArrived.get()) return;
-            dataArrived.set(true);
+            if (realData == null) {
+                return;
+            }
 
-            long elapsedTime = System.currentTimeMillis() - startTime;
-            long remainingTime = MIN_SKELETON_DISPLAY_TIME - elapsedTime;
+            // Para la carga inicial, se aplica la lógica del esqueleto.
+            if (isInitialDataArrived.compareAndSet(false, true)) {
+                // Ignorar la primera emisión si es vacía para evitar que el esqueleto desaparezca.
+                if (realData.isEmpty()) {
+                    return;
+                }
 
-            if (remainingTime > 0) {
-                new Handler(Looper.getMainLooper()).postDelayed(() -> uiLiveData.setValue(realData), remainingTime);
+                long elapsedTime = System.currentTimeMillis() - startTime;
+                long remainingTime = MIN_SKELETON_DISPLAY_TIME - elapsedTime;
+
+                if (remainingTime > 0) {
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> uiLiveData.setValue(realData), remainingTime);
+                } else {
+                    uiLiveData.setValue(realData);
+                }
             } else {
+                // Para actualizaciones subsecuentes (desde WS), se actualiza la UI directamente.
                 uiLiveData.setValue(realData);
             }
-            uiLiveData.removeSource(repoLiveData);
         });
 
         loadFunction.load();
