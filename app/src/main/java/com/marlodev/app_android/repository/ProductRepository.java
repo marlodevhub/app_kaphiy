@@ -16,6 +16,7 @@ import com.marlodev.app_android.network.ProductApiService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -67,50 +68,54 @@ public class ProductRepository {
     private void handleWebSocketEvent(ProductWebSocketEvent event) {
         if (event == null || event.getAction() == null) return;
 
-        List<Product> currentList = _products.getValue() != null ? _products.getValue() : new ArrayList<>();
+        List<Product> currentList = _products.getValue();
+        if (currentList == null) {
+            currentList = new ArrayList<>(); // Asegurarse de no operar sobre nulos
+        }
+
         Product product = Product.fromWebSocketEvent(event);
         if (product.getId() == null) return;
 
-        List<Product> updatedList = new ArrayList<>();
-        boolean found = false;
+        List<Product> updatedList = new ArrayList<>(currentList);
+        long productId = product.getId();
 
         switch (event.getAction()) {
             case "CREATE":
-                if (currentList.stream().noneMatch(p -> p.getId().equals(product.getId()))) {
-                    updatedList.add(product);
-                    updatedList.addAll(currentList);
+                // Evita duplicados y añade al principio
+                if (updatedList.stream().noneMatch(p -> Objects.equals(p.getId(), productId))) {
+                    updatedList.add(0, product);
                     Log.d(TAG, "🟢 Producto CREADO: " + product.getName());
-                } else {
-                    updatedList.addAll(currentList);
                 }
                 break;
 
             case "UPDATE":
             case "IMAGES_UPDATE":
-                for (Product p : currentList) {
-                    if (p.getId().equals(product.getId())) {
-                        updatedList.add(product);
+                boolean found = false;
+                for (int i = 0; i < updatedList.size(); i++) {
+                    if (Objects.equals(updatedList.get(i).getId(), productId)) {
+                        updatedList.set(i, product); // Reemplaza en la posición
                         found = true;
-                    } else {
-                        updatedList.add(p);
+                        break;
                     }
                 }
+                // Si es una actualización de imágenes de un producto que no estaba en la lista, lo añade.
                 if (!found && event.getAction().equals("IMAGES_UPDATE")) {
-                    updatedList.add(product);
+                    updatedList.add(0, product);
                 }
                 Log.d(TAG, "🟡 Producto ACTUALIZADO: " + product.getName());
                 break;
 
             case "DELETE":
-                for (Product p : currentList) {
-                    if (!p.getId().equals(product.getId())) updatedList.add(p);
+                // Elimina el producto de la lista
+                if (updatedList.removeIf(p -> Objects.equals(p.getId(), productId))) {
+                    Log.d(TAG, "🔴 Producto ELIMINADO: " + productId);
                 }
-                Log.d(TAG, "🔴 Producto ELIMINADO: " + product.getId());
                 break;
 
             default:
-                updatedList.addAll(currentList);
                 Log.w(TAG, "⚪ Acción desconocida: " + event.getAction());
+                // No se modifica la lista si la acción no es reconocida
+                return;
         }
 
         _products.postValue(updatedList);
