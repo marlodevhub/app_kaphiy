@@ -10,7 +10,7 @@
 
         <!-- Configuración para las barras del sistema -->
         <!-- El sistema determinará automáticamente el color de los iconos basado en el contraste -->
-        <item name="android:statusBarColor">@color/colorPrimary</item>
+        <item name="android:statusBarColor">@color/colorSecondary</item>
         <item name="android:navigationBarColor">@color/colorBlack</item>
     </style>
 
