@@ -1,6 +1,5 @@
 package com.marlodev.app_android.ui.client;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,26 +15,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-import com.marlodev.app_android.BuildConfig;
+import com.marlodev.app_android.MainApplication;
 import com.marlodev.app_android.R;
 import com.marlodev.app_android.adapter.client.BannerAdapter;
 import com.marlodev.app_android.adapter.client.PopularAdapter;
 import com.marlodev.app_android.adapter.client.TagAdapter;
 import com.marlodev.app_android.databinding.FragmentClientHomeBinding;
+import com.marlodev.app_android.di.AppContainer;
 import com.marlodev.app_android.domain.Banner;
 import com.marlodev.app_android.domain.Product;
-import com.marlodev.app_android.model.BannerWebSocketEvent;
-import com.marlodev.app_android.model.ProductWebSocketEvent;
-import com.marlodev.app_android.network.ApiClient;
-import com.marlodev.app_android.network.BannerApiService;
-import com.marlodev.app_android.network.GenericWebSocketManager;
-import com.marlodev.app_android.network.ProductApiService;
-import com.marlodev.app_android.network.TagApiService;
-import com.marlodev.app_android.repository.BannerRepository;
-import com.marlodev.app_android.repository.ProductRepository;
-import com.marlodev.app_android.repository.TagRepository;
 import com.marlodev.app_android.ui.home.customer.ClientDetailActivity;
-import com.marlodev.app_android.utils.SessionManager;
 import com.marlodev.app_android.viewmodel.ClientHomeVM;
 import com.marlodev.app_android.viewmodel.ClientHomeVMFactory;
 
@@ -60,27 +49,25 @@ public class ClientHomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Lógica de UI simplificada. Toda la complejidad de insets ha sido eliminada.
-
         initViewModel();
         setupAdapters();
         observeViewModel();
 
         clientHomeVM.startWebSocket();
-        clientHomeVM.observeWebSocketEvents(getViewLifecycleOwner());
     }
 
     private void initViewModel() {
-        Context context = requireContext().getApplicationContext();
-        String token = SessionManager.getInstance(context).getToken();
-        ProductApiService productApi = ApiClient.getClient(context).create(ProductApiService.class);
-        TagApiService tagApi = ApiClient.getClient(context).create(TagApiService.class);
-        BannerApiService bannerApi = ApiClient.getClient(context).create(BannerApiService.class);
-        ProductRepository productRepository = new ProductRepository(productApi, new GenericWebSocketManager<>(BuildConfig.WS_URL, token, "/topic/products", ProductWebSocketEvent.class));
-        TagRepository tagRepository = new TagRepository(tagApi);
-        BannerRepository bannerRepository = new BannerRepository(bannerApi, new GenericWebSocketManager<>(BuildConfig.WS_URL, token, "/topic/banners", BannerWebSocketEvent.class));
-        ClientHomeVMFactory factory = new ClientHomeVMFactory(productRepository, tagRepository, bannerRepository);
+        // 1. Obtener el contenedor de dependencias desde la clase Application
+        AppContainer appContainer = ((MainApplication) requireActivity().getApplication()).appContainer;
 
+        // 2. Usar los repositorios ya creados del contenedor para construir la Factory
+        ClientHomeVMFactory factory = new ClientHomeVMFactory(
+                appContainer.productRepository,
+                appContainer.tagRepository,
+                appContainer.bannerRepository
+        );
+
+        // 3. Crear el ViewModel. El Fragment ya no construye nada, solo pide las piezas.
         clientHomeVM = new ViewModelProvider(requireActivity(), factory).get(ClientHomeVM.class);
     }
 

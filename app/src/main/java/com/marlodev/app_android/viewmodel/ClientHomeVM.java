@@ -5,7 +5,6 @@ import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
@@ -154,10 +153,6 @@ public class ClientHomeVM extends ViewModel {
     public void startWebSocket() {
         productRepository.connectWebSocket();
         bannerRepository.connectWebSocket();
-    }
-    public void observeWebSocketEvents(@NonNull LifecycleOwner owner) {
-        productRepository.observeWebSocketEvents(owner);
-        bannerRepository.observeWebSocketEvents(owner);
     }
 
     @Override

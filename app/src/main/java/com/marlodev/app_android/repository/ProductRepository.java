@@ -3,9 +3,9 @@ package com.marlodev.app_android.repository;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import com.marlodev.app_android.domain.Product;
 import com.marlodev.app_android.dto.product.ProductMapper;
@@ -35,6 +35,7 @@ public class ProductRepository {
 
     private final ProductApiService apiService;
     private final GenericWebSocketManager<ProductWebSocketEvent> wsManager;
+    private final Observer<ProductWebSocketEvent> webSocketObserver;
 
     private final MutableLiveData<List<Product>> _products = new MutableLiveData<>(new ArrayList<>());
     private final MutableLiveData<String> _errorMessage = new MutableLiveData<>();
@@ -48,6 +49,9 @@ public class ProductRepository {
                              GenericWebSocketManager<ProductWebSocketEvent> wsManager) {
         this.apiService = apiService;
         this.wsManager = wsManager;
+        this.webSocketObserver = this::handleWebSocketEvent;
+        // Inicia la observación aquí, independientemente del ciclo de vida de la UI
+        this.wsManager.getEventLiveData().observeForever(webSocketObserver);
     }
 
     // -----------------------------
@@ -59,10 +63,6 @@ public class ProductRepository {
 
     public void disconnectWebSocket() {
         wsManager.disconnect();
-    }
-
-    public void observeWebSocketEvents(@NonNull LifecycleOwner owner) {
-        wsManager.getEventLiveData().observe(owner, this::handleWebSocketEvent);
     }
 
     private void handleWebSocketEvent(ProductWebSocketEvent event) {
@@ -201,6 +201,7 @@ public class ProductRepository {
     // Cleanup
     // -----------------------------
     public void shutdown() {
+        wsManager.getEventLiveData().removeObserver(webSocketObserver);
         disconnectWebSocket();
     }
 }
