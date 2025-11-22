@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--    ############ THEME DARK ############-->
+    <!--    Brand    -->
+    <color name="colorPrimary">#5DBEA3</color>
+    <color name="colorSecondary">#B2D367</color>
+
+    <!--    Degradados-->
+    <color name="colorGreen1">#B2D367</color>
+    <color name="colorGreen2">#7FC870</color>
+
+    <!--    Neutral    -->
+    <color name="colorBlack">#000000</color>
+    <color name="colorGrey800">#E0E0E0</color>
+    <color name="colorGrey600">#BDBDBD</color>
+    <color name="colorGrey400">#757575</color>
+    <color name="colorGrey300">#424242</color>
+    <color name="colorGrey200">#303030</color>
+    <color name="colorGrey100">#212121</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorWhiteOpacity50">#8CFFFFFF</color>
+    <color name="colorWhiteOpacity30">#4AFFFFFF</color>
+    <color name="colorTransparent">#00FFFFFF</color>
+
+    <!--    Utility-->
+    <color name="colorStar">#FFDD2A</color>
+
+    <!--    Accent -->
+    <color name="colorRed">#FF5252</color>
+    <color name="colorOnRed">#FFFFFF</color>
+    <color name="colorOrange">#FFAB40</color>
+    <color name="colorOnOrange">#000000</color>
+    <color name="colorYellow">#FFFF00</color>
+    <color name="colorOnYellow">#000000</color>
+    <color name="colorGreen">#69F0AE</color>
+    <color name="colorOnGreen">#000000</color>
+    <color name="colorTurquoise">#64FFDA</color>
+    <color name="colorOnTurquoise">#000000</color>
+    <color name="colorBlue">#448AFF</color>
+    <color name="colorOnBlue">#FFFFFF</color>
+    <color name="colorPurple">#B388FF</color>
+    <color name="colorOnPurple">#000000</color>
+    <color name="colorVerdeOscuro">#69F0AE</color>
+    <color name="colorRojo">#FF5252</color>
+    <color name="colorBrown">#A1887F</color>
+    <color name="colorGreenLight">#33691E</color>
+    <color name="colorGrey">#757575</color>
+
+</resources>

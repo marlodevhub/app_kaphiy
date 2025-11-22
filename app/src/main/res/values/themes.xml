@@ -5,13 +5,24 @@
     <style name="Base.Theme.app_android" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Colores primarios y de la marca -->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorGreen2</item>
-        <item name="colorOnPrimary">@color/colorGrey400</item>
+        <item name="colorOnPrimary">@color/colorWhite</item>
+        <item name="colorPrimaryContainer">@color/colorGreen1</item>
+        <item name="colorOnPrimaryContainer">@color/colorPrimary</item>
+
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorOnSecondary">@color/colorBlack</item>
+        <item name="colorSecondaryContainer">@color/colorGreenLight</item>
+        <item name="colorOnSecondaryContainer">@color/colorPrimary</item>
+
+        <!-- El color de fondo de la app -->
+        <item name="android:colorBackground">@color/colorGrey100</item>
+        <item name="colorSurface">@color/colorWhite</item>
+        <item name="colorOnSurface">@color/colorBlack</item>
 
         <!-- Configuración para las barras del sistema -->
         <!-- El sistema determinará automáticamente el color de los iconos basado en el contraste -->
-        <item name="android:statusBarColor">@color/colorSecondary</item>
-        <item name="android:navigationBarColor">@color/colorBlack</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item> <!-- Iconos oscuros para tema claro -->
     </style>
 
     <!-- Tema principal de la app -->
