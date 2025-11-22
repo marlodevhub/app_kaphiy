@@ -4,48 +4,70 @@ import com.marlodev.app_android.domain.Tag;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+/**
+ * Mapper bidireccional para convertir entre TagResponse (DTO), Tag (Dominio) y TagRequest (DTO).
+ * Centraliza toda la lógica de transformación, desacoplando la capa de red de la de dominio.
+ */
 public class TagMapper {
 
-    // ───────────────────────────────
-    // TagResponse -> Tag (Domain)
-    // ───────────────────────────────
+    // ------------------------------------------
+    // DE LA RESPUESTA DE LA API -> AL DOMINIO
+    // ------------------------------------------
+
     public static Tag fromResponse(TagResponse dto) {
-        if (dto == null) return null;
-        return Tag.builder()
-                .id(dto.getId())
-                .name(dto.getName())
-                .createdAt(dto.getCreatedAt()) // incluir fecha
-                .build();
-    }
-
-    public static List<Tag> fromResponseList(List<TagResponse> list) {
-        List<Tag> result = new ArrayList<>();
-        if (list != null) {
-            for (TagResponse dto : list) {
-                result.add(fromResponse(dto));
-            }
+        if (dto == null) {
+            return null;
         }
-        return result;
+        return new Tag(
+                dto.getId(),
+                dto.getName(),
+                null,
+                false
+        );
     }
 
-    // ───────────────────────────────
-    // Tag -> TagRequest (para enviar al backend)
-    // ───────────────────────────────
+    public static List<Tag> fromResponseList(List<TagResponse> dtoList) {
+        if (dtoList == null) {
+            return new ArrayList<>();
+        }
+        return dtoList.stream()
+                .map(TagMapper::fromResponse)
+                .collect(Collectors.toList());
+    }
+
+    // ------------------------------------------
+    // DEL DOMINIO -> A LA PETICIÓN PARA LA API
+    // ------------------------------------------
+
+    /**
+     * Convierte un objeto de dominio Tag a un TagRequest DTO.
+     * El DTO solo contendrá el ID, que es lo que la API necesita.
+     *
+     * @param tag El objeto de dominio.
+     * @return Un objeto TagRequest listo para la petición.
+     */
     public static TagRequest toRequest(Tag tag) {
-        if (tag == null) return null;
-        return TagRequest.builder()
-                .name(tag.getName())
-                .build();
+        if (tag == null || tag.getId() == null) {
+            return null;
+        }
+        return new TagRequest(tag.getId());
     }
 
-    public static List<TagRequest> toRequestList(List<Tag> list) {
-        List<TagRequest> result = new ArrayList<>();
-        if (list != null) {
-            for (Tag t : list) {
-                result.add(toRequest(t));
-            }
+    /**
+     * Convierte una lista de objetos de dominio Tag a una lista de TagRequest DTOs.
+     * Esto resuelve el error de tipo en ProductMapper.
+     *
+     * @param tags La lista de objetos de dominio.
+     * @return Una lista de TagRequest, lista para ser enviada en un JSON.
+     */
+    public static List<TagRequest> toRequestList(List<Tag> tags) {
+        if (tags == null) {
+            return new ArrayList<>();
         }
-        return result;
+        return tags.stream()
+                .map(TagMapper::toRequest)
+                .collect(Collectors.toList());
     }
 }

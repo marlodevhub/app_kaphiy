@@ -7,6 +7,8 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.marlodev.app_android.domain.Tag;
 import com.marlodev.app_android.dto.ApiResponse;
+import com.marlodev.app_android.dto.tag.TagMapper;
+import com.marlodev.app_android.dto.tag.TagResponse;
 import com.marlodev.app_android.network.TagApiService;
 
 import java.util.ArrayList;
@@ -18,8 +20,7 @@ import retrofit2.Response;
 
 /**
  * Repositorio profesional para Tags.
- * Gestiona REST API y mantiene LiveData sincronizado.
- * Ideal para MVVM y LiveData.
+ * Gestiona REST API, convierte DTOs a modelos de Dominio y mantiene LiveData sincronizado.
  */
 public class TagRepository {
 
@@ -43,19 +44,22 @@ public class TagRepository {
     // REST API
     // -----------------------------
     /**
-     * Carga todos los tags desde el backend
+     * Carga todos los tags desde el backend, realizando la conversión de DTO a Dominio.
      */
     public void loadTags() {
         _isLoading.postValue(true);
-        apiService.getTags().enqueue(new Callback<ApiResponse<List<Tag>>>() {
+        // La llamada ahora espera una lista de DTOs (TagResponse)
+        apiService.getTags().enqueue(new Callback<ApiResponse<List<TagResponse>>>() {
             @Override
-            public void onResponse(Call<ApiResponse<List<Tag>>> call, Response<ApiResponse<List<Tag>>> response) {
+            public void onResponse(Call<ApiResponse<List<TagResponse>>> call, Response<ApiResponse<List<TagResponse>>> response) {
                 _isLoading.postValue(false);
                 if (response.isSuccessful() && response.body() != null) {
-                    ApiResponse<List<Tag>> apiResponse = response.body();
+                    ApiResponse<List<TagResponse>> apiResponse = response.body();
                     if (apiResponse.isSuccess() && apiResponse.getData() != null) {
-                        _tags.postValue(apiResponse.getData());
-                        Log.d(TAG_LOG, "✅ Tags cargados: " + apiResponse.getData().size());
+                        // AQUÍ OCURRE LA MAGIA: El Mapper convierte la lista de DTOs a modelos de Dominio.
+                        List<Tag> domainTags = TagMapper.fromResponseList(apiResponse.getData());
+                        _tags.postValue(domainTags);
+                        Log.d(TAG_LOG, "✅ Tags cargados y mapeados: " + domainTags.size());
                     } else {
                         _errorMessage.postValue(apiResponse.getMessage());
                         Log.e(TAG_LOG, "⚠️ Error al cargar tags: " + apiResponse.getMessage());
@@ -67,7 +71,7 @@ public class TagRepository {
             }
 
             @Override
-            public void onFailure(Call<ApiResponse<List<Tag>>> call, Throwable t) {
+            public void onFailure(Call<ApiResponse<List<TagResponse>>> call, Throwable t) {
                 _isLoading.postValue(false);
                 _errorMessage.postValue("Error de red: " + t.getMessage());
                 Log.e(TAG_LOG, "❌ Falló la carga de tags", t);
@@ -76,7 +80,7 @@ public class TagRepository {
     }
 
     /**
-     * Obtiene un tag por ID
+     * Obtiene un tag por ID, realizando la conversión de DTO a Dominio.
      * @param id ID del tag
      * @return LiveData<Tag> con el resultado o null si no existe
      */
@@ -91,18 +95,21 @@ public class TagRepository {
             }
         }
 
-        apiService.getTagById(id).enqueue(new Callback<ApiResponse<Tag>>() {
+        // La llamada ahora espera un DTO (TagResponse)
+        apiService.getTagById(id).enqueue(new Callback<ApiResponse<TagResponse>>() {
             @Override
-            public void onResponse(Call<ApiResponse<Tag>> call, Response<ApiResponse<Tag>> response) {
+            public void onResponse(Call<ApiResponse<TagResponse>> call, Response<ApiResponse<TagResponse>> response) {
                 if (response.isSuccessful() && response.body() != null && response.body().isSuccess()) {
-                    liveData.postValue(response.body().getData());
+                    // El Mapper convierte el DTO a un modelo de Dominio.
+                    Tag domainTag = TagMapper.fromResponse(response.body().getData());
+                    liveData.postValue(domainTag);
                 } else {
                     liveData.postValue(null);
                 }
             }
 
             @Override
-            public void onFailure(Call<ApiResponse<Tag>> call, Throwable t) {
+            public void onFailure(Call<ApiResponse<TagResponse>> call, Throwable t) {
                 liveData.postValue(null);
             }
         });
