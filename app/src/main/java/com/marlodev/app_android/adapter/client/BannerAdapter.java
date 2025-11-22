@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.CompositePageTransformer;
 import androidx.viewpager2.widget.MarginPageTransformer;
@@ -18,31 +19,25 @@ import com.marlodev.app_android.databinding.ItemBannerSkeletonBinding;
 import com.marlodev.app_android.databinding.ItemSliderBinding;
 import com.marlodev.app_android.domain.Banner;
 
-import java.util.ArrayList;
-import java.util.List;
+/**
+ * Adaptador profesional para el ViewPager2 de banners, refactorizado para usar ListAdapter.
+ * Esta implementación es más eficiente, proporciona animaciones automáticas y simplifica la gestión de la lista.
+ */
+public class BannerAdapter extends ListAdapter<Banner, RecyclerView.ViewHolder> {
 
-public class BannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-
-    private final List<Banner> sliderItems = new ArrayList<>();
     private final Context context;
     private OnBannerClickListener clickListener;
 
     private static final int VIEW_TYPE_ITEM = 0;
     private static final int VIEW_TYPE_SKELETON = 1;
 
-    /**
-     * Constructor que encapsula la lógica de configuración del ViewPager.
-     * Esta arquitectura previene condiciones de carrera en el layout inicial.
-     * @param context Contexto de la aplicación.
-     * @param viewPager2 La instancia de ViewPager2 a configurar.
-     */
     public BannerAdapter(Context context, ViewPager2 viewPager2) {
+        super(new BannerDiffCallback());
         this.context = context;
         setupViewPager(viewPager2);
     }
 
     private void setupViewPager(ViewPager2 viewPager2) {
-        // Configuración que se aplica al ViewPager ANTES de que se le asigne el adaptador.
         viewPager2.setClipToPadding(false);
         viewPager2.setClipChildren(false);
         viewPager2.setOffscreenPageLimit(3);
@@ -63,7 +58,6 @@ public class BannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         });
         viewPager2.setPageTransformer(transformer);
 
-        // Corrección post-layout para el RecyclerView interno.
         viewPager2.post(() -> {
             if (viewPager2.getChildCount() > 0) {
                 View child = viewPager2.getChildAt(0);
@@ -72,7 +66,7 @@ public class BannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     recyclerView.setClipToPadding(false);
                     recyclerView.setClipChildren(false);
                     recyclerView.setOverScrollMode(RecyclerView.OVER_SCROLL_NEVER);
-                    recyclerView.setPadding(0, 0, 0, 0); // Clave para evitar el "doble padding"
+                    recyclerView.setPadding(0, 0, 0, 0);
                 }
             }
         });
@@ -82,17 +76,9 @@ public class BannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         this.clickListener = listener;
     }
 
-    public void setSliderItems(List<Banner> items) {
-        sliderItems.clear();
-        if (items != null) {
-            sliderItems.addAll(items);
-        }
-        notifyDataSetChanged();
-    }
-
     @Override
     public int getItemViewType(int position) {
-        return sliderItems.get(position).isSkeleton() ? VIEW_TYPE_SKELETON : VIEW_TYPE_ITEM;
+        return getItem(position).isSkeleton() ? VIEW_TYPE_SKELETON : VIEW_TYPE_ITEM;
     }
 
     @NonNull
@@ -109,13 +95,8 @@ public class BannerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder.getItemViewType() == VIEW_TYPE_ITEM) {
-            ((BannerViewHolder) holder).bind(sliderItems.get(position), clickListener);
+            ((BannerViewHolder) holder).bind(getItem(position), clickListener);
         }
-    }
-
-    @Override
-    public int getItemCount() {
-        return sliderItems.size();
     }
 
     private int dpToPx(int dp) {

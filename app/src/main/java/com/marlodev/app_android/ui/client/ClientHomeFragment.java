@@ -38,6 +38,7 @@ public class ClientHomeFragment extends Fragment {
     private PopularAdapter popularAdapter;
     private TagAdapter tagAdapter;
     private BannerAdapter bannerAdapter;
+    private boolean isInitialBannerLoad = true;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -127,13 +128,13 @@ public class ClientHomeFragment extends Fragment {
         clientHomeVM.getErrorMessage().observe(getViewLifecycleOwner(), this::showError);
 
         clientHomeVM.getBanners().observe(getViewLifecycleOwner(), banners -> {
-            // El ViewModel ahora es el único responsable de la lista.
-            // Si la lista está vacía, el adapter la mostrará vacía.
-            // Si el VM quiere mostrar esqueletos, la lista 'banners' ya contendrá los esqueletos.
-            bannerAdapter.setSliderItems(banners);
+            // La lista ahora se envía al ListAdapter, que calculará las diferencias y animará los cambios.
+            bannerAdapter.submitList(banners);
 
-            if (binding.bannerTabLayout.getTabCount() > 0) {
+            // La lógica para evitar el reinicio del slider se mantiene igual y es crucial.
+            if (isInitialBannerLoad && binding.bannerTabLayout.getTabCount() > 0) {
                 binding.bannerTabLayout.selectTab(binding.bannerTabLayout.getTabAt(0));
+                isInitialBannerLoad = false;
             }
         });
     }
