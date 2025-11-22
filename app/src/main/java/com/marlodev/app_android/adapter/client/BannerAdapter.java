@@ -49,11 +49,12 @@ public class BannerAdapter extends ListAdapter<Banner, RecyclerView.ViewHolder> 
             page.setScaleX(0.85f + (1 - absPos) * 0.15f);
             page.setScaleY(0.90f + (1 - absPos) * 0.10f);
             page.setAlpha(0.65f + (1 - absPos) * 0.35f);
-            page.setTranslationZ((1 - absPos) * 100f);
 
+            // Se elimina el cambio de elevación dinámico para mantener una sombra única y constante.
+            // Esto soluciona la inconsistencia visual al iniciar y al deslizar.
             View cardContainer = page.findViewById(R.id.cardContainer);
             if (cardContainer instanceof MaterialCardView) {
-                ((MaterialCardView) cardContainer).setCardElevation(6f + (1 - absPos) * 6f);
+                ((MaterialCardView) cardContainer).setCardElevation(dpToPx(8)); // Sombra constante
             }
         });
         viewPager2.setPageTransformer(transformer);
