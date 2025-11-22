@@ -127,15 +127,11 @@ public class ClientHomeFragment extends Fragment {
         clientHomeVM.getErrorMessage().observe(getViewLifecycleOwner(), this::showError);
 
         clientHomeVM.getBanners().observe(getViewLifecycleOwner(), banners -> {
-            if (banners != null && !banners.isEmpty()) {
-                bannerAdapter.setSliderItems(banners);
-            } else {
-                List<Banner> skeletons = new ArrayList<>();
-                for (int i = 0; i < 5; i++) {
-                    skeletons.add(new Banner(null, null, null, null, null, true));
-                }
-                bannerAdapter.setSliderItems(skeletons);
-            }
+            // El ViewModel ahora es el único responsable de la lista.
+            // Si la lista está vacía, el adapter la mostrará vacía.
+            // Si el VM quiere mostrar esqueletos, la lista 'banners' ya contendrá los esqueletos.
+            bannerAdapter.setSliderItems(banners);
+
             if (binding.bannerTabLayout.getTabCount() > 0) {
                 binding.bannerTabLayout.selectTab(binding.bannerTabLayout.getTabAt(0));
             }
