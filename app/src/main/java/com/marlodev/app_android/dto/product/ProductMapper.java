@@ -24,8 +24,8 @@ public class ProductMapper {
         p.setIsNew(dto.getIsNew());
         p.setRating(dto.getRating());
         p.setReviewsCount(dto.getReviewsCount());
-        p.setCategoryId(dto.getCategoryId());
         p.setStoreId(dto.getStoreId());
+        p.setCategoryId(dto.getCategoryId());
         p.setImageUrls(dto.getImageUrls());
         p.setImagePublicIds(dto.getImagePublicIds());
         p.setVariants(ProductVariantMapper.fromResponseList(dto.getVariants()));

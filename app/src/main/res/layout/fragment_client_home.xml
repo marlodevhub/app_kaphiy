@@ -233,7 +233,7 @@
                 android:id="@+id/bannerTabLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="9dp"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="20dp"
                 android:background="@drawable/bg_transparent"
                 android:elevation="0dp"
                 android:minHeight="0dp"

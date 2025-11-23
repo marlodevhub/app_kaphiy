@@ -27,6 +27,7 @@ public class ItemProductCarAdapter extends RecyclerView.Adapter<ItemProductCarAd
     public interface OnQuantityChangeListener {
         void onQuantityChanged(CartItem item, int newQuantity);
     }
+
     public interface OnDeleteClickListener {
         void onDelete(CartItem item);
     }
