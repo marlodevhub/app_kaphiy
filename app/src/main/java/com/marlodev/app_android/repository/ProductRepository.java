@@ -2,7 +2,6 @@ package com.marlodev.app_android.repository;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
@@ -10,9 +9,9 @@ import androidx.lifecycle.Observer;
 import com.marlodev.app_android.domain.Product;
 import com.marlodev.app_android.dto.product.ProductMapper;
 import com.marlodev.app_android.dto.product.ProductResponse;
-import com.marlodev.app_android.model.ProductWebSocketEvent;
-import com.marlodev.app_android.network.GenericWebSocketManager;
-import com.marlodev.app_android.network.ProductApiService;
+import com.marlodev.app_android.dto.product.ProductWebSocketEvent;
+import com.marlodev.app_android.dto.order.network.GenericWebSocketManager;
+import com.marlodev.app_android.dto.order.network.ProductApiService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,9 +25,10 @@ import retrofit2.Response;
 
 /**
  * Repositorio profesional para productos.
- * Gestiona REST API y WebSocket, mantiene LiveData sincronizado.
+ * Gestiona REST API (CRUD completo) y WebSocket, mantiene LiveData sincronizado.
  * Convierte automáticamente entre DTOs y dominio usando ProductMapper.
  */
+
 public class ProductRepository {
 
     private static final String TAG = "ProductRepository";
@@ -55,16 +55,14 @@ public class ProductRepository {
     }
 
     // -----------------------------
-    // WebSocket
+    // WEBSOCKET
     // -----------------------------
     public void connectWebSocket() {
         wsManager.connect();
     }
-
     public void disconnectWebSocket() {
         wsManager.disconnect();
     }
-
     private void handleWebSocketEvent(ProductWebSocketEvent event) {
         if (event == null || event.getAction() == null) return;
 
@@ -121,9 +119,56 @@ public class ProductRepository {
         _products.postValue(updatedList);
     }
 
+    public void shutdown() {
+        wsManager.getEventLiveData().removeObserver(webSocketObserver);
+        disconnectWebSocket();
+    }
+
     // -----------------------------
-    // REST API
+    // REST API - CRUD COMPLETO
     // -----------------------------
+
+    // --- Crear ---
+    public void createProduct(RequestBody productJson, MultipartBody.Part[] images) {
+        apiService.createProduct(productJson, images).enqueue(new Callback<ProductResponse>() {
+            @Override
+            public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // No es necesario actualizar la lista aquí, el WebSocket lo hará.
+                    Log.d(TAG, "Petición CREATE enviada con éxito.");
+                } else {
+                    _errorMessage.postValue("Error al crear producto (" + response.code() + ")");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ProductResponse> call, Throwable t) {
+                _errorMessage.postValue("Error de red: " + t.getMessage());
+            }
+        });
+    }
+
+    // --- Actualizar ---
+    public void updateProduct(long productId, RequestBody productJson, MultipartBody.Part[] images) {
+        apiService.updateProduct(productId, productJson, images).enqueue(new Callback<ProductResponse>() {
+            @Override
+            public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
+                if (response.isSuccessful()) {
+                    Log.d(TAG, "Petición UPDATE para el producto " + productId + " enviada con éxito.");
+                    // La actualización de la lista la gestionará el evento WebSocket para mantener una única fuente de verdad.
+                } else {
+                    _errorMessage.postValue("Error al actualizar producto (" + response.code() + ")");
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ProductResponse> call, Throwable t) {
+                _errorMessage.postValue("Error de red al actualizar: " + t.getMessage());
+            }
+        });
+    }
+
+    // --- Listar ---
     public void loadProducts() {
         _isLoading.postValue(true);
         apiService.getProducts().enqueue(new Callback<List<ProductResponse>>() {
@@ -148,6 +193,7 @@ public class ProductRepository {
         });
     }
 
+    // --- Buscar por Id ---
     public LiveData<Product> getProductById(long id) {
         MutableLiveData<Product> liveData = new MutableLiveData<>();
         List<Product> list = _products.getValue();
@@ -176,32 +222,25 @@ public class ProductRepository {
         return liveData;
     }
 
-    public void createProduct(RequestBody productJson, MultipartBody.Part[] images) {
-        apiService.createProduct(productJson, images).enqueue(new Callback<ProductResponse>() {
+    // --- Eliminar ---
+    public void deleteProduct(long productId) {
+        apiService.deleteProduct(productId).enqueue(new Callback<Void>() {
             @Override
-            public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Product> updatedList = new ArrayList<>();
-                    updatedList.add(ProductMapper.fromResponse(response.body()));
-                    if (_products.getValue() != null) updatedList.addAll(_products.getValue());
-                    _products.postValue(updatedList);
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    Log.d(TAG, "Petición DELETE para el producto " + productId + " enviada con éxito.");
+                    // La eliminación de la lista la gestionará el evento WebSocket.
                 } else {
-                    _errorMessage.postValue("Error al crear producto (" + response.code() + ")");
+                    _errorMessage.postValue("Error al eliminar producto (" + response.code() + ")");
                 }
             }
 
             @Override
-            public void onFailure(Call<ProductResponse> call, Throwable t) {
-                _errorMessage.postValue("Error de red: " + t.getMessage());
+            public void onFailure(Call<Void> call, Throwable t) {
+                _errorMessage.postValue("Error de red al eliminar: " + t.getMessage());
             }
         });
     }
 
-    // -----------------------------
-    // Cleanup
-    // -----------------------------
-    public void shutdown() {
-        wsManager.getEventLiveData().removeObserver(webSocketObserver);
-        disconnectWebSocket();
-    }
+
 }

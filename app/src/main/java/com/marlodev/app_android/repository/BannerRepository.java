@@ -11,9 +11,9 @@ import com.marlodev.app_android.domain.Banner;
 import com.marlodev.app_android.dto.banner.BannerMapper;
 import com.marlodev.app_android.dto.banner.BannerRequest;
 import com.marlodev.app_android.dto.banner.BannerResponse;
-import com.marlodev.app_android.model.BannerWebSocketEvent;
-import com.marlodev.app_android.network.BannerApiService;
-import com.marlodev.app_android.network.GenericWebSocketManager;
+import com.marlodev.app_android.dto.banner.BannerWebSocketEvent;
+import com.marlodev.app_android.dto.order.network.BannerApiService;
+import com.marlodev.app_android.dto.order.network.GenericWebSocketManager;
 
 import java.io.File;
 import java.util.ArrayList;

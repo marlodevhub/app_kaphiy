@@ -8,13 +8,10 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.marlodev.app_android.model.LoginResponse;
-import com.marlodev.app_android.model.RegisterResponse;
+import com.marlodev.app_android.dto.auth.RegisterResponse;
 import com.marlodev.app_android.repository.AuthRepository;
 import com.marlodev.app_android.utils.JwtUtils;
 import com.marlodev.app_android.utils.SessionManager;
-
-import org.json.JSONObject;
 
 public class AuthViewModel extends AndroidViewModel {
 

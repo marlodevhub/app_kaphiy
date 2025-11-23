@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.marlodev.app_android.adapter.client.ItemProductCarAdapter;
 import com.marlodev.app_android.databinding.FragmentClienteCarritoBinding;
-import com.marlodev.app_android.model.order.CartItem;
+import com.marlodev.app_android.dto.order.CartItem;
 import com.marlodev.app_android.utils.CartNotifier;
 import com.marlodev.app_android.viewmodel.ClientCartVM;
 

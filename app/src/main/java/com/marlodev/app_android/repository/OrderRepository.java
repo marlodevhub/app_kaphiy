@@ -1,8 +1,8 @@
 package com.marlodev.app_android.repository;
 
-import com.marlodev.app_android.model.order.OrderResponse;
-import com.marlodev.app_android.model.order.OrderTrackingResponse;
-import com.marlodev.app_android.network.order.OrderApi;
+import com.marlodev.app_android.dto.order.OrderResponse;
+import com.marlodev.app_android.dto.order.OrderTrackingResponse;
+import com.marlodev.app_android.dto.order.network.order.OrderApi;
 
 import java.util.List;
 

@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.marlodev.app_android.model.order.OrderResponse;
+import com.marlodev.app_android.dto.order.OrderResponse;
 import com.marlodev.app_android.repository.OrderRepository;
 
 import java.text.SimpleDateFormat;

@@ -8,10 +8,10 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.marlodev.app_android.domain.Product;
-import com.marlodev.app_android.model.ProductWebSocketEvent;
-import com.marlodev.app_android.network.ApiClient;
-import com.marlodev.app_android.network.GenericWebSocketManager;
-import com.marlodev.app_android.network.ProductApiService;
+import com.marlodev.app_android.dto.product.ProductWebSocketEvent;
+import com.marlodev.app_android.dto.order.network.ApiClient;
+import com.marlodev.app_android.dto.order.network.GenericWebSocketManager;
+import com.marlodev.app_android.dto.order.network.ProductApiService;
 import com.marlodev.app_android.repository.ProductRepository;
 import com.marlodev.app_android.utils.SessionManager;
 

@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.marlodev.app_android.R;
-import com.marlodev.app_android.model.order.CartItem;
+import com.marlodev.app_android.dto.order.CartItem;
 
 import java.util.ArrayList;
 import java.util.List;

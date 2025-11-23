@@ -1,4 +1,4 @@
-package com.marlodev.app_android.network;
+package com.marlodev.app_android.dto.order.network;
 
 
 import com.google.gson.Gson;

@@ -3,7 +3,7 @@ package com.marlodev.app_android.adapter.client;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 
-import com.marlodev.app_android.model.order.CartItem;
+import com.marlodev.app_android.dto.order.CartItem;
 
 import java.util.Objects;
 

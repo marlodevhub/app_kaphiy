@@ -1,7 +1,7 @@
-package com.marlodev.app_android.network.order;
+package com.marlodev.app_android.dto.order.network.order;
 
-import com.marlodev.app_android.model.order.OrderResponse;
-import com.marlodev.app_android.model.order.OrderTrackingResponse;
+import com.marlodev.app_android.dto.order.OrderResponse;
+import com.marlodev.app_android.dto.order.OrderTrackingResponse;
 
 import java.util.List;
 

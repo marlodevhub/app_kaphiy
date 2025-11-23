@@ -1,7 +1,7 @@
-package com.marlodev.app_android.network.order;
+package com.marlodev.app_android.dto.order.network.order;
 
-import com.marlodev.app_android.model.order.CartItemRequest;
-import com.marlodev.app_android.model.order.OrderResponse;
+import com.marlodev.app_android.dto.order.CartItemRequest;
+import com.marlodev.app_android.dto.order.OrderResponse;
 
 import retrofit2.Call;
 import retrofit2.http.Body;

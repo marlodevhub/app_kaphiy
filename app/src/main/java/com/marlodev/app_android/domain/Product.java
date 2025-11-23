@@ -1,6 +1,6 @@
 package com.marlodev.app_android.domain;
 
-import com.marlodev.app_android.model.ProductWebSocketEvent;
+import com.marlodev.app_android.dto.product.ProductWebSocketEvent;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

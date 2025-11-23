@@ -1,4 +1,4 @@
-package com.marlodev.app_android.model;
+package com.marlodev.app_android.dto.product;
 
 import com.google.gson.Gson;
 

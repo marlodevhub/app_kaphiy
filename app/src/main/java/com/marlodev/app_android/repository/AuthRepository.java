@@ -6,12 +6,12 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.MutableLiveData;
 
-import com.marlodev.app_android.model.LoginRequest;
-import com.marlodev.app_android.model.LoginResponse;
-import com.marlodev.app_android.model.RegisterRequest;
-import com.marlodev.app_android.model.RegisterResponse;
-import com.marlodev.app_android.network.ApiClient;
-import com.marlodev.app_android.network.ApiService;
+import com.marlodev.app_android.dto.auth.LoginRequest;
+import com.marlodev.app_android.dto.auth.LoginResponse;
+import com.marlodev.app_android.dto.auth.RegisterRequest;
+import com.marlodev.app_android.dto.auth.RegisterResponse;
+import com.marlodev.app_android.dto.order.network.ApiClient;
+import com.marlodev.app_android.dto.order.network.ApiService;
 
 import retrofit2.Call;
 import retrofit2.Callback;

@@ -2,72 +2,94 @@ package com.marlodev.app_android.dto.tag;
 
 import com.marlodev.app_android.domain.Tag;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Mapper bidireccional para convertir entre TagResponse (DTO), Tag (Dominio) y TagRequest (DTO).
- * Centraliza toda la lógica de transformación, desacoplando la capa de red de la de dominio.
+ * Mapper profesional para la entidad Tag.
+ * Se encarga de la conversión bidireccional entre los objetos de la capa de Datos (DTOs) y
+ * los objetos de la capa de Dominio (el modelo de la aplicación).
+ * <p>
+ * - DTO de Entrada: {@link TagResponse}
+ * - Modelo de Dominio: {@link Tag}
+ * - DTO de Salida: {@link TagRequest}
  */
+
 public class TagMapper {
 
-    // ------------------------------------------
-    // DE LA RESPUESTA DE LA API -> AL DOMINIO
-    // ------------------------------------------
+    // --------------------------------------------------------------------
+    // --- ENTRADA: Conversión desde DTO de Respuesta -> Modelo de Dominio ---
+    // --------------------------------------------------------------------
+
+    /**
+     * Convierte un único DTO {@link TagResponse} (de la red) en un modelo de dominio {@link Tag}.
+     * Los campos que no vienen en la respuesta (como 'icon' o 'isSelected') se inicializan a valores por defecto.
+     * @param dto El objeto de transferencia de datos recibido de la API.
+     * @return Un objeto {@link Tag} limpio, o null si la entrada es nula.
+     */
 
     public static Tag fromResponse(TagResponse dto) {
+
         if (dto == null) {
             return null;
         }
+        // Los campos 'icon' y 'isSelected' son estados de la UI, no vienen del DTO de respuesta,
+        // por lo que se inicializan a un estado seguro por defecto.
         return new Tag(
                 dto.getId(),
                 dto.getName(),
-                null,
-                false
+                null,    // 'icon' se puede establecer en la capa de UI o ViewModel si es necesario.
+                false    // 'isSelected' es un estado puramente de la UI.
         );
     }
 
+    /**
+     * Convierte una lista de DTOs {@link TagResponse} en una lista de modelos de dominio {@link Tag}.
+     * @param dtoList La lista de DTOs recibida de la API.
+     * @return Una lista de {@link Tag}, o una lista vacía si la entrada es nula o está vacía.
+     */
+
     public static List<Tag> fromResponseList(List<TagResponse> dtoList) {
-        if (dtoList == null) {
-            return new ArrayList<>();
+        if (dtoList == null || dtoList.isEmpty()) {
+            return Collections.emptyList();
         }
         return dtoList.stream()
                 .map(TagMapper::fromResponse)
                 .collect(Collectors.toList());
     }
 
-    // ------------------------------------------
-    // DEL DOMINIO -> A LA PETICIÓN PARA LA API
-    // ------------------------------------------
+    // --------------------------------------------------------------------
+    // --- SALIDA: Conversión desde Modelo de Dominio -> DTO de Petición  ---
+    // --------------------------------------------------------------------
 
     /**
-     * Convierte un objeto de dominio Tag a un TagRequest DTO.
-     * El DTO solo contendrá el ID, que es lo que la API necesita.
-     *
-     * @param tag El objeto de dominio.
-     * @return Un objeto TagRequest listo para la petición.
+     * Convierte un objeto de dominio {@link Tag} en un {@link TagRequest} DTO.
+     * Cuando se convierte un Tag para asociarlo a otra entidad (ej. un Producto),
+     * la API generalmente solo necesita el ID del tag.
+     * @param tag El objeto de dominio a convertir.
+     * @return Un DTO {@link TagRequest} que contiene solo el ID, o null si el tag o su ID son nulos.
      */
     public static TagRequest toRequest(Tag tag) {
         if (tag == null || tag.getId() == null) {
             return null;
         }
+        // Gracias a nuestro TagRequest flexible, esto crea una petición que solo contiene el ID.
         return new TagRequest(tag.getId());
     }
 
     /**
-     * Convierte una lista de objetos de dominio Tag a una lista de TagRequest DTOs.
-     * Esto resuelve el error de tipo en ProductMapper.
-     *
+     * Convierte una lista de modelos de dominio {@link Tag} en una lista de DTOs {@link TagRequest}.
      * @param tags La lista de objetos de dominio.
-     * @return Una lista de TagRequest, lista para ser enviada en un JSON.
+     * @return Una lista de {@link TagRequest}, o una lista vacía si la entrada es nula o está vacía.
      */
     public static List<TagRequest> toRequestList(List<Tag> tags) {
-        if (tags == null) {
-            return new ArrayList<>();
+        if (tags == null || tags.isEmpty()) {
+            return Collections.emptyList();
         }
         return tags.stream()
                 .map(TagMapper::toRequest)
                 .collect(Collectors.toList());
     }
+
 }

@@ -1,4 +1,4 @@
-package com.marlodev.app_android.model;
+package com.marlodev.app_android.dto.auth;
 
 public class LoginRequest {
     private String username;

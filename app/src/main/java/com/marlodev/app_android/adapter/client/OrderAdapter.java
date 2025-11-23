@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.marlodev.app_android.databinding.ItemPedidoHistorialBinding;
 import com.marlodev.app_android.model.order.CartItemResponse;
-import com.marlodev.app_android.model.order.OrderResponse;
+import com.marlodev.app_android.dto.order.OrderResponse;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

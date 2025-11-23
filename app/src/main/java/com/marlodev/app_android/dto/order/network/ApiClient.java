@@ -1,4 +1,4 @@
-package com.marlodev.app_android.network;
+package com.marlodev.app_android.dto.order.network;
 
 import android.content.Context;
 import okhttp3.OkHttpClient;

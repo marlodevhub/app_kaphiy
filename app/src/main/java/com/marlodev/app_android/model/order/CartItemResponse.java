@@ -2,6 +2,8 @@ package com.marlodev.app_android.model.order;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.marlodev.app_android.dto.product.ProductResponse;
+
 import java.math.BigDecimal;
 
 import lombok.AllArgsConstructor;
@@ -65,7 +67,7 @@ public class CartItemResponse implements Parcelable {
             dest.writeByte((byte) 1);
             dest.writeLong(id);
         }
-        dest.writeParcelable(product, flags);
+//        dest.writeParcelable(product, flags);
         if (quantity == null) {
             dest.writeByte((byte) 0);
         } else {

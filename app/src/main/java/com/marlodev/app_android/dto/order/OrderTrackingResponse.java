@@ -1,4 +1,6 @@
-package com.marlodev.app_android.model.order;
+package com.marlodev.app_android.dto.order;
+
+import com.marlodev.app_android.model.order.CartItemResponse;
 
 import java.math.BigDecimal;
 import java.util.List;

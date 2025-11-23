@@ -7,13 +7,13 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.marlodev.app_android.model.order.CartItem;
+import com.marlodev.app_android.dto.order.CartItem;
+import com.marlodev.app_android.dto.product.ProductResponse;
 import com.marlodev.app_android.model.order.CartItemResponse;
-import com.marlodev.app_android.model.order.OrderResponse;
-import com.marlodev.app_android.model.order.ProductResponse;
+import com.marlodev.app_android.dto.order.OrderResponse;
 import com.marlodev.app_android.repository.CartRepository;
-import com.marlodev.app_android.network.ApiClient;
-import com.marlodev.app_android.network.order.CartApi;
+import com.marlodev.app_android.dto.order.network.ApiClient;
+import com.marlodev.app_android.dto.order.network.order.CartApi;
 import com.marlodev.app_android.utils.CartNotifier;
 
 import java.util.ArrayList;
