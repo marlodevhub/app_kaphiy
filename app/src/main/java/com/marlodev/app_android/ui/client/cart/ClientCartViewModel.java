@@ -8,18 +8,17 @@ import com.marlodev.app_android.domain.model.CartItem;
 import com.marlodev.app_android.domain.model.Order;
 import com.marlodev.app_android.domain.model.Product;
 import com.marlodev.app_android.domain.usecase.cart.CartUseCases;
-import com.marlodev.app_android.utils.CartNotifier;
 import com.marlodev.app_android.utils.Result;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ClientCartViewModel extends ViewModel {
 
     private final CartUseCases cartUseCases;
 
-    private final MutableLiveData<List<CartItem>> cartItems = new MutableLiveData<>(new ArrayList<>());
+    private final MutableLiveData<List<CartItem>> cartItems = new MutableLiveData<>(Collections.emptyList());
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>(null);
     private final MutableLiveData<Integer> totalItems = new MutableLiveData<>(0);
@@ -39,56 +38,51 @@ public class ClientCartViewModel extends ViewModel {
     public void loadCart() {
         if (Boolean.TRUE.equals(isLoading.getValue())) return;
         isLoading.setValue(true);
-        cartUseCases.getGetCart().execute().observeForever(this::handleCartResult);
+        cartUseCases.getGetCart().execute().observeForever(this::handleCartUpdateResult);
     }
 
+    // This method remains for other parts of the app (e.g., product detail page)
     public LiveData<Result<Order>> addItemToCart(Product product, int quantity) {
         List<CartItem> currentItemsList = cartItems.getValue();
         return cartUseCases.getAddOrUpdateItem().execute(currentItemsList, product, quantity);
     }
 
     public void updateQuantity(CartItem item, int newQty) {
+        isLoading.setValue(true);
         item.setQuantity(newQty);
         if (item.getUnitPrice() != null) {
             item.setTotalPrice(item.getUnitPrice().multiply(BigDecimal.valueOf(newQty)));
         }
-        // NOTE: This is still fire-and-forget, may need same pattern if issues arise.
-        cartUseCases.getUpdateCartItem().execute(item.getId(), item).observeForever(this::handleCartResult);
-        recalcTotals(cartItems.getValue());
-        CartNotifier.notifyCartUpdated();
+        cartUseCases.getUpdateCartItem().execute(item.getId(), item).observeForever(this::handleCartUpdateResult);
     }
 
     public void deleteItem(CartItem item) {
-        // NOTE: This is still fire-and-forget, may need same pattern if issues arise.
-        cartUseCases.getDeleteCartItem().execute(item.getId()).observeForever(this::handleCartResult);
+        isLoading.setValue(true);
+        cartUseCases.getDeleteCartItem().execute(item.getId()).observeForever(this::handleCartUpdateResult);
     }
 
-    /**
-     * Public method for activities/fragments to call to update the ViewModel's state after an operation.
-     * @param order The updated order object from a successful cart operation.
-     */
-    public void onCartUpdated(Order order) {
-        if (order == null) return;
-        cartItems.postValue(order.getItems());
-        recalcTotals(order.getItems());
-        CartNotifier.notifyCartUpdated(); // Notifies other parts of the app, like a badge count.
-    }
-
-    /**
-     * Handles results from internally observed LiveData (like loadCart).
-     */
-    private void handleCartResult(Result<Order> result) {
+    private void handleCartUpdateResult(Result<Order> result) {
         isLoading.postValue(result.status == Result.Status.LOADING);
 
         if (result.status == Result.Status.SUCCESS) {
-            onCartUpdated(result.data); // Reuse the public update logic
+            updateStateFromOrder(result.data);
         } else if (result.status == Result.Status.ERROR) {
             errorMessage.postValue(result.message);
+            // Optional: If the operation failed, refresh the cart to get the source of truth from the server
+            // refreshCart();
         }
     }
 
-    private void recalcTotals(List<CartItem> items) {
-        if (items == null) return;
+    private void updateStateFromOrder(Order order) {
+        if (order == null || order.getItems() == null) {
+            cartItems.postValue(Collections.emptyList());
+            totalItems.postValue(0);
+            totalPrice.postValue(BigDecimal.ZERO);
+            return;
+        }
+
+        List<CartItem> items = order.getItems();
+        cartItems.postValue(items);
 
         int count = items.stream()
                 .mapToInt(item -> item.getQuantity() != null ? item.getQuantity() : 0)

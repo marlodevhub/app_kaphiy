@@ -11,7 +11,6 @@ import com.marlodev.app_android.data.network.mapper.OrderMapper;
 import com.marlodev.app_android.data.network.model.order.CartItemRequest;
 import com.marlodev.app_android.domain.model.CartItem;
 import com.marlodev.app_android.domain.model.Order;
-import com.marlodev.app_android.utils.CartNotifier;
 import com.marlodev.app_android.utils.Result;
 
 import retrofit2.Call;
@@ -46,9 +45,6 @@ public class CartRepository {
 
                     Order domainOrder = OrderMapper.fromResponse(response.body());
                     liveData.postValue(Result.success(domainOrder));
-
-                    // Notificar a toda la app que el carrito cambió
-                    CartNotifier.notifyCartUpdated();
 
                 } else {
                     String msg = "❌ Error al " + action + " (" + response.code() + ")";

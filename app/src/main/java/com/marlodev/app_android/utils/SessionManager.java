@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 
 import androidx.annotation.Nullable;
 
-import org.json.JSONObject;
 
 public final class SessionManager {
 

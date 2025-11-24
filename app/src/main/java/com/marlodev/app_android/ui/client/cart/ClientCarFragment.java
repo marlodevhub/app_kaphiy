@@ -16,7 +16,6 @@ import com.marlodev.app_android.databinding.FragmentClienteCarritoBinding;
 import com.marlodev.app_android.di.DependencyProvider;
 import com.marlodev.app_android.domain.model.CartItem;
 import com.marlodev.app_android.ui.client.cart.components.ItemProductCarAdapter;
-import com.marlodev.app_android.utils.CartNotifier;
 
 import java.util.List;
 
@@ -42,6 +41,15 @@ public class ClientCarFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Refresh the cart every time the fragment becomes visible
+        if (cartVM != null) {
+            cartVM.refreshCart();
+        }
+    }
+
     private void setupViewModel() {
         ClientCartViewModelFactory factory = DependencyProvider.provideClientCartViewModelFactory(requireContext());
 
@@ -55,9 +63,10 @@ public class ClientCarFragment extends Fragment {
                 binding.txtTotalPriceCar.setText("S/. " + total)
         );
         cartVM.getErrorMessage().observe(getViewLifecycleOwner(), this::showError);
-
-        CartNotifier.getCartUpdated().observe(getViewLifecycleOwner(), updated -> {
-            if (updated != null && updated) cartVM.refreshCart();
+        cartVM.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
+            if (binding.progressBar != null) {
+                binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            }
         });
     }
 
@@ -72,7 +81,11 @@ public class ClientCarFragment extends Fragment {
 
     private void updateCartItems(List<CartItem> items) {
         cartAdapter.submitList(items);
-        binding.cartItemsRecyclerView.setVisibility(items.isEmpty() ? View.GONE : View.VISIBLE);
+        if (binding != null) {
+            binding.cartItemsRecyclerView.setVisibility(items.isEmpty() ? View.GONE : View.VISIBLE);
+        }
+
+
     }
 
     private void showError(String message) {

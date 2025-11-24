@@ -177,7 +177,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                 case SUCCESS:
                     Toast.makeText(this, "Producto agregado al carrito", Toast.LENGTH_SHORT).show();
                     if (result.data != null) {
-                        cartViewModel.onCartUpdated(result.data);
+                        cartViewModel.refreshCart();
                     }
                     break;
                 case ERROR:
