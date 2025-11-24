@@ -1,6 +1,5 @@
 package com.marlodev.app_android.ui.client.products;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -14,14 +13,9 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
-import com.marlodev.app_android.data.network.api.CartApi;
-import com.marlodev.app_android.data.network.api.ProductApiService;
-import com.marlodev.app_android.data.network.retrofit.ApiClient;
-import com.marlodev.app_android.data.repository.CartRepository;
-import com.marlodev.app_android.data.repository.ProductRepositoryImpl;
 import com.marlodev.app_android.databinding.ActivityProductDetailBinding;
+import com.marlodev.app_android.di.DependencyProvider;
 import com.marlodev.app_android.domain.model.Product;
-import com.marlodev.app_android.domain.usecase.cart.GetProductByIdUseCase;
 import com.marlodev.app_android.ui.auth.login.LoginActivity;
 import com.marlodev.app_android.ui.client.cart.ClientCartViewModel;
 import com.marlodev.app_android.ui.client.cart.ClientCartViewModelFactory;
@@ -55,19 +49,10 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     private void initViewModels() {
-        Context context = getApplicationContext();
-
-        ProductApiService apiService = ApiClient.getClient(context).create(ProductApiService.class);
-        ProductRepositoryImpl productRepository = new ProductRepositoryImpl(apiService);
-        GetProductByIdUseCase getProductByIdUseCase = new GetProductByIdUseCase(productRepository);
-
-        CartApi cartApi = ApiClient.getClient(context).create(CartApi.class);
-        CartRepository cartRepository = new CartRepository(cartApi);
-
-        ProductDetailViewModelFactory factory = new ProductDetailViewModelFactory(getProductByIdUseCase);
+        ProductDetailViewModelFactory factory = DependencyProvider.provideProductDetailViewModelFactory(getApplicationContext());
         viewModel = new ViewModelProvider(this, factory).get(ProductDetailViewModel.class);
 
-        ClientCartViewModelFactory cartFactory = new ClientCartViewModelFactory(cartRepository);
+        ClientCartViewModelFactory cartFactory = DependencyProvider.provideClientCartViewModelFactory(getApplicationContext());
         cartViewModel = new ViewModelProvider(this, cartFactory).get(ClientCartViewModel.class);
     }
 
@@ -147,6 +132,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         }
     }
 
+
     private void addProductToCart() {
         if (!sessionManager.isLoggedIn()) {
             loginLauncher.launch(new Intent(this, LoginActivity.class));
@@ -154,20 +140,29 @@ public class ProductDetailActivity extends AppCompatActivity {
         }
 
         int quantity = getQuantity();
-        cartViewModel.addItemToCart(productId, quantity).observe(this, result -> {
+
+        Product product = viewModel.productResult.getValue() != null
+                && viewModel.productResult.getValue().data != null
+                ? viewModel.productResult.getValue().data
+                : null;
+
+        if (product == null) {
+            showError("Producto no cargado aún");
+            return;
+        }
+
+        cartViewModel.addItemToCart(product, quantity).observe(this, result -> {
             if (result == null) return;
 
             switch (result.status) {
                 case LOADING:
                     showLoading(true);
                     break;
-
                 case SUCCESS:
                     showLoading(false);
                     Toast.makeText(this, "Producto agregado al carrito", Toast.LENGTH_SHORT).show();
                     cartViewModel.refreshCart();
                     break;
-
                 case ERROR:
                     showLoading(false);
                     showError(result.message);

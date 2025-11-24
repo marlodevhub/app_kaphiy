@@ -12,11 +12,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.marlodev.app_android.data.network.api.CartApi;
-import com.marlodev.app_android.data.network.retrofit.ApiClient;
-import com.marlodev.app_android.data.repository.CartRepository;
 import com.marlodev.app_android.databinding.FragmentClienteCarritoBinding;
-import com.marlodev.app_android.data.network.model.order.CartItem;
+import com.marlodev.app_android.di.DependencyProvider;
+import com.marlodev.app_android.domain.model.CartItem;
 import com.marlodev.app_android.utils.CartNotifier;
 
 import java.util.List;
@@ -44,9 +42,7 @@ public class ClientCarFragment extends Fragment {
     }
 
     private void setupViewModel() {
-        CartApi cartApi = ApiClient.getClient(requireContext()).create(CartApi.class);
-        CartRepository cartRepository = new CartRepository(cartApi);
-        ClientCartViewModelFactory factory = new ClientCartViewModelFactory(cartRepository);
+        ClientCartViewModelFactory factory = DependencyProvider.provideClientCartViewModelFactory(requireContext());
 
         cartVM = new ViewModelProvider(requireActivity(), factory).get(ClientCartViewModel.class);
 

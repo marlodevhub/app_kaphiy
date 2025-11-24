@@ -13,14 +13,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.marlodev.app_android.databinding.FragmentClientOrderBinding;
-import com.marlodev.app_android.data.network.retrofit.ApiClient;
 import com.marlodev.app_android.data.network.api.OrderApi;
+import com.marlodev.app_android.data.network.retrofit.ApiClient;
 import com.marlodev.app_android.data.repository.OrderRepository;
+import com.marlodev.app_android.domain.model.Order;
+import com.marlodev.app_android.utils.Result;
+
+import java.util.Collections;
 
 public class ClientOrderFragment extends Fragment {
 
     private FragmentClientOrderBinding binding;
     private ClientOrderViewModel viewModel;
+
     private OrderAdapter activeOrdersAdapter;
     private OrderAdapter historyOrdersAdapter;
 
@@ -31,64 +36,88 @@ public class ClientOrderFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
         binding = FragmentClientOrderBinding.inflate(inflater, container, false);
-        View view = binding.getRoot();
 
-        // Lógica de UI simplificada. Toda la complejidad de insets ha sido eliminada.
+        setupAdapters();
+        setupViewModel();
+        observeViewModel();
 
-        initAdapters();
-        initViewModel();
-        setupObservers();
-
-        return view;
+        return binding.getRoot();
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null; // Avoid memory leaks
+        binding = null; // prevenir memory leaks
     }
 
-    /** Initializes the Adapters and LayoutManagers */
-    private void initAdapters() {
+    // ----------------------------------------
+    // Inicialización de Adapters
+    // ----------------------------------------
+    private void setupAdapters() {
         activeOrdersAdapter = new OrderAdapter();
         historyOrdersAdapter = new OrderAdapter();
 
-        binding.activeOrdersRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.activeOrdersRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.activeOrdersRecyclerView.setAdapter(activeOrdersAdapter);
         binding.activeOrdersRecyclerView.setNestedScrollingEnabled(false);
 
-        binding.historyRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.historyRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.historyRecyclerView.setAdapter(historyOrdersAdapter);
         binding.historyRecyclerView.setNestedScrollingEnabled(false);
     }
 
-    /** Initializes the ViewModel with Repository */
-    private void initViewModel() {
+    // ----------------------------------------
+    // Inicialización de ViewModel
+    // ----------------------------------------
+    private void setupViewModel() {
         OrderApi api = ApiClient.getClient(requireContext()).create(OrderApi.class);
         OrderRepository repository = new OrderRepository(api);
-        ClientOrderViewModelFactory factory = new ClientOrderViewModelFactory(repository);
 
+        ClientOrderViewModelFactory factory = new ClientOrderViewModelFactory(repository);
         viewModel = new ViewModelProvider(this, factory).get(ClientOrderViewModel.class);
     }
 
-    /** Configures the ViewModel observers */
-    private void setupObservers() {
-        viewModel.getActiveOrders().observe(getViewLifecycleOwner(), orders -> {
-            if (orders != null) {
-                activeOrdersAdapter.submitList(orders);
-            }
+    // ----------------------------------------
+    // Observadores de LiveData
+    // ----------------------------------------
+    private void observeViewModel() {
+
+        // Órdenes activas
+        viewModel.getActiveOrders().observe(getViewLifecycleOwner(), result -> {
+//            handleOrderResult(result, activeOrdersAdapter, binding.activeOrdersProgress);
         });
 
-        viewModel.getHistoryOrders().observe(getViewLifecycleOwner(), orders -> {
-            if (orders != null) {
-                historyOrdersAdapter.submitList(orders);
-            }
+        // Historial de órdenes
+        viewModel.getHistoryOrders().observe(getViewLifecycleOwner(), result -> {
+//            handleOrderResult(result, historyOrdersAdapter, binding.historyProgress);
         });
 
+        // Errores genéricos
         viewModel.getErrorMessage().observe(getViewLifecycleOwner(), msg -> {
             if (msg != null) {
                 Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_LONG).show();
             }
         });
     }
+
+    // ----------------------------------------
+    // Manejo de resultados de órdenes
+    // ----------------------------------------
+//    private void handleOrderResult(Result<java.util.List<Order>> result, OrderAdapter adapter, View progressBar) {
+//        switch (result.getStatus()) {
+//            case LOADING:
+//                progressBar.setVisibility(View.VISIBLE);
+//                adapter.submitList(Collections.emptyList());
+//                break;
+//            case SUCCESS:
+//                progressBar.setVisibility(View.GONE);
+//                adapter.submitList(result.getData());
+//                break;
+//            case ERROR:
+//                progressBar.setVisibility(View.GONE);
+//                adapter.submitList(Collections.emptyList());
+//                Snackbar.make(binding.getRoot(), result.getMessage(), Snackbar.LENGTH_LONG).show();
+//                break;
+//        }
+//    }
 }

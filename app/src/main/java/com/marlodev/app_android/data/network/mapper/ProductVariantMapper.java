@@ -10,6 +10,9 @@ public class ProductVariantMapper {
 
     // De Response -> Domain
     public static ProductVariant fromResponse(ProductVariantResponse dto) {
+        if (dto == null) {
+            return null;
+        }
         return ProductVariant.builder()
                 .id(dto.getId())
                 .name(dto.getName())
@@ -31,6 +34,9 @@ public class ProductVariantMapper {
 
     // De Domain -> Request
     public static ProductVariantRequest toRequest(ProductVariant variant) {
+        if (variant == null) {
+            return null;
+        }
         return ProductVariantRequest.builder()
                 .name(variant.getName())
                 .price(variant.getPrice())

@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.marlodev.app_android.R;
-import com.marlodev.app_android.data.network.model.order.CartItem;
+import com.marlodev.app_android.domain.model.CartItem;
 
 /**
  * Adaptador profesional para la lista de items del carrito.

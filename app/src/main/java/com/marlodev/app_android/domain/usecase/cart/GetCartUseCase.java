@@ -3,19 +3,18 @@ package com.marlodev.app_android.domain.usecase.cart;
 import androidx.lifecycle.LiveData;
 
 import com.marlodev.app_android.data.repository.CartRepository;
-import com.marlodev.app_android.domain.model.CartItem;
 import com.marlodev.app_android.domain.model.Order;
 import com.marlodev.app_android.utils.Result;
 
-public class AddItemToCartUseCase {
+public class GetCartUseCase {
 
     private final CartRepository repository;
 
-    public AddItemToCartUseCase(CartRepository repository) {
+    public GetCartUseCase(CartRepository repository) {
         this.repository = repository;
     }
 
-    public LiveData<Result<Order>> execute(CartItem item) {
-        return repository.addItem(item);
+    public LiveData<Result<Order>> execute() {
+        return repository.getCart();
     }
 }

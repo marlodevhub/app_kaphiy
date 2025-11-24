@@ -53,13 +53,10 @@ public class OrderAdapter extends ListAdapter<OrderResponse, OrderAdapter.ViewHo
                 try {
                     SimpleDateFormat isoFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
                     isoFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-                    Date date = isoFormat.parse(order.getCreatedAt());
 
                     SimpleDateFormat sdf = new SimpleDateFormat("dd 'de' MMMM", new Locale("es", "PE"));
-                    binding.textDate.setText(sdf.format(date));
                 } catch (Exception e) {
                     e.printStackTrace();
-                    binding.textDate.setText(order.getCreatedAt()); // fallback
                 }
             } else {
                 binding.textDate.setText("");

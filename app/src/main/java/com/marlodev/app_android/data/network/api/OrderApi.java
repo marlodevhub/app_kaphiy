@@ -11,18 +11,19 @@ import retrofit2.http.Path;
 
 public interface OrderApi {
 
-    @GET("orders/history")
-    Call<List<OrderResponse>> getOrderHistory();
-
-    @GET("orders/{orderId}")
-    Call<OrderResponse> getOrder(@Path("orderId") Long orderId);
-
-    @GET("orders/{orderId}/tracking")
-    Call<OrderTrackingResponse> getOrderTracking(@Path("orderId") Long orderId);
-
+    // Órdenes activas del usuario autenticado
     @GET("orders/active")
     Call<List<OrderResponse>> getActiveOrders();
 
+    // Historial del usuario autenticado
+    @GET("orders/history")
+    Call<List<OrderResponse>> getHistoryOrders();
 
+    // Obtiene un pedido por ID
+    @GET("orders/{orderId}")
+    Call<OrderResponse> getOrderById(@Path("orderId") long orderId);
 
+    // Tracking del pedido
+    @GET("orders/{orderId}/tracking")
+    Call<OrderTrackingResponse> getOrderTracking(@Path("orderId") long orderId);
 }
