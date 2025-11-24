@@ -43,22 +43,8 @@ public class ClientCartViewModel extends ViewModel {
     }
 
     public LiveData<Result<Order>> addItemToCart(Product product, int quantity) {
-        CartItem existingItem = findItemByProductId(product.getId());
-
-        if (existingItem != null) {
-            existingItem.setQuantity(existingItem.getQuantity() + quantity);
-            if (existingItem.getUnitPrice() != null) {
-                existingItem.setTotalPrice(existingItem.getUnitPrice().multiply(BigDecimal.valueOf(existingItem.getQuantity())));
-            }
-            return cartUseCases.getUpdateCartItem().execute(existingItem.getId(), existingItem);
-        } else {
-            CartItem newItem = new CartItem();
-            newItem.setProduct(product);
-            newItem.setQuantity(quantity);
-            newItem.setUnitPrice(product.getPrice());
-            newItem.setTotalPrice(product.getPrice().multiply(BigDecimal.valueOf(quantity)));
-            return cartUseCases.getAddItemToCart().execute(newItem);
-        }
+        List<CartItem> currentItemsList = cartItems.getValue();
+        return cartUseCases.getAddOrUpdateItem().execute(currentItemsList, product, quantity);
     }
 
     public void updateQuantity(CartItem item, int newQty) {
@@ -66,22 +52,36 @@ public class ClientCartViewModel extends ViewModel {
         if (item.getUnitPrice() != null) {
             item.setTotalPrice(item.getUnitPrice().multiply(BigDecimal.valueOf(newQty)));
         }
+        // NOTE: This is still fire-and-forget, may need same pattern if issues arise.
         cartUseCases.getUpdateCartItem().execute(item.getId(), item).observeForever(this::handleCartResult);
         recalcTotals(cartItems.getValue());
         CartNotifier.notifyCartUpdated();
     }
 
     public void deleteItem(CartItem item) {
+        // NOTE: This is still fire-and-forget, may need same pattern if issues arise.
         cartUseCases.getDeleteCartItem().execute(item.getId()).observeForever(this::handleCartResult);
     }
 
+    /**
+     * Public method for activities/fragments to call to update the ViewModel's state after an operation.
+     * @param order The updated order object from a successful cart operation.
+     */
+    public void onCartUpdated(Order order) {
+        if (order == null) return;
+        cartItems.postValue(order.getItems());
+        recalcTotals(order.getItems());
+        CartNotifier.notifyCartUpdated(); // Notifies other parts of the app, like a badge count.
+    }
+
+    /**
+     * Handles results from internally observed LiveData (like loadCart).
+     */
     private void handleCartResult(Result<Order> result) {
         isLoading.postValue(result.status == Result.Status.LOADING);
 
-        if (result.status == Result.Status.SUCCESS && result.data != null) {
-            cartItems.postValue(result.data.getItems());
-            recalcTotals(result.data.getItems());
-            CartNotifier.notifyCartUpdated();
+        if (result.status == Result.Status.SUCCESS) {
+            onCartUpdated(result.data); // Reuse the public update logic
         } else if (result.status == Result.Status.ERROR) {
             errorMessage.postValue(result.message);
         }
@@ -100,17 +100,6 @@ public class ClientCartViewModel extends ViewModel {
 
         totalItems.postValue(count);
         totalPrice.postValue(total);
-    }
-
-    private CartItem findItemByProductId(Long productId) {
-        if (cartItems.getValue() == null) return null;
-
-        return cartItems.getValue().stream()
-                .filter(item -> item.getProduct() != null
-                        && item.getProduct().getId() != null
-                        && item.getProduct().getId().equals(productId))
-                .findFirst()
-                .orElse(null);
     }
 
     public void refreshCart() {

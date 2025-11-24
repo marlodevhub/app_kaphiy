@@ -1,4 +1,4 @@
-package com.marlodev.app_android.domain.usecase.cart;
+package com.marlodev.app_android.domain.usecase.product;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;

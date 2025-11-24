@@ -1,5 +1,7 @@
 package com.marlodev.app_android.ui.client.products;
 
+import static com.marlodev.app_android.utils.Result.Status.LOADING;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;

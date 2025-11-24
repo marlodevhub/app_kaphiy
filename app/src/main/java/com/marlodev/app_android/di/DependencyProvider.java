@@ -8,7 +8,7 @@ import com.marlodev.app_android.data.network.retrofit.ApiClient;
 import com.marlodev.app_android.data.repository.CartRepository;
 import com.marlodev.app_android.data.repository.ProductRepositoryImpl;
 import com.marlodev.app_android.domain.usecase.cart.CartUseCases;
-import com.marlodev.app_android.domain.usecase.cart.GetProductByIdUseCase;
+import com.marlodev.app_android.domain.usecase.product.GetProductByIdUseCase;
 import com.marlodev.app_android.ui.client.cart.ClientCartViewModelFactory;
 import com.marlodev.app_android.ui.client.products.ProductDetailViewModelFactory;
 
