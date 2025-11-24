@@ -3,13 +3,17 @@ package com.marlodev.app_android.di;
 import android.content.Context;
 
 import com.marlodev.app_android.data.network.api.CartApi;
+import com.marlodev.app_android.data.network.api.OrderApi;
 import com.marlodev.app_android.data.network.api.ProductApiService;
 import com.marlodev.app_android.data.network.retrofit.ApiClient;
 import com.marlodev.app_android.data.repository.CartRepository;
+import com.marlodev.app_android.data.repository.OrderRepository;
 import com.marlodev.app_android.data.repository.ProductRepositoryImpl;
 import com.marlodev.app_android.domain.usecase.cart.CartUseCases;
+import com.marlodev.app_android.domain.usecase.cart.CheckoutUseCase;
 import com.marlodev.app_android.domain.usecase.product.GetProductByIdUseCase;
 import com.marlodev.app_android.ui.client.cart.ClientCartViewModelFactory;
+import com.marlodev.app_android.ui.client.order.ClientOrderViewModelFactory;
 import com.marlodev.app_android.ui.client.products.ProductDetailViewModelFactory;
 
 public class DependencyProvider {
@@ -21,6 +25,9 @@ public class DependencyProvider {
     private static CartApi cartApi;
     private static CartRepository cartRepository;
     private static CartUseCases cartUseCases;
+
+    private static OrderApi orderApi;
+    private static OrderRepository orderRepository;
 
     public static ProductRepositoryImpl provideProductRepository(Context context) {
         if (productRepository == null) {
@@ -70,5 +77,25 @@ public class DependencyProvider {
 
     public static ClientCartViewModelFactory provideClientCartViewModelFactory(Context context) {
         return new ClientCartViewModelFactory(provideCartUseCases(context.getApplicationContext()));
+    }
+
+    private static OrderApi provideOrderApi(Context context) {
+        if (orderApi == null) {
+            orderApi = ApiClient.getClient(context.getApplicationContext()).create(OrderApi.class);
+        }
+        return orderApi;
+    }
+
+    public static OrderRepository provideOrderRepository(Context context) {
+        if (orderRepository == null) {
+            orderRepository = new OrderRepository(provideOrderApi(context.getApplicationContext()));
+        }
+        return orderRepository;
+    }
+
+    public static ClientOrderViewModelFactory provideClientOrderViewModelFactory(Context context) {
+        OrderRepository orderRepo = provideOrderRepository(context);
+        CheckoutUseCase checkoutUseCase = provideCartUseCases(context).getCheckoutUseCase();
+        return new ClientOrderViewModelFactory(orderRepo, checkoutUseCase);
     }
 }

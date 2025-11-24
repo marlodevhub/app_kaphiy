@@ -13,13 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.marlodev.app_android.databinding.FragmentClientOrderBinding;
-import com.marlodev.app_android.data.network.api.OrderApi;
-import com.marlodev.app_android.data.network.retrofit.ApiClient;
-import com.marlodev.app_android.data.repository.OrderRepository;
-import com.marlodev.app_android.domain.model.Order;
+import com.marlodev.app_android.di.DependencyProvider;
 import com.marlodev.app_android.utils.Result;
-
-import java.util.Collections;
 
 public class ClientOrderFragment extends Fragment {
 
@@ -40,6 +35,9 @@ public class ClientOrderFragment extends Fragment {
         setupAdapters();
         setupViewModel();
         observeViewModel();
+
+        // TODO: Asigna el listener a tu boton de checkout
+        // binding.checkoutButton.setOnClickListener(v -> viewModel.checkout());
 
         return binding.getRoot();
     }
@@ -70,10 +68,7 @@ public class ClientOrderFragment extends Fragment {
     // Inicialización de ViewModel
     // ----------------------------------------
     private void setupViewModel() {
-        OrderApi api = ApiClient.getClient(requireContext()).create(OrderApi.class);
-        OrderRepository repository = new OrderRepository(api);
-
-        ClientOrderViewModelFactory factory = new ClientOrderViewModelFactory(repository);
+        ClientOrderViewModelFactory factory = DependencyProvider.provideClientOrderViewModelFactory(requireContext());
         viewModel = new ViewModelProvider(this, factory).get(ClientOrderViewModel.class);
     }
 
@@ -90,6 +85,15 @@ public class ClientOrderFragment extends Fragment {
         // Historial de órdenes
         viewModel.getHistoryOrders().observe(getViewLifecycleOwner(), result -> {
 //            handleOrderResult(result, historyOrdersAdapter, binding.historyProgress);
+        });
+
+        // Resultado del Checkout
+        viewModel.getCheckoutResult().observe(getViewLifecycleOwner(), result -> {
+            if (result.status == Result.Status.SUCCESS) {
+                Snackbar.make(binding.getRoot(), "Compra realizada con éxito", Snackbar.LENGTH_LONG).show();
+            } else if (result.status == Result.Status.ERROR) {
+                Snackbar.make(binding.getRoot(), "Error al realizar la compra: " + result.message, Snackbar.LENGTH_LONG).show();
+            }
         });
 
         // Errores genéricos

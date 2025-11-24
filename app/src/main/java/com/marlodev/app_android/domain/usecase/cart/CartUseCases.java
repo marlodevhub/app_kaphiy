@@ -13,6 +13,7 @@ public class CartUseCases {
     private final GetCartUseCase getCart;
     private final UpdateCartItemUseCase updateCartItem;
     private final DeleteCartItemUseCase deleteCartItem;
+    private final CheckoutUseCase checkoutUseCase;
 
     /**
      * Constructor que agrupa todos los casos de uso del carrito.
@@ -21,17 +22,20 @@ public class CartUseCases {
      * @param getCart         Caso de uso para obtener el carrito completo.
      * @param updateCartItem  Caso de uso para actualizar un item existente (ej. cambiar cantidad).
      * @param deleteCartItem  Caso de uso para eliminar un item.
+     * @param checkoutUseCase Caso de uso para finalizar la compra.
      */
     public CartUseCases(
             AddOrUpdateCartItemUseCase addOrUpdateItem,
             GetCartUseCase getCart,
             UpdateCartItemUseCase updateCartItem,
-            DeleteCartItemUseCase deleteCartItem
+            DeleteCartItemUseCase deleteCartItem,
+            CheckoutUseCase checkoutUseCase
     ) {
         this.addOrUpdateItem = addOrUpdateItem;
         this.getCart = getCart;
         this.updateCartItem = updateCartItem;
         this.deleteCartItem = deleteCartItem;
+        this.checkoutUseCase = checkoutUseCase;
     }
 
     // --- Getters para que el ViewModel pueda acceder a cada caso de uso específico ---
@@ -50,5 +54,9 @@ public class CartUseCases {
 
     public DeleteCartItemUseCase getDeleteCartItem() {
         return deleteCartItem;
+    }
+
+    public CheckoutUseCase getCheckoutUseCase() {
+        return checkoutUseCase;
     }
 }

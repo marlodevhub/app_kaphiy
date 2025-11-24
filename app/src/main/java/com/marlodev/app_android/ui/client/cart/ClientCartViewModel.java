@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.marlodev.app_android.domain.DomainCallback;
 import com.marlodev.app_android.domain.model.CartItem;
 import com.marlodev.app_android.domain.model.Order;
 import com.marlodev.app_android.domain.model.Product;
@@ -25,6 +26,8 @@ public class ClientCartViewModel extends ViewModel {
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>(null);
     private final MutableLiveData<Integer> totalItems = new MutableLiveData<>(0);
     private final MutableLiveData<BigDecimal> totalPrice = new MutableLiveData<>(BigDecimal.ZERO);
+    private final MutableLiveData<Result<Order>> checkoutResult = new MutableLiveData<>();
+
 
     public ClientCartViewModel(CartUseCases cartUseCases) {
         this.cartUseCases = cartUseCases;
@@ -36,11 +39,30 @@ public class ClientCartViewModel extends ViewModel {
     public LiveData<String> getErrorMessage() { return errorMessage; }
     public LiveData<Integer> getTotalItems() { return totalItems; }
     public LiveData<BigDecimal> getTotalPrice() { return totalPrice; }
+    public LiveData<Result<Order>> getCheckoutResult() { return checkoutResult; }
+
 
     public void loadCart() {
         if (Boolean.TRUE.equals(isLoading.getValue())) return;
         isLoading.setValue(true);
         cartUseCases.getGetCart().execute().observeForever(this::handleCartUpdateResult);
+    }
+
+    public void checkout() {
+        isLoading.setValue(true);
+        cartUseCases.getCheckoutUseCase().execute(new DomainCallback<Order>() {
+            @Override
+            public void onSuccess(Order order) {
+                checkoutResult.postValue(Result.success(order));
+                isLoading.postValue(false);
+            }
+
+            @Override
+            public void onError(String message) {
+                checkoutResult.postValue(Result.error(message, null));
+                isLoading.postValue(false);
+            }
+        });
     }
 
     // This method remains for other parts of the app (e.g., product detail page)

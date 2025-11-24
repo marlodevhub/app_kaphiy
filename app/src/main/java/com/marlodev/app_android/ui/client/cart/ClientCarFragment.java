@@ -16,6 +16,7 @@ import com.marlodev.app_android.databinding.FragmentClienteCarritoBinding;
 import com.marlodev.app_android.di.DependencyProvider;
 import com.marlodev.app_android.domain.model.CartItem;
 import com.marlodev.app_android.ui.client.cart.components.ItemProductCarAdapter;
+import com.marlodev.app_android.utils.Result;
 
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class ClientCarFragment extends Fragment {
 
         setupViewModel();
         setupRecyclerView();
+        setupListeners();
 
         return view;
     }
@@ -48,6 +50,12 @@ public class ClientCarFragment extends Fragment {
         if (cartVM != null) {
             cartVM.refreshCart();
         }
+    }
+
+    private void setupListeners() {
+        binding.btnRealizarOrder.setOnClickListener(v -> {
+            cartVM.checkout();
+        });
     }
 
     private void setupViewModel() {
@@ -66,6 +74,15 @@ public class ClientCarFragment extends Fragment {
         cartVM.getIsLoading().observe(getViewLifecycleOwner(), isLoading -> {
             if (binding.progressBar != null) {
                 binding.progressBar.setVisibility(isLoading ? View.VISIBLE : View.GONE);
+            }
+        });
+
+        cartVM.getCheckoutResult().observe(getViewLifecycleOwner(), result -> {
+            if (result.status == Result.Status.SUCCESS) {
+                Toast.makeText(requireContext(), "Orden creada exitosamente", Toast.LENGTH_SHORT).show();
+                // Aquí puedes navegar a otra pantalla, por ejemplo, el historial de órdenes
+            } else if (result.status == Result.Status.ERROR) {
+                showError(result.message);
             }
         });
     }
@@ -99,4 +116,5 @@ public class ClientCarFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
+
 }
