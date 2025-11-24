@@ -73,14 +73,12 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private void setupUI() {
         binding.btnArrowLeft.setOnClickListener(v -> finish());
-        // Los clics ahora solo notifican al ViewModel, sin lógica en la Activity.
         binding.btnPlus.setOnClickListener(v -> viewModel.increaseQuantity());
         binding.btnMinus.setOnClickListener(v -> viewModel.decreaseQuantity());
         binding.btnAddCart.setOnClickListener(v -> addProductToCart());
     }
 
     private void observeViewModel() {
-        // Observador para los detalles del producto
         viewModel.productResult.observe(this, result -> {
             if (result == null) return;
 
@@ -105,9 +103,25 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
         });
 
-        // Observador para la cantidad. La UI se actualiza automáticamente.
         viewModel.quantity.observe(this, qty -> {
             binding.txtQuantity.setText(String.valueOf(qty));
+        });
+
+        viewModel.totalPrice.observe(this, total -> {
+            if (total != null) {
+                binding.tvCurrentPrice.setText(String.format("S/%.2f", total));
+            }
+        });
+
+        // NUEVO: Observador para el precio antiguo total.
+        viewModel.totalOldPrice.observe(this, totalOld -> {
+            if (totalOld != null) {
+                binding.tvOldPrice.setText(String.format("S/%.2f", totalOld));
+                binding.tvOldPrice.setVisibility(View.VISIBLE);
+            } else {
+                // Si es nulo, el ViewModel nos está diciendo que no hay precio antiguo.
+                binding.tvOldPrice.setVisibility(View.GONE);
+            }
         });
     }
 
@@ -125,13 +139,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private void bindProduct(Product product) {
         binding.txtTitleProduct.setText(product.getName());
-        binding.tvCurrentPrice.setText(String.format("S/%.2f", product.getPrice()));
-        if (product.getOldPrice() != null) {
-            binding.tvOldPrice.setText(String.format("S/%.2f", product.getOldPrice()));
-            binding.tvOldPrice.setVisibility(View.VISIBLE);
-        } else {
-            binding.tvOldPrice.setVisibility(View.GONE);
-        }
+        // La lógica de precios ahora es 100% reactiva y se maneja en los observadores.
         binding.txtDescripcion.setText(product.getDescription());
 
         if (product.getImageUrls() != null && !product.getImageUrls().isEmpty()) {
@@ -141,16 +149,14 @@ public class ProductDetailActivity extends AppCompatActivity {
         }
     }
 
-
     private void addProductToCart() {
         if (!sessionManager.isLoggedIn()) {
             loginLauncher.launch(new Intent(this, LoginActivity.class));
             return;
         }
 
-        // La cantidad ahora se obtiene del ViewModel, la única fuente de la verdad.
         Integer quantity = viewModel.quantity.getValue();
-        if (quantity == null) quantity = 1; // Guarda de seguridad
+        if (quantity == null) quantity = 1;
 
         Product product = viewModel.productResult.getValue() != null
                 && viewModel.productResult.getValue().data != null
@@ -167,12 +173,10 @@ public class ProductDetailActivity extends AppCompatActivity {
 
             switch (result.status) {
                 case LOADING:
-                    // Podríamos mostrar un estado de carga en el botón, por ejemplo.
                     break;
                 case SUCCESS:
                     Toast.makeText(this, "Producto agregado al carrito", Toast.LENGTH_SHORT).show();
                     if (result.data != null) {
-                        // Notificamos al ViewModel del carrito sobre la actualización.
                         cartViewModel.onCartUpdated(result.data);
                     }
                     break;
@@ -182,8 +186,5 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
         });
     }
-
-    // Los métodos getQuantity y updateQuantity han sido eliminados de la Activity.
-    // La responsabilidad ahora es 100% del ViewModel.
 
 }
