@@ -11,18 +11,21 @@
     android:elevation="2dp"
     android:paddingHorizontal="4dp"
     tools:targetApi="21">
+
+    <!-- Imagen del producto -->
     <ImageView
         android:id="@+id/item_image"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:scaleType="centerCrop"
-        android:contentDescription="Imagem do produto"
+        android:contentDescription="Imagen del producto"
         tools:src="@tools:sample/backgrounds/scenic"
         android:background="@drawable/bg_input_rounded"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />
 
+    <!-- Detalles del producto: nombre, tamaño, precio -->
     <LinearLayout
         android:id="@+id/details_price_layout"
         android:layout_width="0dp"
@@ -79,6 +82,7 @@
         </LinearLayout>
     </LinearLayout>
 
+    <!-- Contenedor de cantidad y acciones -->
     <LinearLayout
         android:id="@+id/quantity_container"
         android:layout_width="wrap_content"
@@ -89,6 +93,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
+        <!-- Selector de cantidad -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -98,11 +103,11 @@
 
             <ImageButton
                 android:id="@+id/minus_button"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                tools:src="@drawable/menos"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/menos"
                 android:background="@android:color/transparent"
-                android:contentDescription="Diminuir quantidade"
+                android:contentDescription="Disminuir cantidad"
                 android:padding="4dp" />
 
             <TextView
@@ -117,21 +122,21 @@
 
             <ImageButton
                 android:id="@+id/plus_button"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                tools:src="@drawable/plus"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@drawable/plus"
                 android:background="@android:color/transparent"
-                android:contentDescription="Diminuir quantidade"
+                android:contentDescription="Aumentar cantidad"
                 android:padding="4dp" />
-            plus_button
         </LinearLayout>
 
+        <!-- Icono eliminar producto -->
         <ImageView
             android:id="@+id/delete_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            tools:src="@drawable/delete"
-            android:tint="#888888" />
+            android:src="@drawable/delete"
+            android:tint="@color/colorGrey800" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
