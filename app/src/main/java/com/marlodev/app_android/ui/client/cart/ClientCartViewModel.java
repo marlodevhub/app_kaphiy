@@ -11,8 +11,10 @@ import com.marlodev.app_android.domain.usecase.cart.CartUseCases;
 import com.marlodev.app_android.utils.Result;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class ClientCartViewModel extends ViewModel {
 
@@ -49,11 +51,35 @@ public class ClientCartViewModel extends ViewModel {
 
     public void updateQuantity(CartItem item, int newQty) {
         isLoading.setValue(true);
-        item.setQuantity(newQty);
-        if (item.getUnitPrice() != null) {
-            item.setTotalPrice(item.getUnitPrice().multiply(BigDecimal.valueOf(newQty)));
+        List<CartItem> currentItems = new ArrayList<>(Objects.requireNonNull(cartItems.getValue()));
+        CartItem itemToUpdateInBackend = null;
+
+        for (int i = 0; i < currentItems.size(); i++) {
+            CartItem currentItem = currentItems.get(i);
+            if (Objects.equals(currentItem.getId(), item.getId())) {
+                CartItem updatedItem = CartItem.builder()
+                        .id(currentItem.getId())
+                        .product(currentItem.getProduct())
+                        .variant(currentItem.getVariant())
+                        .extras(currentItem.getExtras())
+                        .quantity(newQty)
+                        .unitPrice(currentItem.getUnitPrice())
+                        .totalPrice(currentItem.getUnitPrice() != null ? currentItem.getUnitPrice().multiply(BigDecimal.valueOf(newQty)) : null)
+                        .build();
+                currentItems.set(i, updatedItem);
+                itemToUpdateInBackend = updatedItem;
+                break;
+            }
         }
-        cartUseCases.getUpdateCartItem().execute(item.getId(), item).observeForever(this::handleCartUpdateResult);
+
+        cartItems.setValue(currentItems);
+        updateTotals(currentItems);
+
+        if (itemToUpdateInBackend != null) {
+            cartUseCases.getUpdateCartItem().execute(item.getId(), itemToUpdateInBackend).observeForever(this::handleCartUpdateResult);
+        } else {
+            isLoading.setValue(false);
+        }
     }
 
     public void deleteItem(CartItem item) {
@@ -76,14 +102,17 @@ public class ClientCartViewModel extends ViewModel {
     private void updateStateFromOrder(Order order) {
         if (order == null || order.getItems() == null) {
             cartItems.postValue(Collections.emptyList());
-            totalItems.postValue(0);
-            totalPrice.postValue(BigDecimal.ZERO);
+            updateTotals(Collections.emptyList());
             return;
         }
 
         List<CartItem> items = order.getItems();
         cartItems.postValue(items);
+        updateTotals(items);
 
+    }
+
+    private void updateTotals(List<CartItem> items) {
         int count = items.stream()
                 .mapToInt(item -> item.getQuantity() != null ? item.getQuantity() : 0)
                 .sum();
