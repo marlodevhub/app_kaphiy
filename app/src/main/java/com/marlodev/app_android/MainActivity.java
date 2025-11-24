@@ -9,11 +9,11 @@ import androidx.fragment.app.Fragment;
 
 import com.marlodev.app_android.databinding.ActivityMainBinding;
 import com.marlodev.app_android.ui.admin.AdminMainActivity;
-import com.marlodev.app_android.ui.auth.LoginActivity;
-import com.marlodev.app_android.ui.client.ClientCarFragment;
-import com.marlodev.app_android.ui.client.ClientHomeFragment;
-import com.marlodev.app_android.ui.client.ClientOrderFragment;
-import com.marlodev.app_android.ui.client.ClientPerfilFragment;
+import com.marlodev.app_android.ui.auth.login.LoginActivity;
+import com.marlodev.app_android.ui.client.cart.ClientCarFragment;
+import com.marlodev.app_android.ui.client.home.ClientHomeFragment;
+import com.marlodev.app_android.ui.client.order.ClientOrderFragment;
+import com.marlodev.app_android.ui.client.perfil.ClientPerfilFragment;
 import com.marlodev.app_android.utils.SessionManager;
 
 public class MainActivity extends AppCompatActivity {

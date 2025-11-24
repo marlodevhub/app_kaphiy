@@ -18,7 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.marlodev.app_android.R;
-import com.marlodev.app_android.domain.Pedido;
+import com.marlodev.app_android.domain.model.Pedido;
 
 import org.maplibre.android.MapLibre;
 import org.maplibre.android.camera.CameraPosition;

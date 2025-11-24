@@ -15,11 +15,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.marlodev.app_android.MainActivity;
-import com.marlodev.app_android.adapter.client.PedidoAdapter;
+import com.marlodev.app_android.ui.client.order.PedidoAdapter;
 import com.marlodev.app_android.databinding.FragmentDeliveryHomeBinding;
-import com.marlodev.app_android.domain.Pedido;
+import com.marlodev.app_android.domain.model.Pedido;
 import com.marlodev.app_android.utils.SessionManager;
-import com.marlodev.app_android.viewmodel.DeliveryViewModel;
 
 public class DeliveryHomeFragment extends Fragment implements PedidoAdapter.OnPedidoClickListener {
 

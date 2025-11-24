@@ -2,12 +2,8 @@ package com.marlodev.app_android.ui.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.button.MaterialButton;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -15,13 +11,9 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
-import com.marlodev.app_android.MainActivity;
 import com.marlodev.app_android.R;
-import com.marlodev.app_android.ui.auth.LoginActivity;
-import com.marlodev.app_android.ui.barista.BaristaDetalleFragment;
-import com.marlodev.app_android.ui.barista.BaristaHistorialFragment;
-import com.marlodev.app_android.ui.barista.BaristaHomeFragment;
-import com.marlodev.app_android.ui.barista.BaristaNotificacionesFragment;
+import com.marlodev.app_android.ui.admin.home.AdminHomeFragment;
+import com.marlodev.app_android.ui.auth.login.LoginActivity;
 import com.marlodev.app_android.utils.SessionManager;
 
 public class AdminMainActivity extends AppCompatActivity {

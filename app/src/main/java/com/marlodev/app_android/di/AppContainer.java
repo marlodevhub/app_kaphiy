@@ -3,16 +3,16 @@ package com.marlodev.app_android.di;
 import android.content.Context;
 
 import com.marlodev.app_android.BuildConfig;
-import com.marlodev.app_android.dto.banner.BannerWebSocketEvent;
-import com.marlodev.app_android.dto.product.ProductWebSocketEvent;
-import com.marlodev.app_android.dto.order.network.ApiClient;
-import com.marlodev.app_android.dto.order.network.BannerApiService;
-import com.marlodev.app_android.dto.order.network.GenericWebSocketManager;
-import com.marlodev.app_android.dto.order.network.ProductApiService;
-import com.marlodev.app_android.dto.order.network.TagApiService;
-import com.marlodev.app_android.repository.BannerRepository;
-import com.marlodev.app_android.repository.ProductRepository;
-import com.marlodev.app_android.repository.TagRepository;
+import com.marlodev.app_android.data.network.websocket.dto.BannerWebSocketEvent;
+import com.marlodev.app_android.data.network.websocket.dto.ProductWebSocketEvent;
+import com.marlodev.app_android.data.network.retrofit.ApiClient;
+import com.marlodev.app_android.data.network.api.BannerApiService;
+import com.marlodev.app_android.data.network.websocket.GenericWebSocketManager;
+import com.marlodev.app_android.data.network.api.ProductApiService;
+import com.marlodev.app_android.data.network.api.TagApiService;
+import com.marlodev.app_android.data.repository.BannerRepositoryImpl;
+import com.marlodev.app_android.data.repository.ProductRepositoryImpl;
+import com.marlodev.app_android.data.repository.TagRepositoryImpl;
 import com.marlodev.app_android.utils.SessionManager;
 
 import retrofit2.Retrofit;
@@ -28,9 +28,9 @@ public class AppContainer {
     private final Retrofit retrofit;
 
     // Repositorios (se crean una sola vez y se reutilizan)
-    public final ProductRepository productRepository;
-    public final BannerRepository bannerRepository;
-    public final TagRepository tagRepository;
+    public final ProductRepositoryImpl productRepository;
+    public final BannerRepositoryImpl bannerRepository;
+    public final TagRepositoryImpl tagRepository;
 
     public AppContainer(Context context) {
         // Dependencias base
@@ -50,14 +50,14 @@ public class AppContainer {
         // --- Repositorios ---
         // Se construyen los repositorios con sus dependencias. Estos son los objetos que
         // el resto de la app consumirá. Son "singletons" en la práctica.
-        this.productRepository = new ProductRepository(
+        this.productRepository = new ProductRepositoryImpl(
                 retrofit.create(ProductApiService.class),
                 productWsManager
         );
-        this.bannerRepository = new BannerRepository(
+        this.bannerRepository = new BannerRepositoryImpl(
                 retrofit.create(BannerApiService.class),
                 bannerWsManager
         );
-        this.tagRepository = new TagRepository(retrofit.create(TagApiService.class));
+        this.tagRepository = new TagRepositoryImpl(retrofit.create(TagApiService.class));
     }
 }

@@ -2,27 +2,17 @@ package com.marlodev.app_android.ui.barista;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.button.MaterialButton;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
-import com.marlodev.app_android.MainActivity;
 import com.marlodev.app_android.R;
-import com.marlodev.app_android.ui.auth.LoginActivity;
-import com.marlodev.app_android.ui.delivery.DeliveryGananciasFragment;
-import com.marlodev.app_android.ui.delivery.DeliveryHistorialFragment;
-import com.marlodev.app_android.ui.delivery.DeliveryHomeFragment;
-import com.marlodev.app_android.ui.delivery.DeliveryMensajeriaFragment;
-import com.marlodev.app_android.ui.delivery.DeliveryPerfilFragment;
+import com.marlodev.app_android.ui.auth.login.LoginActivity;
 import com.marlodev.app_android.utils.SessionManager;
 
 public class BaristaMainActivity extends AppCompatActivity {

@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.marlodev.app_android.R;
-import com.marlodev.app_android.domain.Pedido;
+import com.marlodev.app_android.domain.model.Pedido;
 
 public class DeliveryMainActivity extends AppCompatActivity implements DeliveryHomeFragment.OnPedidoSelectedListener {
 

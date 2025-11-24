@@ -15,8 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.marlodev.app_android.R;
-import com.marlodev.app_android.adapter.ChatAdapter;
-import com.marlodev.app_android.domain.ChatMessage;
+import com.marlodev.app_android.domain.model.ChatMessage;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;

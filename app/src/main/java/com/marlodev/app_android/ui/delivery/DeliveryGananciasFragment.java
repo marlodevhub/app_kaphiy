@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.marlodev.app_android.R;
-import com.marlodev.app_android.adapter.client.HistorialAdapter;
-import com.marlodev.app_android.domain.PedidoEntregado;
+import com.marlodev.app_android.ui.client.order.HistorialAdapter;
+import com.marlodev.app_android.domain.model.PedidoEntregado;
 
 import java.util.ArrayList;
 import java.util.List;
