@@ -5,7 +5,7 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.marlodev.app_android.domain.model.Product;
-import com.marlodev.app_android.domain.usecase.GetProductByIdUseCase;
+import com.marlodev.app_android.domain.usecase.cart.GetProductByIdUseCase;
 import com.marlodev.app_android.utils.Result;
 
 public class ProductDetailViewModel extends ViewModel {

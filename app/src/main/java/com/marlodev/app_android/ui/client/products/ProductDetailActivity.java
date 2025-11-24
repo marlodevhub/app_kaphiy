@@ -1,12 +1,7 @@
 package com.marlodev.app_android.ui.client.products;
 
-import static com.marlodev.app_android.utils.Result.Status.ERROR;
-import static com.marlodev.app_android.utils.Result.Status.LOADING;
-import static com.marlodev.app_android.utils.Result.Status.SUCCESS;
-
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -14,13 +9,11 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
-import com.marlodev.app_android.R;
 import com.marlodev.app_android.data.network.api.CartApi;
 import com.marlodev.app_android.data.network.api.ProductApiService;
 import com.marlodev.app_android.data.network.retrofit.ApiClient;
@@ -28,14 +21,11 @@ import com.marlodev.app_android.data.repository.CartRepository;
 import com.marlodev.app_android.data.repository.ProductRepositoryImpl;
 import com.marlodev.app_android.databinding.ActivityProductDetailBinding;
 import com.marlodev.app_android.domain.model.Product;
-import com.marlodev.app_android.domain.usecase.GetProductByIdUseCase;
+import com.marlodev.app_android.domain.usecase.cart.GetProductByIdUseCase;
 import com.marlodev.app_android.ui.auth.login.LoginActivity;
 import com.marlodev.app_android.ui.client.cart.ClientCartViewModel;
 import com.marlodev.app_android.ui.client.cart.ClientCartViewModelFactory;
 import com.marlodev.app_android.utils.SessionManager;
-
-import java.math.BigDecimal;
-import java.util.Collections;
 
 public class ProductDetailActivity extends AppCompatActivity {
 

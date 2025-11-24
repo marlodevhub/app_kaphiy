@@ -38,6 +38,9 @@ public class ClientCartViewModel extends ViewModel {
     public LiveData<Double> getTotalPrice() { return totalPrice; }
 
     public void loadCart() {
+        if (Boolean.TRUE.equals(isLoading.getValue())) {
+            return;
+        }
         repository.getCart().observeForever(result -> {
             if (result.status == Result.Status.SUCCESS && result.data != null) {
                 List<CartItem> mappedItems = result.data.getItems().stream()

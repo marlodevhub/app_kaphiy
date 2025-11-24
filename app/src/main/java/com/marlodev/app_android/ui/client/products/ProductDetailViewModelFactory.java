@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.marlodev.app_android.domain.usecase.GetProductByIdUseCase;
+import com.marlodev.app_android.domain.usecase.cart.GetProductByIdUseCase;
 
 public class ProductDetailViewModelFactory implements ViewModelProvider.Factory {
 
