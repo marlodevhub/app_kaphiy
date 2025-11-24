@@ -73,12 +73,14 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private void setupUI() {
         binding.btnArrowLeft.setOnClickListener(v -> finish());
-        binding.btnPlus.setOnClickListener(v -> updateQuantity(1));
-        binding.btnMinus.setOnClickListener(v -> updateQuantity(-1));
+        // Los clics ahora solo notifican al ViewModel, sin lógica en la Activity.
+        binding.btnPlus.setOnClickListener(v -> viewModel.increaseQuantity());
+        binding.btnMinus.setOnClickListener(v -> viewModel.decreaseQuantity());
         binding.btnAddCart.setOnClickListener(v -> addProductToCart());
     }
 
     private void observeViewModel() {
+        // Observador para los detalles del producto
         viewModel.productResult.observe(this, result -> {
             if (result == null) return;
 
@@ -101,6 +103,11 @@ public class ProductDetailActivity extends AppCompatActivity {
                     showError(result.message);
                     break;
             }
+        });
+
+        // Observador para la cantidad. La UI se actualiza automáticamente.
+        viewModel.quantity.observe(this, qty -> {
+            binding.txtQuantity.setText(String.valueOf(qty));
         });
     }
 
@@ -141,7 +148,9 @@ public class ProductDetailActivity extends AppCompatActivity {
             return;
         }
 
-        int quantity = getQuantity();
+        // La cantidad ahora se obtiene del ViewModel, la única fuente de la verdad.
+        Integer quantity = viewModel.quantity.getValue();
+        if (quantity == null) quantity = 1; // Guarda de seguridad
 
         Product product = viewModel.productResult.getValue() != null
                 && viewModel.productResult.getValue().data != null
@@ -158,35 +167,23 @@ public class ProductDetailActivity extends AppCompatActivity {
 
             switch (result.status) {
                 case LOADING:
-                    showLoading(true);
+                    // Podríamos mostrar un estado de carga en el botón, por ejemplo.
                     break;
                 case SUCCESS:
-                    showLoading(false);
                     Toast.makeText(this, "Producto agregado al carrito", Toast.LENGTH_SHORT).show();
-                    cartViewModel.refreshCart();
+                    if (result.data != null) {
+                        // Notificamos al ViewModel del carrito sobre la actualización.
+                        cartViewModel.onCartUpdated(result.data);
+                    }
                     break;
                 case ERROR:
-                    showLoading(false);
                     showError(result.message);
                     break;
             }
         });
     }
 
-    private void updateQuantity(int change) {
-        int currentQuantity = getQuantity();
-        int newQuantity = currentQuantity + change;
-        if (newQuantity < 1) {
-            newQuantity = 1;
-        }
-        binding.txtQuantity.setText(String.valueOf(newQuantity));
-    }
+    // Los métodos getQuantity y updateQuantity han sido eliminados de la Activity.
+    // La responsabilidad ahora es 100% del ViewModel.
 
-    private int getQuantity() {
-        try {
-            return Integer.parseInt(binding.txtQuantity.getText().toString());
-        } catch (NumberFormatException e) {
-            return 1;
-        }
-    }
 }

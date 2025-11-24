@@ -1,4 +1,4 @@
-package com.marlodev.app_android.ui.client.cart;
+package com.marlodev.app_android.ui.client.cart.components;
 
 import android.view.LayoutInflater;
 import android.view.View;
