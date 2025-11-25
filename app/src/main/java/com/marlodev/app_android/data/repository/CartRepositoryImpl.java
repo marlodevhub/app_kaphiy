@@ -9,7 +9,6 @@ import com.marlodev.app_android.data.network.api.CartApi;
 import com.marlodev.app_android.data.network.mapper.CartItemMapper;
 import com.marlodev.app_android.data.network.mapper.OrderMapper;
 import com.marlodev.app_android.data.network.model.order.CartItemRequest;
-import com.marlodev.app_android.domain.DomainCallback;
 import com.marlodev.app_android.domain.model.CartItem;
 import com.marlodev.app_android.domain.model.Order;
 import com.marlodev.app_android.utils.Result;
@@ -18,12 +17,12 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CartRepository implements com.marlodev.app_android.domain.repository.CartRepository {
+public class CartRepositoryImpl implements com.marlodev.app_android.domain.repository.CartRepository {
 
-    private static final String TAG = "CartRepository";
+    private static final String TAG = "CartRepositoryImpl";
     private final CartApi api;
 
-    public CartRepository(CartApi api) {
+    public CartRepositoryImpl(CartApi api) {
         this.api = api;
     }
 
@@ -98,21 +97,7 @@ public class CartRepository implements com.marlodev.app_android.domain.repositor
 
     /** Finalizar el carrito (checkout) */
     @Override
-    public void checkout(DomainCallback<Order> callback) {
-        api.checkout().enqueue(new Callback<com.marlodev.app_android.data.network.model.order.OrderResponse>() {
-            @Override
-            public void onResponse(Call<com.marlodev.app_android.data.network.model.order.OrderResponse> call, Response<com.marlodev.app_android.data.network.model.order.OrderResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    callback.onSuccess(OrderMapper.fromResponse(response.body()));
-                } else {
-                    callback.onError("Error al finalizar la compra (" + response.code() + ")");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<com.marlodev.app_android.data.network.model.order.OrderResponse> call, Throwable t) {
-                callback.onError("Error de red al finalizar la compra: " + t.getMessage());
-            }
-        });
+    public LiveData<Result<Order>> checkout() {
+        return performCall(api.checkout(), "finalizar la compra");
     }
 }

@@ -5,8 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
 import androidx.lifecycle.ViewModel;
 
-import com.marlodev.app_android.data.repository.OrderRepository;
-import com.marlodev.app_android.domain.DomainCallback;
+import com.marlodev.app_android.data.repository.OrderRepositoryImpl;
 import com.marlodev.app_android.domain.model.Order;
 import com.marlodev.app_android.domain.usecase.cart.CheckoutUseCase;
 import com.marlodev.app_android.utils.Result;
@@ -17,16 +16,18 @@ import java.util.List;
 
 public class ClientOrderViewModel extends ViewModel {
 
-    private final OrderRepository repository;
+    private final OrderRepositoryImpl repository;
     private final CheckoutUseCase checkoutUseCase;
 
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
-    private final MutableLiveData<Result<Order>> checkoutResult = new MutableLiveData<>();
 
     private final LiveData<List<Order>> activeOrders;
     private final LiveData<List<Order>> historyOrders;
 
-    public ClientOrderViewModel(OrderRepository repository, CheckoutUseCase checkoutUseCase) {
+    private final MutableLiveData<Void> checkoutTrigger = new MutableLiveData<>();
+    private final LiveData<Result<Order>> checkoutResult;
+
+    public ClientOrderViewModel(OrderRepositoryImpl repository, CheckoutUseCase checkoutUseCase) {
         this.repository = repository;
         this.checkoutUseCase = checkoutUseCase;
 
@@ -39,6 +40,8 @@ public class ClientOrderViewModel extends ViewModel {
                 repository.getHistoryOrders(),
                 this::processResult
         );
+
+        checkoutResult = Transformations.switchMap(checkoutTrigger, v -> checkoutUseCase.execute());
     }
 
     public LiveData<List<Order>> getActiveOrders() { return activeOrders; }
@@ -47,18 +50,7 @@ public class ClientOrderViewModel extends ViewModel {
     public LiveData<Result<Order>> getCheckoutResult() { return checkoutResult; }
 
     public void checkout() {
-        checkoutResult.setValue(Result.loading());
-        checkoutUseCase.execute(new DomainCallback<Order>() {
-            @Override
-            public void onSuccess(Order data) {
-                checkoutResult.postValue(Result.success(data));
-            }
-
-            @Override
-            public void onError(String message) {
-                checkoutResult.postValue(Result.error(message));
-            }
-        });
+        checkoutTrigger.setValue(null);
     }
 
     private List<Order> processResult(Result<List<Order>> result) {

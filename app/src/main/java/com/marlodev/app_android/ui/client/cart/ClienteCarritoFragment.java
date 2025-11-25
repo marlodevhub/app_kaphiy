@@ -19,6 +19,7 @@ public class ClienteCarritoFragment extends Fragment {
 
     private FragmentClienteCarritoBinding binding;
     private ClientCartViewModel viewModel;
+    // private TuAdaptador cartAdapter; // Reemplaza con tu adaptador
 
     @Nullable
     @Override
@@ -42,6 +43,27 @@ public class ClienteCarritoFragment extends Fragment {
     }
 
     private void observeViewModel() {
+        // OBSERVADOR PRINCIPAL Y ÚNICO para la visibilidad de la UI.
+        // Reacciona al estado explícito que envía el ViewModel.
+        viewModel.getIsCartEmpty().observe(getViewLifecycleOwner(), this::updateCartView);
+
+        // Observador para actualizar la lista del RecyclerView
+        viewModel.getCartItems().observe(getViewLifecycleOwner(), cartItems -> {
+            // cartAdapter.submitList(cartItems);
+        });
+
+        // Observadores para detalles de la UI (precios, totales)
+        viewModel.getTotalItems().observe(getViewLifecycleOwner(), total -> {
+            binding.titleText.setText("Cesta(" + (total != null ? total : 0) + ")");
+        });
+
+        viewModel.getTotalPrice().observe(getViewLifecycleOwner(), price -> {
+             String formattedPrice = "S/. " + (price != null ? price.toString() : "0.00");
+            binding.txtTotalPriceCar.setText(formattedPrice);
+            binding.txtTotalItems.setText(formattedPrice);
+        });
+
+        // Observador para mostrar el resultado del checkout (Toast)
         viewModel.getCheckoutResult().observe(getViewLifecycleOwner(), result -> {
             if (result == null) return;
 
@@ -52,7 +74,6 @@ public class ClienteCarritoFragment extends Fragment {
                 case SUCCESS:
                     binding.progressBar.setVisibility(View.GONE);
                     Toast.makeText(getContext(), "¡Pedido realizado con éxito!", Toast.LENGTH_LONG).show();
-                    // Aquí puedes navegar a otra pantalla, por ejemplo, la de historial de pedidos
                     break;
                 case ERROR:
                     binding.progressBar.setVisibility(View.GONE);
@@ -60,6 +81,20 @@ public class ClienteCarritoFragment extends Fragment {
                     break;
             }
         });
+    }
+
+    /**
+     * Controla la visibilidad de la pantalla del carrito vs. la pantalla de "Carrito Vacío".
+     * @param isEmpty El estado inequívoco que proviene del ViewModel.
+     */
+    private void updateCartView(boolean isEmpty) {
+        if (isEmpty) {
+            binding.emptyCartView.setVisibility(View.VISIBLE);
+            binding.cartContentContainer.setVisibility(View.GONE);
+        } else {
+            binding.emptyCartView.setVisibility(View.GONE);
+            binding.cartContentContainer.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

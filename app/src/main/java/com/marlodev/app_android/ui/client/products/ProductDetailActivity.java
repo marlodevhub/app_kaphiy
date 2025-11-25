@@ -1,7 +1,5 @@
 package com.marlodev.app_android.ui.client.products;
 
-import static com.marlodev.app_android.utils.Result.Status.LOADING;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -21,6 +19,7 @@ import com.marlodev.app_android.domain.model.Product;
 import com.marlodev.app_android.ui.auth.login.LoginActivity;
 import com.marlodev.app_android.ui.client.cart.ClientCartViewModel;
 import com.marlodev.app_android.ui.client.cart.ClientCartViewModelFactory;
+import com.marlodev.app_android.utils.Result;
 import com.marlodev.app_android.utils.SessionManager;
 
 public class ProductDetailActivity extends AppCompatActivity {
@@ -113,14 +112,31 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
         });
 
-        // NUEVO: Observador para el precio antiguo total.
         viewModel.totalOldPrice.observe(this, totalOld -> {
             if (totalOld != null) {
                 binding.tvOldPrice.setText(String.format("S/%.2f", totalOld));
                 binding.tvOldPrice.setVisibility(View.VISIBLE);
             } else {
-                // Si es nulo, el ViewModel nos está diciendo que no hay precio antiguo.
                 binding.tvOldPrice.setVisibility(View.GONE);
+            }
+        });
+
+        // NUEVO: Observador centralizado para los resultados de las operaciones del carrito
+        cartViewModel.getCartOperationResult().observe(this, result -> {
+            if (result == null) return;
+
+            switch (result.status) {
+                case LOADING:
+                    showLoading(true); // Reutilizamos el loading de la pantalla de detalle
+                    break;
+                case SUCCESS:
+                    showLoading(false);
+                    Toast.makeText(this, result.data, Toast.LENGTH_SHORT).show();
+                    break;
+                case ERROR:
+                    showLoading(false);
+                    showError(result.message);
+                    break;
             }
         });
     }
@@ -139,7 +155,6 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     private void bindProduct(Product product) {
         binding.txtTitleProduct.setText(product.getName());
-        // La lógica de precios ahora es 100% reactiva y se maneja en los observadores.
         binding.txtDescripcion.setText(product.getDescription());
 
         if (product.getImageUrls() != null && !product.getImageUrls().isEmpty()) {
@@ -168,23 +183,8 @@ public class ProductDetailActivity extends AppCompatActivity {
             return;
         }
 
-        cartViewModel.addItemToCart(product, quantity).observe(this, result -> {
-            if (result == null) return;
-
-            switch (result.status) {
-                case LOADING:
-                    break;
-                case SUCCESS:
-                    Toast.makeText(this, "Producto agregado al carrito", Toast.LENGTH_SHORT).show();
-                    if (result.data != null) {
-                        cartViewModel.refreshCart();
-                    }
-                    break;
-                case ERROR:
-                    showError(result.message);
-                    break;
-            }
-        });
+        // La lógica de observación se ha movido a observeViewModel
+        cartViewModel.addItemToCart(product, quantity);
     }
 
 }

@@ -22,12 +22,12 @@ import retrofit2.Response;
  * Repositorio profesional para Orders.
  * Centraliza llamadas de red, manejo de errores y mapeo a dominio.
  */
-public class OrderRepository {
+public class OrderRepositoryImpl {
 
-    private static final String TAG = "OrderRepository";
+    private static final String TAG = "OrderRepositoryImpl";
     private final OrderApi api;
 
-    public OrderRepository(OrderApi api) {
+    public OrderRepositoryImpl(OrderApi api) {
         this.api = api;
     }
 

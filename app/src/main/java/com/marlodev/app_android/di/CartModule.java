@@ -1,6 +1,6 @@
 package com.marlodev.app_android.di;
 
-import com.marlodev.app_android.data.repository.CartRepository;
+import com.marlodev.app_android.data.repository.CartRepositoryImpl;
 import com.marlodev.app_android.domain.usecase.cart.AddItemToCartUseCase;
 import com.marlodev.app_android.domain.usecase.cart.AddOrUpdateCartItemUseCase;
 import com.marlodev.app_android.domain.usecase.cart.CartUseCases;
@@ -11,7 +11,7 @@ import com.marlodev.app_android.domain.usecase.cart.UpdateCartItemUseCase;
 
 public class CartModule {
 
-    public static CartUseCases provideCartUseCases(CartRepository repository) {
+    public static CartUseCases provideCartUseCases(CartRepositoryImpl repository) {
         // Casos de uso atómicos
         AddItemToCartUseCase addItem = new AddItemToCartUseCase(repository);
         UpdateCartItemUseCase updateItem = new UpdateCartItemUseCase(repository);

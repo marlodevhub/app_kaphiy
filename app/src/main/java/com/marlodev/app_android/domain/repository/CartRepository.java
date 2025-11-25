@@ -12,5 +12,5 @@ public interface CartRepository {
     LiveData<Result<Order>> addItem(CartItem item);
     LiveData<Result<Order>> updateItem(Long itemId, CartItem item);
     LiveData<Result<Order>> deleteItem(Long itemId);
-    void checkout(DomainCallback<Order> callback);
+    LiveData<Result<Order>> checkout();
 }

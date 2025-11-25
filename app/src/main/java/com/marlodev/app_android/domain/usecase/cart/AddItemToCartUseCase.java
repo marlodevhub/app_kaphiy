@@ -1,7 +1,7 @@
 package com.marlodev.app_android.domain.usecase.cart;
 
 import androidx.lifecycle.LiveData;
-import com.marlodev.app_android.data.repository.CartRepository;
+import com.marlodev.app_android.data.repository.CartRepositoryImpl;
 import com.marlodev.app_android.domain.model.CartItem;
 import com.marlodev.app_android.domain.model.Order;
 import com.marlodev.app_android.utils.Result;
@@ -13,13 +13,13 @@ import com.marlodev.app_android.utils.Result;
  */
 public class AddItemToCartUseCase {
 
-    private final CartRepository repository;
+    private final CartRepositoryImpl repository;
 
     /**
      * Constructor que inyecta el repositorio del carrito.
      * @param repository La implementación del repositorio que se comunicará con la fuente de datos.
      */
-    public AddItemToCartUseCase(CartRepository repository) {
+    public AddItemToCartUseCase(CartRepositoryImpl repository) {
         this.repository = repository;
     }
 

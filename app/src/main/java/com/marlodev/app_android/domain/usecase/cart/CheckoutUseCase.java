@@ -1,8 +1,10 @@
 package com.marlodev.app_android.domain.usecase.cart;
 
-import com.marlodev.app_android.domain.DomainCallback;
+import androidx.lifecycle.LiveData;
+
 import com.marlodev.app_android.domain.model.Order;
 import com.marlodev.app_android.domain.repository.CartRepository;
+import com.marlodev.app_android.utils.Result;
 
 public class CheckoutUseCase {
 
@@ -12,7 +14,7 @@ public class CheckoutUseCase {
         this.cartRepository = cartRepository;
     }
 
-    public void execute(DomainCallback<Order> callback) {
-        cartRepository.checkout(callback);
+    public LiveData<Result<Order>> execute() {
+        return cartRepository.checkout();
     }
 }
