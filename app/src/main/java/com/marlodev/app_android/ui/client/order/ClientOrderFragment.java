@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.android.material.snackbar.Snackbar;
 import com.marlodev.app_android.databinding.FragmentClientOrderBinding;
 import com.marlodev.app_android.di.DependencyProvider;
+import com.marlodev.app_android.ui.client.order.components.active_orders.OrderAdapter;
 import com.marlodev.app_android.utils.Result;
 
 public class ClientOrderFragment extends Fragment {

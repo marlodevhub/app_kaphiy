@@ -1,4 +1,4 @@
-package com.marlodev.app_android.ui.client.order;
+package com.marlodev.app_android.ui.client.order.components.active_orders;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -13,7 +13,6 @@ import com.marlodev.app_android.data.network.model.order.CartItemResponse;
 import com.marlodev.app_android.data.network.model.order.OrderResponse;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 

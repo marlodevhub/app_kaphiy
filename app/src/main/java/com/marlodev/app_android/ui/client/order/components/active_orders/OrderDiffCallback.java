@@ -1,4 +1,4 @@
-package com.marlodev.app_android.ui.client.order;
+package com.marlodev.app_android.ui.client.order.components.active_orders;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
