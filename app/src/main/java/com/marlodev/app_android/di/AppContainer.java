@@ -21,6 +21,7 @@ import com.marlodev.app_android.domain.usecase.cart.CartUseCases;
 import com.marlodev.app_android.domain.usecase.cart.CheckoutUseCase;
 import com.marlodev.app_android.domain.usecase.order.cliente.OrderUseCases;
 import com.marlodev.app_android.domain.usecase.product.GetProductByIdUseCase;
+import com.marlodev.app_android.domain.usecase.product.ProductUseCases;
 import com.marlodev.app_android.ui.client.cart.ClientCartViewModelFactory;
 import com.marlodev.app_android.ui.client.order.ClientOrderViewModelFactory;
 import com.marlodev.app_android.ui.client.products.ProductDetailViewModelFactory;
@@ -39,14 +40,14 @@ public class AppContainer {
     private final Retrofit retrofit;
 
     // --- Repositorios ---
-    public final ProductRepositoryImpl productRepository;
     public final BannerRepositoryImpl bannerRepository;
     public final TagRepositoryImpl tagRepository;
+    public final ProductRepositoryImpl productRepository;
     public final CartRepositoryImpl cartRepository;
     public final OrderRepositoryImpl orderRepository;
 
     // --- Casos de uso ---
-    public final GetProductByIdUseCase getProductByIdUseCase;
+    public final ProductUseCases productUseCases;
     public final CartUseCases cartUseCases;
     public final OrderUseCases orderUseCases;
     public final CheckoutUseCase checkoutUseCase;
@@ -71,10 +72,6 @@ public class AppContainer {
         );
 
         // --- Repositorios ---
-        this.productRepository = new ProductRepositoryImpl(
-                retrofit.create(ProductApiService.class),
-                productWsManager
-        );
         this.bannerRepository = new BannerRepositoryImpl(
                 retrofit.create(BannerApiService.class),
                 bannerWsManager
@@ -82,18 +79,25 @@ public class AppContainer {
         this.tagRepository = new TagRepositoryImpl(
                 retrofit.create(TagApiService.class)
         );
-        this.cartRepository = new CartRepositoryImpl(retrofit.create(CartApi.class));
-        this.orderRepository = new OrderRepositoryImpl(retrofit.create(OrderApi.class));
+        this.productRepository = new ProductRepositoryImpl(
+                retrofit.create(ProductApiService.class),
+                productWsManager
+        );
+        this.cartRepository = new CartRepositoryImpl(
+                retrofit.create(CartApi.class));
+        this.orderRepository = new OrderRepositoryImpl(
+                retrofit.create(OrderApi.class));
+
+
 
         // --- Casos de uso ---
-        this.getProductByIdUseCase = new GetProductByIdUseCase(productRepository);
+        this.productUseCases = ProductModule.provideProductUseCases(productRepository);
         this.cartUseCases = CartModule.provideCartUseCases(cartRepository);
         this.orderUseCases = OrderModule.provideCartUseCases(orderRepository);
-
         this.checkoutUseCase = cartUseCases.getCheckoutUseCase();
 
         // --- ViewModel Factories ---
-        this.productDetailViewModelFactory = new ProductDetailViewModelFactory(getProductByIdUseCase);
+        this.productDetailViewModelFactory = new ProductDetailViewModelFactory(productUseCases);
         this.clientCartViewModelFactory = new ClientCartViewModelFactory(cartUseCases);
         this.clientOrderViewModelFactory = new ClientOrderViewModelFactory(orderUseCases);
     }

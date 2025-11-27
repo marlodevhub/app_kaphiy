@@ -12,6 +12,8 @@ import com.marlodev.app_android.data.network.model.product.ProductResponse;
 import com.marlodev.app_android.data.network.websocket.dto.ProductWebSocketEvent;
 import com.marlodev.app_android.data.network.websocket.GenericWebSocketManager;
 import com.marlodev.app_android.data.network.api.ProductApiService;
+import com.marlodev.app_android.domain.repository.ProductRepository;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -22,13 +24,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Repositorio profesional para productos.
- * Gestiona REST API (CRUD completo) y WebSocket, mantiene LiveData sincronizado.
- * Convierte automáticamente entre DTOs y dominio usando ProductMapper.
- */
-
-public class ProductRepositoryImpl {
+public class ProductRepositoryImpl implements ProductRepository {
 
     private static final String TAG = "ProductRepositoryImpl";
 
@@ -50,7 +46,6 @@ public class ProductRepositoryImpl {
         this.apiService = apiService;
         this.wsManager = wsManager;
         this.webSocketObserver = this::handleWebSocketEvent;
-        // Inicia la observación aquí, independientemente del ciclo de vida de la UI
         this.wsManager.getEventLiveData().observeForever(webSocketObserver);
     }
 
@@ -60,7 +55,18 @@ public class ProductRepositoryImpl {
         this.wsManager = null;
         this.webSocketObserver = null;
     }
+
     // -----------------------------
+    // IMPLEMENTACIÓN DE LA INTERFAZ
+    // -----------------------------
+
+    @Override
+    public LiveData<List<Product>> getAllProducts() {
+        loadProducts(); // Asegura que se inicie la carga si aún no se ha hecho.
+        return products; // Devuelve el LiveData público existente.
+    }
+
+    // -----------------------------    
     // WEBSOCKET
     // -----------------------------
     public void connectWebSocket() {
@@ -85,7 +91,6 @@ public class ProductRepositoryImpl {
 
         switch (event.getAction()) {
             case "CREATE":
-                // Evita duplicados y añade al principio
                 if (updatedList.stream().noneMatch(p -> Objects.equals(p.getId(), productId))) {
                     updatedList.add(0, product);
                     Log.d(TAG, "🟢 Producto CREADO: " + product.getName());
@@ -97,12 +102,11 @@ public class ProductRepositoryImpl {
                 boolean found = false;
                 for (int i = 0; i < updatedList.size(); i++) {
                     if (Objects.equals(updatedList.get(i).getId(), productId)) {
-                        updatedList.set(i, product); // Reemplaza en la posición
+                        updatedList.set(i, product); 
                         found = true;
                         break;
                     }
                 }
-                // Si es una actualización de imágenes de un producto que no estaba en la lista, lo añade.
                 if (!found && event.getAction().equals("IMAGES_UPDATE")) {
                     updatedList.add(0, product);
                 }
@@ -110,7 +114,6 @@ public class ProductRepositoryImpl {
                 break;
 
             case "DELETE":
-                // Elimina el producto de la lista
                 if (updatedList.removeIf(p -> Objects.equals(p.getId(), productId))) {
                     Log.d(TAG, "🔴 Producto ELIMINADO: " + productId);
                 }
@@ -118,7 +121,6 @@ public class ProductRepositoryImpl {
 
             default:
                 Log.w(TAG, "⚪ Acción desconocida: " + event.getAction());
-                // No se modifica la lista si la acción no es reconocida
                 return;
         }
 
@@ -130,17 +132,16 @@ public class ProductRepositoryImpl {
         disconnectWebSocket();
     }
 
-    // -----------------------------
+    // -----------------------------    
     // REST API - CRUD COMPLETO
     // -----------------------------
 
-    // --- Crear ---
+    @Override
     public void createProduct(RequestBody productJson, MultipartBody.Part[] images) {
         apiService.createProduct(productJson, images).enqueue(new Callback<ProductResponse>() {
             @Override
             public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    // No es necesario actualizar la lista aquí, el WebSocket lo hará.
                     Log.d(TAG, "Petición CREATE enviada con éxito.");
                 } else {
                     _errorMessage.postValue("Error al crear producto (" + response.code() + ")");
@@ -154,14 +155,13 @@ public class ProductRepositoryImpl {
         });
     }
 
-    // --- Actualizar ---
+    @Override
     public void updateProduct(long productId, RequestBody productJson, MultipartBody.Part[] images) {
         apiService.updateProduct(productId, productJson, images).enqueue(new Callback<ProductResponse>() {
             @Override
             public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
                 if (response.isSuccessful()) {
                     Log.d(TAG, "Petición UPDATE para el producto " + productId + " enviada con éxito.");
-                    // La actualización de la lista la gestionará el evento WebSocket para mantener una única fuente de verdad.
                 } else {
                     _errorMessage.postValue("Error al actualizar producto (" + response.code() + ")");
                 }
@@ -174,7 +174,6 @@ public class ProductRepositoryImpl {
         });
     }
 
-    // --- Listar ---
     public void loadProducts() {
         _isLoading.postValue(true);
         apiService.getProducts().enqueue(new Callback<List<ProductResponse>>() {
@@ -199,7 +198,7 @@ public class ProductRepositoryImpl {
         });
     }
 
-    // --- Buscar por Id ---
+    @Override
     public LiveData<Product> getProductById(long id) {
         MutableLiveData<Product> liveData = new MutableLiveData<>();
         List<Product> list = _products.getValue();
@@ -228,14 +227,13 @@ public class ProductRepositoryImpl {
         return liveData;
     }
 
-    // --- Eliminar ---
+    @Override
     public void deleteProduct(long productId) {
         apiService.deleteProduct(productId).enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 if (response.isSuccessful()) {
                     Log.d(TAG, "Petición DELETE para el producto " + productId + " enviada con éxito.");
-                    // La eliminación de la lista la gestionará el evento WebSocket.
                 } else {
                     _errorMessage.postValue("Error al eliminar producto (" + response.code() + ")");
                 }
@@ -247,6 +245,4 @@ public class ProductRepositoryImpl {
             }
         });
     }
-
-
 }

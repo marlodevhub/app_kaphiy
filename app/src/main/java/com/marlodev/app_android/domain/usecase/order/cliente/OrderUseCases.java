@@ -8,6 +8,7 @@ public class OrderUseCases {
         this.getActiveOrders = getActiveOrders;
     }
     public GetActiveOrdersUseCase getActiveOrders() {
+
         return getActiveOrders;
     }
 
