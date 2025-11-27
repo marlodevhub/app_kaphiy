@@ -15,4 +15,5 @@ public class MainApplication extends Application {
         // El contenedor se crea una sola vez, cuando la app inicia
         appContainer = new AppContainer(this);
     }
+
 }

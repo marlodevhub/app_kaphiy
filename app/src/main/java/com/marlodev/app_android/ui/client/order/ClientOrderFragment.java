@@ -12,8 +12,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.marlodev.app_android.MainApplication;
 import com.marlodev.app_android.databinding.FragmentClientOrderBinding;
-import com.marlodev.app_android.di.DependencyProvider;
 import com.marlodev.app_android.ui.client.order.components.active_orders.ActiveOrderAdapter;
 import com.marlodev.app_android.utils.Result;
 
@@ -59,7 +59,16 @@ public class ClientOrderFragment extends Fragment {
     // Inicialización de ViewModel
     // ----------------------------------------
     private void setupViewModel() {
-        ClientOrderViewModelFactory factory = DependencyProvider.provideClientOrderViewModelFactory(requireContext());
+//        ClientOrderViewModelFactory factory = DependencyProvider.provideClientOrderViewModelFactory(requireContext());
+//        orderVM = new ViewModelProvider(this, factory).get(ClientOrderViewModel.class);
+//
+        // Obtienes el AppContainer desde MainApplication
+        MainApplication app = (MainApplication) requireActivity().getApplicationContext();
+
+        // Usas la factory centralizada en AppContainer
+        ClientOrderViewModelFactory factory = app.appContainer.clientOrderViewModelFactory;
+
+        // Inicializas el ViewModel con la factory
         orderVM = new ViewModelProvider(this, factory).get(ClientOrderViewModel.class);
     }
 

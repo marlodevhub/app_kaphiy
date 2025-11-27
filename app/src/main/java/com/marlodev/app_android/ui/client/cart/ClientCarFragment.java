@@ -12,10 +12,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.marlodev.app_android.MainApplication;
 import com.marlodev.app_android.databinding.FragmentClienteCarritoBinding;
-import com.marlodev.app_android.di.DependencyProvider;
 import com.marlodev.app_android.ui.client.cart.components.ItemProductCarAdapter;
-import com.marlodev.app_android.utils.Event;
 import com.marlodev.app_android.utils.Result;
 
 public class ClientCarFragment extends Fragment {
@@ -54,8 +53,12 @@ public class ClientCarFragment extends Fragment {
     }
 
     private void setupViewModel() {
-        ClientCartViewModelFactory factory = DependencyProvider.provideClientCartViewModelFactory(requireContext());
+
+        MainApplication app = (MainApplication) requireActivity().getApplicationContext();
+
+        ClientCartViewModelFactory factory = app.appContainer.clientCartViewModelFactory;
         cartVM = new ViewModelProvider(requireActivity(), factory).get(ClientCartViewModel.class);
+
 
         binding.setViewModel(cartVM);
         binding.setLifecycleOwner(getViewLifecycleOwner());
@@ -69,7 +72,6 @@ public class ClientCarFragment extends Fragment {
             }
         });
 
-        // --- Observadores de Eventos de un solo uso ---
         cartVM.errorMessage.observe(getViewLifecycleOwner(), event -> {
             String message = event.getContentIfNotHandled();
             if (message != null) {
@@ -81,15 +83,16 @@ public class ClientCarFragment extends Fragment {
             Result<com.marlodev.app_android.domain.model.Order> result = event.getContentIfNotHandled();
             if (result != null) {
                 if (result.status == Result.Status.SUCCESS) {
+                    // Mostrar Toast o Snackbar
                     Toast.makeText(requireContext(), "Orden creada exitosamente", Toast.LENGTH_SHORT).show();
+                    // Y navegar a otra pantalla
+                    // NavHostFragment.findNavController(this).navigate(R.id.action_cartFragment_to_orderSuccessFragment);
                 } else if (result.status == Result.Status.ERROR) {
                     showError(result.message);
                 }
             }
         });
 
-        // Nota: Si tienes un cartOperationResult, también deberías envolverlo en un Event
-        // y observarlo de la misma manera.
     }
 
     private void setupRecyclerView() {

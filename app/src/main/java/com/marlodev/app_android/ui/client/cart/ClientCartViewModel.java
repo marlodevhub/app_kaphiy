@@ -138,16 +138,13 @@ public class ClientCartViewModel extends ViewModel {
         List<CartItem> items = (order != null && order.getItems() != null) ? order.getItems() : Collections.emptyList();
         _cartItems.postValue(items);
         _isCartEmpty.postValue(items.isEmpty());
-        updateTotals(items);
-    }
 
-    private void updateTotals(List<CartItem> items) {
-        int count = items.stream().mapToInt(CartItem::getQuantity).sum();
-        BigDecimal total = items.stream()
-                .map(CartItem::getTotalPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        _totalItems.postValue(count);
-        _totalPrice.postValue(total);
+        if (order != null) {
+            _totalItems.postValue(order.getTotalItemCount());
+            _totalPrice.postValue(order.calculateTotalPrice());
+        } else {
+            _totalItems.postValue(0);
+            _totalPrice.postValue(BigDecimal.ZERO);
+        }
     }
 }

@@ -13,8 +13,8 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.snackbar.Snackbar;
+import com.marlodev.app_android.MainApplication;
 import com.marlodev.app_android.databinding.ActivityProductDetailBinding;
-import com.marlodev.app_android.di.DependencyProvider;
 import com.marlodev.app_android.domain.model.Product;
 import com.marlodev.app_android.ui.auth.login.LoginActivity;
 import com.marlodev.app_android.ui.client.cart.ClientCartViewModel;
@@ -50,13 +50,27 @@ public class ProductDetailActivity extends AppCompatActivity {
         }
     }
 
+//    private void initViewModels() {
+//        ProductDetailViewModelFactory factory = DependencyProvider.provideProductDetailViewModelFactory(getApplicationContext());
+//        viewModel = new ViewModelProvider(this, factory).get(ProductDetailViewModel.class);
+//
+//        ClientCartViewModelFactory cartFactory = DependencyProvider.provideClientCartViewModelFactory(getApplicationContext());
+//        cartViewModel = new ViewModelProvider(this, cartFactory).get(ClientCartViewModel.class);
+//    }
+
     private void initViewModels() {
-        ProductDetailViewModelFactory factory = DependencyProvider.provideProductDetailViewModelFactory(getApplicationContext());
+        // Obtienes el AppContainer desde MainApplication
+        MainApplication app = (MainApplication) getApplicationContext();
+
+        // ProductDetail ViewModel
+        ProductDetailViewModelFactory factory = app.appContainer.productDetailViewModelFactory;
         viewModel = new ViewModelProvider(this, factory).get(ProductDetailViewModel.class);
 
-        ClientCartViewModelFactory cartFactory = DependencyProvider.provideClientCartViewModelFactory(getApplicationContext());
+        // ClientCart ViewModel
+        ClientCartViewModelFactory cartFactory = app.appContainer.clientCartViewModelFactory;
         cartViewModel = new ViewModelProvider(this, cartFactory).get(ClientCartViewModel.class);
     }
+
 
     private void setupEdgeToEdgeDisplay() {
         WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
