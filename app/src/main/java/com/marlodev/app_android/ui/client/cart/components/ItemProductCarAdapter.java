@@ -12,23 +12,38 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.marlodev.app_android.R;
 import com.marlodev.app_android.domain.model.CartItem;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
+import java.util.Locale;
+
 /**
- * Adaptador profesional para la lista de items del carrito.
- * Usa ListAdapter para manejar de forma eficiente las actualizaciones de la lista, 
- * previniendo la duplicación de vistas y permitiendo animaciones suaves.
+ * Adapter profesional para el carrito del cliente con mejoras de performance y manejo de errores.
+ * - Usa ListAdapter y DiffUtil para actualizaciones eficientes
+ * - Implementa ViewHolder pattern optimizado
+ * - Maneja estados de error y casos edge
  */
 public class ItemProductCarAdapter extends ListAdapter<CartItem, ItemProductCarAdapter.ViewHolder> {
 
+    private static final int MAX_QUANTITY = 99;
+    private static final NumberFormat CURRENCY_FORMAT = NumberFormat.getCurrencyInstance(new Locale("es", "PE"));
+
     private OnQuantityChangeListener quantityListener;
     private OnDeleteClickListener deleteListener;
+    private OnItemClickListener itemClickListener;
 
     public ItemProductCarAdapter() {
         super(new CartItemDiffCallback());
+        CURRENCY_FORMAT.setMaximumFractionDigits(2);
+        CURRENCY_FORMAT.setMinimumFractionDigits(2);
     }
 
+    // ----------------------------------------------
+    // INTERFACES PARA EVENTOS
+    // ----------------------------------------------
     public interface OnQuantityChangeListener {
         void onQuantityChanged(CartItem item, int newQuantity);
     }
@@ -37,6 +52,13 @@ public class ItemProductCarAdapter extends ListAdapter<CartItem, ItemProductCarA
         void onDelete(CartItem item);
     }
 
+    public interface OnItemClickListener {
+        void onItemClick(CartItem item);
+    }
+
+    // ----------------------------------------------
+    // SETTERS DE LISTENERS
+    // ----------------------------------------------
     public void setOnQuantityChangeListener(OnQuantityChangeListener listener) {
         this.quantityListener = listener;
     }
@@ -45,6 +67,13 @@ public class ItemProductCarAdapter extends ListAdapter<CartItem, ItemProductCarA
         this.deleteListener = listener;
     }
 
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.itemClickListener = listener;
+    }
+
+    // ----------------------------------------------
+    // CREAR VISTA
+    // ----------------------------------------------
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -53,55 +82,44 @@ public class ItemProductCarAdapter extends ListAdapter<CartItem, ItemProductCarA
         return new ViewHolder(view);
     }
 
+    // ----------------------------------------------
+    // BIND DE DATOS
+    // ----------------------------------------------
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         CartItem item = getItem(position);
-        var product = item.getProduct();
-
-        if (product == null) return; // Guarda de seguridad por si el producto es nulo
-
-        holder.itemName.setText(product.getName());
-        holder.currentPrice.setText("S/. " + product.getPrice());
-
-        if (product.getOldPrice() != null) {
-            holder.oldPrice.setText("S/. " + product.getOldPrice());
-            holder.oldPrice.setVisibility(View.VISIBLE);
-        } else {
-            holder.oldPrice.setVisibility(View.GONE);
+        if (item == null || item.getProduct() == null) {
+            bindErrorState(holder);
+            return;
         }
 
-        holder.quantityText.setText(String.valueOf(item.getQuantity()));
-
-        if (product.getImageUrls() != null && !product.getImageUrls().isEmpty()) {
-            Glide.with(holder.itemView.getContext())
-                    .load(product.getImageUrls().get(0))
-                    .placeholder(R.drawable.ic_image_placeholder)
-                    .into(holder.itemImage);
-        }
-
-        holder.plusButton.setOnClickListener(v -> {
-            int newQuantity = item.getQuantity() + 1;
-            // No actualizamos la UI directamente. Delegamos al ViewModel.
-            if (quantityListener != null) quantityListener.onQuantityChanged(item, newQuantity);
-        });
-
-        holder.minusButton.setOnClickListener(v -> {
-            if (item.getQuantity() > 1) {
-                int newQuantity = item.getQuantity() - 1;
-                if (quantityListener != null) quantityListener.onQuantityChanged(item, newQuantity);
-            }
-        });
-
-        holder.deleteIcon.setOnClickListener(v -> {
-            if (deleteListener != null) deleteListener.onDelete(item);
-        });
+        holder.bind(item, quantityListener, deleteListener, itemClickListener);
     }
 
+    /**
+     * Maneja el estado cuando el item o producto es nulo
+     */
+    private void bindErrorState(@NonNull ViewHolder holder) {
+        holder.itemName.setText("Error al cargar producto");
+        holder.currentPrice.setText("S/. 0.00");
+        holder.oldPrice.setVisibility(View.GONE);
+        holder.quantityText.setText("0");
+        holder.itemImage.setImageResource(R.drawable.ic_image_placeholder);
+        holder.disableInteractions();
+    }
+
+    // ----------------------------------------------
+    // VISTA HOLDER OPTIMIZADO
+    // ----------------------------------------------
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView itemImage;
-        TextView itemName, currentPrice, oldPrice, quantityText;
-        ImageButton plusButton, minusButton;
-        ImageView deleteIcon;
+        private final ImageView itemImage;
+        private final TextView itemName;
+        private final TextView currentPrice;
+        private final TextView oldPrice;
+        private final TextView quantityText;
+        private final ImageButton plusButton;
+        private final ImageButton minusButton;
+        private final ImageView deleteIcon;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -113,6 +131,108 @@ public class ItemProductCarAdapter extends ListAdapter<CartItem, ItemProductCarA
             plusButton = itemView.findViewById(R.id.plus_button);
             minusButton = itemView.findViewById(R.id.minus_button);
             deleteIcon = itemView.findViewById(R.id.delete_icon);
+        }
+
+        /**
+         * Vincula los datos del CartItem con la vista
+         */
+        public void bind(
+                @NonNull CartItem item,
+                OnQuantityChangeListener quantityListener,
+                OnDeleteClickListener deleteListener,
+                OnItemClickListener itemClickListener
+        ) {
+            var product = item.getProduct();
+            if (product == null) return;
+
+            // ---- Datos básicos ----
+            itemName.setText(product.getName() != null ? product.getName() : "Sin nombre");
+
+            // Formateo de precio con manejo de nulos
+            BigDecimal price = product.getPrice();
+            currentPrice.setText(formatPrice(price));
+
+            // Precio antiguo (si existe)
+            BigDecimal oldPriceValue = product.getOldPrice();
+            if (oldPriceValue != null && oldPriceValue.compareTo(BigDecimal.ZERO) > 0) {
+                oldPrice.setText(formatPrice(oldPriceValue));
+                oldPrice.setVisibility(View.VISIBLE);
+            } else {
+                oldPrice.setVisibility(View.GONE);
+            }
+
+            // Cantidad
+            int quantity = item.getQuantity() != null ? item.getQuantity() : 0;
+            quantityText.setText(String.valueOf(quantity));
+
+            // ---- Imagen del producto con manejo de errores ----
+            loadProductImage(product.getImageUrls());
+
+            // ---- Click en el item completo ----
+            itemView.setOnClickListener(v -> {
+                if (itemClickListener != null) {
+                    itemClickListener.onItemClick(item);
+                }
+            });
+
+            // ---- Botón aumentar cantidad ----
+            plusButton.setEnabled(quantity < MAX_QUANTITY);
+            plusButton.setOnClickListener(v -> {
+                if (quantityListener != null && quantity < MAX_QUANTITY) {
+                    quantityListener.onQuantityChanged(item, quantity + 1);
+                }
+            });
+
+            // ---- Botón disminuir cantidad ----
+            minusButton.setEnabled(quantity > 1);
+            minusButton.setOnClickListener(v -> {
+                if (quantityListener != null && quantity > 1) {
+                    quantityListener.onQuantityChanged(item, quantity - 1);
+                }
+            });
+
+            // ---- Eliminar item ----
+            deleteIcon.setOnClickListener(v -> {
+                if (deleteListener != null) {
+                    deleteListener.onDelete(item);
+                }
+            });
+        }
+
+        /**
+         * Carga la imagen del producto con Glide y manejo de errores
+         */
+        private void loadProductImage(java.util.List<String> imageUrls) {
+            if (imageUrls != null && !imageUrls.isEmpty() && imageUrls.get(0) != null) {
+                Glide.with(itemView.getContext())
+                        .load(imageUrls.get(0))
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .placeholder(R.drawable.ic_image_placeholder)
+                        .error(R.drawable.ic_image_placeholder)
+                        .into(itemImage);
+            } else {
+                itemImage.setImageResource(R.drawable.ic_image_placeholder);
+            }
+        }
+
+        /**
+         * Formatea el precio según la configuración regional
+         */
+        private String formatPrice(BigDecimal price) {
+            if (price == null) {
+                return "S/. 0.00";
+            }
+            return CURRENCY_FORMAT.format(price);
+        }
+
+        /**
+         * Deshabilita las interacciones cuando hay un error
+         */
+        public void disableInteractions() {
+            plusButton.setEnabled(false);
+            minusButton.setEnabled(false);
+            deleteIcon.setEnabled(false);
+            itemView.setOnClickListener(null);
         }
     }
 }

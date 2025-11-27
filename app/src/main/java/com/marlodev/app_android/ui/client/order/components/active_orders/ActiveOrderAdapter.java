@@ -16,10 +16,10 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
-public class OrderAdapter extends ListAdapter<OrderResponse, OrderAdapter.ViewHolder> {
+public class ActiveOrderAdapter extends ListAdapter<OrderResponse, ActiveOrderAdapter.ViewHolder> {
 
-    public OrderAdapter() {
-        super(new OrderDiffCallback());
+    public ActiveOrderAdapter() {
+        super(new ActiveOrderDiffCallback());
     }
 
     @NonNull

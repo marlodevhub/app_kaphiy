@@ -15,6 +15,7 @@ playServicesCastFramework = "22.2.0"
 tracingPerfettoHandshake = "1.0.0"
 volley = "1.2.1"
 playServicesMaps = "19.2.0"
+baselibrary = "3.2.0-alpha11"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -31,6 +32,7 @@ play-services-cast-framework = { group = "com.google.android.gms", name = "play-
 tracing-perfetto-handshake = { group = "androidx.tracing", name = "tracing-perfetto-handshake", version.ref = "tracingPerfettoHandshake" }
 volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
+baselibrary = { group = "androidx.databinding", name = "baseLibrary", version.ref = "baselibrary" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

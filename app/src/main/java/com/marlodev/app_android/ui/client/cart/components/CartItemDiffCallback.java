@@ -1,8 +1,8 @@
 package com.marlodev.app_android.ui.client.cart.components;
 
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
-
 import com.marlodev.app_android.domain.model.CartItem;
 
 import java.util.Objects;

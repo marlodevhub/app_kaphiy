@@ -14,16 +14,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.android.material.snackbar.Snackbar;
 import com.marlodev.app_android.databinding.FragmentClientOrderBinding;
 import com.marlodev.app_android.di.DependencyProvider;
-import com.marlodev.app_android.ui.client.order.components.active_orders.OrderAdapter;
+import com.marlodev.app_android.ui.client.order.components.active_orders.ActiveOrderAdapter;
 import com.marlodev.app_android.utils.Result;
 
 public class ClientOrderFragment extends Fragment {
-
     private FragmentClientOrderBinding binding;
-    private ClientOrderViewModel viewModel;
-
-    private OrderAdapter activeOrdersAdapter;
-    private OrderAdapter historyOrdersAdapter;
+    private ClientOrderViewModel orderVM;
+    private ActiveOrderAdapter activeOrdersAdapter;
+    private ActiveOrderAdapter historyOrdersAdapter;
 
     @Nullable
     @Override
@@ -32,14 +30,6 @@ public class ClientOrderFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
         binding = FragmentClientOrderBinding.inflate(inflater, container, false);
-
-        setupAdapters();
-        setupViewModel();
-        observeViewModel();
-
-        // TODO: Asigna el listener a tu boton de checkout
-        // binding.checkoutButton.setOnClickListener(v -> viewModel.checkout());
-
         return binding.getRoot();
     }
 
@@ -53,8 +43,8 @@ public class ClientOrderFragment extends Fragment {
     // Inicialización de Adapters
     // ----------------------------------------
     private void setupAdapters() {
-        activeOrdersAdapter = new OrderAdapter();
-        historyOrdersAdapter = new OrderAdapter();
+        activeOrdersAdapter = new ActiveOrderAdapter();
+        historyOrdersAdapter = new ActiveOrderAdapter();
 
         binding.activeOrdersRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.activeOrdersRecyclerView.setAdapter(activeOrdersAdapter);
@@ -70,7 +60,7 @@ public class ClientOrderFragment extends Fragment {
     // ----------------------------------------
     private void setupViewModel() {
         ClientOrderViewModelFactory factory = DependencyProvider.provideClientOrderViewModelFactory(requireContext());
-        viewModel = new ViewModelProvider(this, factory).get(ClientOrderViewModel.class);
+        orderVM = new ViewModelProvider(this, factory).get(ClientOrderViewModel.class);
     }
 
     // ----------------------------------------
@@ -79,17 +69,17 @@ public class ClientOrderFragment extends Fragment {
     private void observeViewModel() {
 
         // Órdenes activas
-        viewModel.getActiveOrders().observe(getViewLifecycleOwner(), result -> {
+        orderVM.getActiveOrders().observe(getViewLifecycleOwner(), result -> {
 //            handleOrderResult(result, activeOrdersAdapter, binding.activeOrdersProgress);
         });
 
         // Historial de órdenes
-        viewModel.getHistoryOrders().observe(getViewLifecycleOwner(), result -> {
+        orderVM.getHistoryOrders().observe(getViewLifecycleOwner(), result -> {
 //            handleOrderResult(result, historyOrdersAdapter, binding.historyProgress);
         });
 
         // Resultado del Checkout
-        viewModel.getCheckoutResult().observe(getViewLifecycleOwner(), result -> {
+        orderVM.getCheckoutResult().observe(getViewLifecycleOwner(), result -> {
             if (result.status == Result.Status.SUCCESS) {
                 Snackbar.make(binding.getRoot(), "Compra realizada con éxito", Snackbar.LENGTH_LONG).show();
             } else if (result.status == Result.Status.ERROR) {
@@ -98,31 +88,10 @@ public class ClientOrderFragment extends Fragment {
         });
 
         // Errores genéricos
-        viewModel.getErrorMessage().observe(getViewLifecycleOwner(), msg -> {
+        orderVM.getErrorMessage().observe(getViewLifecycleOwner(), msg -> {
             if (msg != null) {
                 Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_LONG).show();
             }
         });
     }
-
-    // ----------------------------------------
-    // Manejo de resultados de órdenes
-    // ----------------------------------------
-//    private void handleOrderResult(Result<java.util.List<Order>> result, OrderAdapter adapter, View progressBar) {
-//        switch (result.getStatus()) {
-//            case LOADING:
-//                progressBar.setVisibility(View.VISIBLE);
-//                adapter.submitList(Collections.emptyList());
-//                break;
-//            case SUCCESS:
-//                progressBar.setVisibility(View.GONE);
-//                adapter.submitList(result.getData());
-//                break;
-//            case ERROR:
-//                progressBar.setVisibility(View.GONE);
-//                adapter.submitList(Collections.emptyList());
-//                Snackbar.make(binding.getRoot(), result.getMessage(), Snackbar.LENGTH_LONG).show();
-//                break;
-//        }
-//    }
 }

@@ -7,7 +7,7 @@ import com.marlodev.app_android.data.network.model.order.OrderResponse;
 
 import java.util.Objects;
 
-public class OrderDiffCallback extends DiffUtil.ItemCallback<OrderResponse> {
+public class ActiveOrderDiffCallback extends DiffUtil.ItemCallback<OrderResponse> {
 
     @Override
     public boolean areItemsTheSame(@NonNull OrderResponse oldItem, @NonNull OrderResponse newItem) {

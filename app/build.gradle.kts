@@ -47,7 +47,9 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        dataBinding = true
         buildConfig = true   // <<< Habilita BuildConfig con tus campos personalizados
+
     }
 }
 
@@ -58,6 +60,7 @@ dependencies {
     // --- Google Play Services (solo si usas otros servicios) ---
     implementation(libs.play.services.maps)
     implementation(libs.play.services.cast.framework)
+
 
     // --- Testing ---
     testImplementation(libs.junit)
@@ -72,7 +75,7 @@ dependencies {
     implementation(libs.recyclerview)
     implementation(libs.viewpager2)
     implementation("androidx.core:core-splashscreen:1.0.1")
-    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
 
     // --- Firebase ---
     implementation(libs.firebase.database)

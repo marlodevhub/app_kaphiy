@@ -15,6 +15,7 @@ import java.util.List;
  * Esta clase es la única puerta de entrada que el ViewModel debe usar para añadir o actualizar productos,
  * promoviendo un código más limpio, reutilizable y desacoplado de la capa de UI.
  */
+
 public class AddOrUpdateCartItemUseCase {
 
     // Dependencias de los casos de uso atómicos que realizan una sola acción.
@@ -27,6 +28,7 @@ public class AddOrUpdateCartItemUseCase {
      * @param addItemToCartUseCase Caso de uso para añadir un nuevo item.
      * @param updateCartItemUseCase Caso de uso para actualizar un item existente.
      */
+
     public AddOrUpdateCartItemUseCase(AddItemToCartUseCase addItemToCartUseCase, UpdateCartItemUseCase updateCartItemUseCase) {
         this.addItemToCartUseCase = addItemToCartUseCase;
         this.updateCartItemUseCase = updateCartItemUseCase;
@@ -53,7 +55,7 @@ public class AddOrUpdateCartItemUseCase {
                 existingItem.setTotalPrice(existingItem.getUnitPrice().multiply(BigDecimal.valueOf(newQuantity)));
             }
             // Se delega la acción de actualización al caso de uso correspondiente.
-            return updateCartItemUseCase.execute(existingItem.getId(), existingItem);
+           return updateCartItemUseCase.execute(currentItems, existingItem.getId(), newQuantity);
         } else {
             // --- LÓGICA DE CREACIÓN ---
             // Si el item es nuevo, se crea una nueva instancia de CartItem.
@@ -84,4 +86,5 @@ public class AddOrUpdateCartItemUseCase {
                 .findFirst()
                 .orElse(null);
     }
+
 }
