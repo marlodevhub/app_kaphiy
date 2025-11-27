@@ -19,6 +19,7 @@ import com.marlodev.app_android.domain.model.Product;
 import com.marlodev.app_android.ui.auth.login.LoginActivity;
 import com.marlodev.app_android.ui.client.cart.ClientCartViewModel;
 import com.marlodev.app_android.ui.client.cart.ClientCartViewModelFactory;
+import com.marlodev.app_android.utils.Event;
 import com.marlodev.app_android.utils.Result;
 import com.marlodev.app_android.utils.SessionManager;
 
@@ -121,22 +122,20 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
         });
 
-        // NUEVO: Observador centralizado para los resultados de las operaciones del carrito
-        cartViewModel.getCartOperationResult().observe(this, result -> {
-            if (result == null) return;
+        // Observador para el estado de carga de las operaciones del carrito
+        cartViewModel.isLoading.observe(this, this::showLoading);
 
-            switch (result.status) {
-                case LOADING:
-                    showLoading(true); // Reutilizamos el loading de la pantalla de detalle
-                    break;
-                case SUCCESS:
-                    showLoading(false);
+        // Observador para los resultados de las operaciones del carrito (eventos de un solo uso)
+        cartViewModel.cartOperationResult.observe(this, event -> {
+            Result<String> result = event.getContentIfNotHandled();
+            if (result != null) {
+                // El resultado es un evento de un solo uso, por lo que no necesitamos manejar el estado de carga aquí.
+                // El observador de `isLoading` ya se encarga de eso.
+                if (result.status == Result.Status.SUCCESS) {
                     Toast.makeText(this, result.data, Toast.LENGTH_SHORT).show();
-                    break;
-                case ERROR:
-                    showLoading(false);
+                } else if (result.status == Result.Status.ERROR) {
                     showError(result.message);
-                    break;
+                }
             }
         });
     }
@@ -150,7 +149,9 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     private void showError(String message) {
-        Snackbar.make(binding.getRoot(), message, Snackbar.LENGTH_LONG).show();
+        if (message != null && !message.isEmpty()){
+            Snackbar.make(binding.getRoot(), message, Snackbar.LENGTH_LONG).show();
+        }
     }
 
     private void bindProduct(Product product) {
@@ -183,7 +184,6 @@ public class ProductDetailActivity extends AppCompatActivity {
             return;
         }
 
-        // La lógica de observación se ha movido a observeViewModel
         cartViewModel.addItemToCart(product, quantity);
     }
 

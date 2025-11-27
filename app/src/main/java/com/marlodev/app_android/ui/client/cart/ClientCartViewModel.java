@@ -4,197 +4,150 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
-
 import com.marlodev.app_android.domain.model.CartItem;
 import com.marlodev.app_android.domain.model.Order;
 import com.marlodev.app_android.domain.model.Product;
 import com.marlodev.app_android.domain.usecase.cart.CartUseCases;
+import com.marlodev.app_android.utils.Event;
 import com.marlodev.app_android.utils.Result;
-
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
+import java.util.function.Consumer;
 
 public class ClientCartViewModel extends ViewModel {
 
     private final CartUseCases cartUseCases;
 
-    private final MutableLiveData<List<CartItem>> cartItems = new MutableLiveData<>(Collections.emptyList());
-    private final MutableLiveData<Boolean> isCartEmpty = new MutableLiveData<>(true);
-    private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>(false);
-    private final MutableLiveData<String> errorMessage = new MutableLiveData<>(null);
-    private final MutableLiveData<Integer> totalItems = new MutableLiveData<>(0);
-    private final MutableLiveData<BigDecimal> totalPrice = new MutableLiveData<>(BigDecimal.ZERO);
-    private final MutableLiveData<Result<Order>> checkoutResult = new MutableLiveData<>();
-    private final MutableLiveData<Result<String>> cartOperationResult = new MutableLiveData<>();
+    // LiveData para el estado de la UI (persistente)
+    private final MutableLiveData<List<CartItem>> _cartItems = new MutableLiveData<>(Collections.emptyList());
+    private final MutableLiveData<Boolean> _isCartEmpty = new MutableLiveData<>(true);
+    private final MutableLiveData<Boolean> _isLoading = new MutableLiveData<>(false);
+    private final MutableLiveData<Integer> _totalItems = new MutableLiveData<>(0);
+    private final MutableLiveData<BigDecimal> _totalPrice = new MutableLiveData<>(BigDecimal.ZERO);
+
+    // LiveData para eventos de un solo uso (Toast, Navegación)
+    private final MutableLiveData<Event<String>> _errorMessage = new MutableLiveData<>();
+    private final MutableLiveData<Event<Result<Order>>> _checkoutResult = new MutableLiveData<>();
+    private final MutableLiveData<Event<Result<String>>> _cartOperationResult = new MutableLiveData<>();
+
+    // LiveData públicos inmutables expuestos a la UI.
+    public final LiveData<List<CartItem>> cartItems = _cartItems;
+    public final LiveData<Boolean> isCartEmpty = _isCartEmpty;
+    public final LiveData<Boolean> isLoading = _isLoading;
+    public final LiveData<Integer> totalItems = _totalItems;
+    public final LiveData<BigDecimal> totalPrice = _totalPrice;
+    public final LiveData<Event<String>> errorMessage = _errorMessage;
+    public final LiveData<Event<Result<Order>>> checkoutResult = _checkoutResult;
+    public final LiveData<Event<Result<String>>> cartOperationResult = _cartOperationResult;
+
 
     public ClientCartViewModel(CartUseCases cartUseCases) {
         this.cartUseCases = cartUseCases;
-        // Cargamos el carrito al inicio
-        loadCart();
+        loadCart(); // Carga inicial del carrito
     }
 
-    public LiveData<List<CartItem>> getCartItems() { return cartItems; }
-    public LiveData<Boolean> getIsCartEmpty() { return isCartEmpty; }
-    public LiveData<Boolean> getIsLoading() { return isLoading; }
-    public LiveData<String> getErrorMessage() { return errorMessage; }
-    public LiveData<Integer> getTotalItems() { return totalItems; }
-    public LiveData<BigDecimal> getTotalPrice() { return totalPrice; }
-    public LiveData<Result<Order>> getCheckoutResult() { return checkoutResult; }
-    public LiveData<Result<String>> getCartOperationResult() { return cartOperationResult; }
+    // --- MÉTODOS DE ACCIÓN PRINCIPALES (Expuestos a la UI) ---
 
-    // --- CARGAR EL CARRITO ---
-    public void loadCart() {
-        isLoading.setValue(true);
-        final LiveData<Result<Order>> getCartLiveData = cartUseCases.getGetCart().execute();
-
-        getCartLiveData.observeForever(new Observer<Result<Order>>() {
-            @Override
-            public void onChanged(Result<Order> result) {
-                if (result.status != Result.Status.LOADING) {
-                    getCartLiveData.removeObserver(this);
-                    isLoading.setValue(false);
-                }
-                if (result.status == Result.Status.SUCCESS) {
-                    updateStateFromOrder(result.data);
-                } else if (result.status == Result.Status.ERROR) {
-                    errorMessage.postValue(result.message);
-                }
-            }
-        });
-    }
-
-    // --- AGREGAR ITEM AL CARRITO ---
-    public void addItemToCart(Product product, int quantity) {
-        if (Boolean.TRUE.equals(isLoading.getValue())) {
-            cartOperationResult.postValue(Result.error("Operación en curso, intente de nuevo."));
-            return;
-        }
-
-        isLoading.setValue(true);
-        List<CartItem> currentItemsList = cartItems.getValue();
-        final LiveData<Result<Order>> addItemLiveData =
-                cartUseCases.getAddOrUpdateItem().execute(currentItemsList, product, quantity);
-
-        addItemLiveData.observeForever(new Observer<Result<Order>>() {
-            @Override
-            public void onChanged(Result<Order> result) {
-                if (result.status == Result.Status.LOADING) return;
-
-                addItemLiveData.removeObserver(this);
-
-                if (result.status == Result.Status.SUCCESS) {
-                    cartOperationResult.postValue(Result.success("Producto agregado al carrito"));
-                    loadCart();
-                } else {
-                    isLoading.setValue(false);
-                    cartOperationResult.postValue(Result.error(result.message));
-                }
-            }
-        });
-    }
-
-    // --- ACTUALIZAR CANTIDAD POR PRODUCTO ---
-    public void updateQuantity(CartItem item, int newQty) {
-        if (newQty <= 0) {
-            deleteItem(item);
-            return;
-        }
-
-        if (cartItems.getValue() == null) return;
-
-        isLoading.setValue(true);
-
-        cartUseCases.getUpdateCartItem()
-                .execute(cartItems.getValue(), item.getId(), newQty)
-                .observeForever(result -> {
-                    isLoading.setValue(false);
-
-                    if (result.status == Result.Status.SUCCESS) {
-                        updateStateFromOrder(result.data);
-                    } else if (result.status == Result.Status.ERROR) {
-                        errorMessage.setValue(result.message != null ? result.message : "Error al actualizar");
-                    }
-                });
-    }
-
-    // --- ELIMINAR ITEM DEL CARRITO ---
-    public void deleteItem(CartItem item) {
-        performModificationOperation(cartUseCases.getDeleteCartItem().execute(item.getId()));
-    }
-
-    // --- REALIZAR LA COMPRA ---
-    public void checkout() {
-        if (Boolean.TRUE.equals(isLoading.getValue())) return;
-
-        isLoading.setValue(true);
-        checkoutResult.setValue(Result.loading());
-
-        final LiveData<Result<Order>> checkoutLiveData = cartUseCases.getCheckoutUseCase().execute();
-
-        checkoutLiveData.observeForever(new Observer<Result<Order>>() {
-            @Override
-            public void onChanged(Result<Order> result) {
-                if (result.status == Result.Status.LOADING) return;
-
-                checkoutLiveData.removeObserver(this);
-                checkoutResult.setValue(result);
-
-                if (result.status == Result.Status.SUCCESS) {
-                    loadCart();
-                } else {
-                    isLoading.setValue(false);
-                    loadCart();
-                }
-            }
-        });
-    }
-
-    // ------------------- MÉTODOS AUXILIARES -------------------
     public void refreshCart() {
         loadCart();
     }
 
-    private void performModificationOperation(LiveData<Result<Order>> operationLiveData) {
-        if (Boolean.TRUE.equals(isLoading.getValue())) return;
+    public void addItemToCart(Product product, int quantity) {
+        if (_cartItems.getValue() == null) return;
+        LiveData<Result<Order>> useCaseLiveData = cartUseCases.getAddOrUpdateItem().execute(_cartItems.getValue(), product, quantity);
 
-        isLoading.setValue(true);
-        operationLiveData.observeForever(new Observer<Result<Order>>() {
+        observeUseCaseResult(
+                useCaseLiveData,
+                order -> {
+                    updateStateFromOrder(order);
+                    _cartOperationResult.postValue(new Event<>(Result.success("Producto agregado al carrito")));
+                },
+                message -> _cartOperationResult.postValue(new Event<>(Result.error(message)))
+        );
+    }
+
+    public void updateQuantity(CartItem item, int newQty) {
+        if (newQty <= 0) {
+            deleteItem(item); // Si la cantidad es cero o menos, se elimina el item.
+            return;
+        }
+        if (_cartItems.getValue() == null) return;
+
+        LiveData<Result<Order>> useCaseLiveData = cartUseCases.getUpdateCartItem().execute(_cartItems.getValue(), item.getId(), newQty);
+        observeUseCaseResult(useCaseLiveData, this::updateStateFromOrder, msg -> _errorMessage.setValue(new Event<>(msg)));
+    }
+
+    public void deleteItem(CartItem item) {
+        LiveData<Result<Order>> useCaseLiveData = cartUseCases.getDeleteCartItem().execute(item.getId());
+        observeUseCaseResult(useCaseLiveData, this::updateStateFromOrder, msg -> _errorMessage.postValue(new Event<>(msg)));
+    }
+
+    public void checkout() {
+        LiveData<Result<Order>> useCaseLiveData = cartUseCases.getCheckoutUseCase().execute();
+
+        observeUseCaseResult(
+                useCaseLiveData,
+                order -> {
+                    _checkoutResult.setValue(new Event<>(Result.success(order)));
+                    loadCart(); // Después de un checkout exitoso, recargamos el carrito (que ahora estará vacío).
+                },
+                message -> _checkoutResult.setValue(new Event<>(Result.error(message)))
+        );
+    }
+
+    // --- LÓGICA INTERNA Y ORQUESTACIÓN ---
+
+    private void loadCart() {
+        LiveData<Result<Order>> useCaseLiveData = cartUseCases.getGetCart().execute();
+        observeUseCaseResult(useCaseLiveData, this::updateStateFromOrder, msg -> _errorMessage.postValue(new Event<>(msg)));
+    }
+
+    private <T> void observeUseCaseResult(final LiveData<Result<T>> useCaseLiveData, final Consumer<T> onSuccess, final Consumer<String> onError) {
+        if (Boolean.TRUE.equals(_isLoading.getValue())) {
+            return;
+        }
+        _isLoading.setValue(true);
+
+        useCaseLiveData.observeForever(new Observer<Result<T>>() {
             @Override
-            public void onChanged(Result<Order> result) {
-                if (result.status == Result.Status.LOADING) return;
+            public void onChanged(Result<T> result) {
+                if (result.status == Result.Status.LOADING) {
+                    return;
+                }
 
-                operationLiveData.removeObserver(this);
+                useCaseLiveData.removeObserver(this);
+                _isLoading.setValue(false);
 
                 if (result.status == Result.Status.SUCCESS) {
-                    loadCart();
-                } else {
-                    isLoading.setValue(false);
-                    errorMessage.postValue(result.message);
+                    if (onSuccess != null) {
+                        onSuccess.accept(result.data);
+                    }
+                } else if (result.status == Result.Status.ERROR) {
+                    if (onError != null) {
+                        onError.accept(result.message);
+                    }
                 }
             }
         });
     }
 
+    // --- MÉTODOS AUXILIARES DE ACTUALIZACIÓN DE ESTADO ---
+
     private void updateStateFromOrder(Order order) {
         List<CartItem> items = (order != null && order.getItems() != null) ? order.getItems() : Collections.emptyList();
-        cartItems.postValue(items);
-        isCartEmpty.postValue(items.isEmpty());
+        _cartItems.postValue(items);
+        _isCartEmpty.postValue(items.isEmpty());
         updateTotals(items);
     }
 
     private void updateTotals(List<CartItem> items) {
-        int count = items.stream()
-                .mapToInt(item -> item.getQuantity() != null ? item.getQuantity() : 0)
-                .sum();
-
+        int count = items.stream().mapToInt(CartItem::getQuantity).sum();
         BigDecimal total = items.stream()
-                .map(item -> item.getTotalPrice() != null ? item.getTotalPrice() : BigDecimal.ZERO)
+                .map(CartItem::getTotalPrice)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        totalItems.postValue(count);
-        totalPrice.postValue(total);
+        _totalItems.postValue(count);
+        _totalPrice.postValue(total);
     }
 }
