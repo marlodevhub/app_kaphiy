@@ -19,6 +19,7 @@ import com.marlodev.app_android.data.repository.ProductRepositoryImpl;
 import com.marlodev.app_android.data.repository.TagRepositoryImpl;
 import com.marlodev.app_android.domain.usecase.cart.CartUseCases;
 import com.marlodev.app_android.domain.usecase.cart.CheckoutUseCase;
+import com.marlodev.app_android.domain.usecase.order.cliente.OrderUseCases;
 import com.marlodev.app_android.domain.usecase.product.GetProductByIdUseCase;
 import com.marlodev.app_android.ui.client.cart.ClientCartViewModelFactory;
 import com.marlodev.app_android.ui.client.order.ClientOrderViewModelFactory;
@@ -47,6 +48,7 @@ public class AppContainer {
     // --- Casos de uso ---
     public final GetProductByIdUseCase getProductByIdUseCase;
     public final CartUseCases cartUseCases;
+    public final OrderUseCases orderUseCases;
     public final CheckoutUseCase checkoutUseCase;
 
     // --- ViewModel Factories ---
@@ -86,12 +88,14 @@ public class AppContainer {
         // --- Casos de uso ---
         this.getProductByIdUseCase = new GetProductByIdUseCase(productRepository);
         this.cartUseCases = CartModule.provideCartUseCases(cartRepository);
+        this.orderUseCases = OrderModule.provideCartUseCases(orderRepository);
+
         this.checkoutUseCase = cartUseCases.getCheckoutUseCase();
 
         // --- ViewModel Factories ---
         this.productDetailViewModelFactory = new ProductDetailViewModelFactory(getProductByIdUseCase);
         this.clientCartViewModelFactory = new ClientCartViewModelFactory(cartUseCases);
-        this.clientOrderViewModelFactory = new ClientOrderViewModelFactory(orderRepository, checkoutUseCase);
+        this.clientOrderViewModelFactory = new ClientOrderViewModelFactory(orderUseCases);
     }
 
     public SessionManager getSessionManager() {

@@ -11,13 +11,21 @@ public enum OrderStatus {
     ENTREGADO,
     CANCELADO;
 
-    // Conversión segura desde String del backend
     public static OrderStatus fromString(String value) {
         if (value == null) return null;
+
+        // Normaliza: mayúsculas, reemplaza espacios, guiones
+        String normalized = value
+                .trim()
+                .toUpperCase()
+                .replace("-", "_")
+                .replace(" ", "_");
+
         try {
-            return OrderStatus.valueOf(value);
-        } catch (IllegalArgumentException ex) {
-            return null; // o un fallback
+            return OrderStatus.valueOf(normalized);
+        } catch (IllegalArgumentException e) {
+            return null; // FallBack o un DEFAULT si deseas
         }
     }
 }
+

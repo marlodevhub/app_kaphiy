@@ -18,14 +18,9 @@ import com.marlodev.app_android.domain.model.CartItem;
 
 import java.math.BigDecimal;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Locale;
 
-/**
- * Adapter profesional para el carrito del cliente con mejoras de performance y manejo de errores.
- * - Usa ListAdapter y DiffUtil para actualizaciones eficientes
- * - Implementa ViewHolder pattern optimizado
- * - Maneja estados de error y casos edge
- */
 public class ItemProductCarAdapter extends ListAdapter<CartItem, ItemProductCarAdapter.ViewHolder> {
 
     private static final int MAX_QUANTITY = 99;
@@ -202,7 +197,7 @@ public class ItemProductCarAdapter extends ListAdapter<CartItem, ItemProductCarA
         /**
          * Carga la imagen del producto con Glide y manejo de errores
          */
-        private void loadProductImage(java.util.List<String> imageUrls) {
+        private void loadProductImage(List<String> imageUrls) {
             if (imageUrls != null && !imageUrls.isEmpty() && imageUrls.get(0) != null) {
                 Glide.with(itemView.getContext())
                         .load(imageUrls.get(0))

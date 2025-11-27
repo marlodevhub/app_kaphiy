@@ -9,15 +9,17 @@ import com.marlodev.app_android.data.network.api.CartApi;
 import com.marlodev.app_android.data.network.mapper.CartItemMapper;
 import com.marlodev.app_android.data.network.mapper.OrderMapper;
 import com.marlodev.app_android.data.network.model.order.CartItemRequest;
+import com.marlodev.app_android.data.network.model.order.OrderResponse;
 import com.marlodev.app_android.domain.model.CartItem;
 import com.marlodev.app_android.domain.model.Order;
+import com.marlodev.app_android.domain.repository.CartRepository;
 import com.marlodev.app_android.utils.Result;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class CartRepositoryImpl implements com.marlodev.app_android.domain.repository.CartRepository {
+public class CartRepositoryImpl implements CartRepository {
 
     private static final String TAG = "CartRepositoryImpl";
     private final CartApi api;
@@ -29,16 +31,15 @@ public class CartRepositoryImpl implements com.marlodev.app_android.domain.repos
     // ======================================================
     // Generic Handler para llamadas que retornan OrderResponse
     // ======================================================
-    private LiveData<Result<Order>> performCall(Call<com.marlodev.app_android.data.network.model.order.OrderResponse> call,
-                                                String action) {
+    private LiveData<Result<Order>> performCall(Call<OrderResponse> call, String action) {
         MutableLiveData<Result<Order>> liveData = new MutableLiveData<>();
         liveData.postValue(Result.loading());
         Log.d(TAG, "🔄 " + action + "...");
 
-        call.enqueue(new Callback<com.marlodev.app_android.data.network.model.order.OrderResponse>() {
+        call.enqueue(new Callback<OrderResponse>() {
             @Override
-            public void onResponse(Call<com.marlodev.app_android.data.network.model.order.OrderResponse> call,
-                                   Response<com.marlodev.app_android.data.network.model.order.OrderResponse> response) {
+            public void onResponse(Call<OrderResponse> call,
+                                   Response<OrderResponse> response) {
 
                 if (response.isSuccessful() && response.body() != null) {
                     Log.d(TAG, "✅ " + action + " completado");
@@ -54,7 +55,7 @@ public class CartRepositoryImpl implements com.marlodev.app_android.domain.repos
             }
 
             @Override
-            public void onFailure(Call<com.marlodev.app_android.data.network.model.order.OrderResponse> call,
+            public void onFailure(Call<OrderResponse> call,
                                   Throwable t) {
                 String msg = "❌ Error de red al " + action + ": " + t.getMessage();
                 Log.e(TAG, msg);

@@ -7,61 +7,89 @@
     android:layout_height="wrap_content"
     android:paddingBottom="24dp">
 
-    <TextView
-        android:id="@+id/text_date"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="12 de julio"
-        android:textSize="14sp"
-        android:textColor="#555555"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginBottom="8dp"/>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/card_pedido"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_input_rounded"
-        android:elevation="2dp"
-        android:padding="12dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/text_date">
+        android:background="@drawable/bg_grey_100"
+        android:padding="6dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <ImageView
-            android:id="@+id/item_image"
+        <!-- FECHA DEL PEDIDO -->
+        <TextView
+            android:id="@+id/txt_order_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="12 de julio"
+            android:textSize="14sp"
+            android:layout_marginTop="5dp"
+            android:layout_marginStart="10dp"
+            android:textColor="#555555"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <!-- LÍNEA DE SEPARACIÓN DEBAJO DE LA FECHA -->
+        <View
+            android:id="@+id/line_separator"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/colorGrey200"
+            android:layout_marginTop="4dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/txt_order_date"/>
+
+        <!-- IMAGEN DEL ITEM -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:scaleType="centerCrop"
-            android:background="@drawable/bg_input_rounded"
-            tools:src="@tools:sample/backgrounds/scenic"
+            android:layout_marginTop="8dp"
+            app:cardBackgroundColor="@android:color/transparent"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/line_separator">
 
+            <ImageView
+                android:id="@+id/img_order_client"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                tools:src="@tools:sample/backgrounds/scenic" />
+        </androidx.cardview.widget.CardView>
+
+        <!-- ESTADO DEL PEDIDO -->
         <TextView
-            android:id="@+id/tv_order_status"
+            android:id="@+id/txt_order_status"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            tools:text="Preparando el Paquete"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="#FFA500"
             android:layout_marginStart="16dp"
-            app:layout_constraintStart_toEndOf="@id/item_image"
-            app:layout_constraintTop_toTopOf="@id/item_image"
+            android:textColor="@color/colorOnYellow"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@id/cardView"
+            app:layout_constraintTop_toTopOf="@id/cardView"
             app:layout_constraintEnd_toEndOf="parent"
-            tools:textColor="#2E8B57"/>
+            tools:text="Preparando el Paquete" />
 
+        <!-- MENSAJE DETALLE -->
         <TextView
-            android:id="@+id/tv_order_message"
+            android:id="@+id/txt_order_message"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textColor="#777777"
-            android:textSize="14sp"
+            android:textColor="@color/colorGrey800"
+            android:textSize="10sp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+
+            app:layout_constraintStart_toStartOf="@id/txt_order_status"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/tv_order_status"
-            app:layout_constraintTop_toBottomOf="@+id/tv_order_status"
+            app:layout_constraintTop_toBottomOf="@id/txt_order_status"
             tools:text="Estamos preparando su pedido con cuidado para garantizar que llegue en perfectas condiciones." />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

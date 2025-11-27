@@ -6,15 +6,14 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.marlodev.app_android.data.repository.OrderRepositoryImpl;
 import com.marlodev.app_android.domain.usecase.cart.CheckoutUseCase;
+import com.marlodev.app_android.domain.usecase.order.cliente.OrderUseCases;
 
 public class ClientOrderViewModelFactory implements ViewModelProvider.Factory {
 
-    private final OrderRepositoryImpl repository;
-    private final CheckoutUseCase checkoutUseCase;
+    private final OrderUseCases orderUseCases;
 
-    public ClientOrderViewModelFactory(OrderRepositoryImpl repository, CheckoutUseCase checkoutUseCase) {
-        this.repository = repository;
-        this.checkoutUseCase = checkoutUseCase;
+    public ClientOrderViewModelFactory(OrderUseCases orderUseCases) {
+        this.orderUseCases = orderUseCases;
     }
 
     @NonNull
@@ -22,7 +21,7 @@ public class ClientOrderViewModelFactory implements ViewModelProvider.Factory {
     @SuppressWarnings("unchecked")
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(ClientOrderViewModel.class)) {
-            return (T) new ClientOrderViewModel(repository, checkoutUseCase);
+            return (T) new ClientOrderViewModel(orderUseCases);
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

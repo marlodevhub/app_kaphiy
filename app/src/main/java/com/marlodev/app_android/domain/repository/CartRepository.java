@@ -1,6 +1,5 @@
 package com.marlodev.app_android.domain.repository;
 
-import com.marlodev.app_android.domain.DomainCallback;
 import com.marlodev.app_android.domain.model.CartItem;
 import com.marlodev.app_android.domain.model.Order;
 import com.marlodev.app_android.utils.Result;

@@ -11,13 +11,13 @@ import retrofit2.http.Path;
 
 public interface OrderApi {
 
-    // Órdenes activas del usuario autenticado
+    // Mostrar Órdenes activas del usuario autenticado
     @GET("orders/active")
     Call<List<OrderResponse>> getActiveOrders();
 
     // Historial del usuario autenticado
     @GET("orders/history")
-    Call<List<OrderResponse>> getHistoryOrders();
+    Call<List<OrderResponse>> getOrderHistory();
 
     // Obtiene un pedido por ID
     @GET("orders/{orderId}")

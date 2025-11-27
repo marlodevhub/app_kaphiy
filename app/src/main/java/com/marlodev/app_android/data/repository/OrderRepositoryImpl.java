@@ -7,22 +7,22 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.marlodev.app_android.data.network.api.OrderApi;
 import com.marlodev.app_android.data.network.mapper.OrderMapper;
+import com.marlodev.app_android.data.network.model.order.OrderResponse;
+import com.marlodev.app_android.data.network.model.order.OrderTrackingResponse;
 import com.marlodev.app_android.domain.model.Order;
 import com.marlodev.app_android.domain.model.OrderTracking;
+import com.marlodev.app_android.domain.repository.OrderRepository;
 import com.marlodev.app_android.utils.Result;
 
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-/**
- * Repositorio profesional para Orders.
- * Centraliza llamadas de red, manejo de errores y mapeo a dominio.
- */
-public class OrderRepositoryImpl {
+public class OrderRepositoryImpl implements OrderRepository {
 
     private static final String TAG = "OrderRepositoryImpl";
     private final OrderApi api;
@@ -31,74 +31,37 @@ public class OrderRepositoryImpl {
         this.api = api;
     }
 
-    // =====================================================
-    // GENÉRICO: LLAMADAS QUE RETORNAN LISTAS
-    // =====================================================
-    private <T, D> LiveData<Result<List<D>>> performListCall(
-            Call<List<T>> call,
-            java.util.function.Function<T, D> mapper,
-            String action
+    // ======================================================
+    // METODO GENÉRICO — Maneja cualquier tipo de llamada
+    // ======================================================
+    private <Dto, Domain> LiveData<Result<Domain>> performCallGeneric(
+            Call<Dto> call,
+            String action,
+            Function<Dto, Domain> mapper
     ) {
-        MutableLiveData<Result<List<D>>> liveData = new MutableLiveData<>();
+        MutableLiveData<Result<Domain>> liveData = new MutableLiveData<>();
         liveData.postValue(Result.loading());
         Log.d(TAG, "🔄 " + action + "...");
 
-        call.enqueue(new Callback<List<T>>() {
+        call.enqueue(new Callback<Dto>() {
             @Override
-            public void onResponse(Call<List<T>> call, Response<List<T>> response) {
+            public void onResponse(Call<Dto> call, Response<Dto> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    Log.d(TAG, "✅ " + action + " exitoso");
-                    List<D> domainList = response.body().stream()
-                            .map(mapper)
-                            .collect(Collectors.toList());
-                    liveData.postValue(Result.success(domainList));
-                } else {
-                    String msg = "Error al " + action + " (" + response.code() + ")";
-                    Log.e(TAG, msg);
-                    liveData.postValue(Result.error(msg));
-                }
-            }
+                    Log.d(TAG, "✅ " + action + " completado");
 
-            @Override
-            public void onFailure(Call<List<T>> call, Throwable t) {
-                String msg = "Error de red al " + action + ": " + t.getMessage();
-                Log.e(TAG, msg);
-                liveData.postValue(Result.error(msg));
-            }
-        });
-
-        return liveData;
-    }
-
-    // =====================================================
-    // GENÉRICO: LLAMADAS QUE RETORNAN UN SOLO OBJETO
-    // =====================================================
-    private <T, D> LiveData<Result<D>> performSingleCall(
-            Call<T> call,
-            java.util.function.Function<T, D> mapper,
-            String action
-    ) {
-        MutableLiveData<Result<D>> liveData = new MutableLiveData<>();
-        liveData.postValue(Result.loading());
-        Log.d(TAG, "🔄 " + action + "...");
-
-        call.enqueue(new Callback<T>() {
-            @Override
-            public void onResponse(Call<T> call, Response<T> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    Log.d(TAG, "✅ " + action + " exitoso");
-                    D domainObj = mapper.apply(response.body());
+                    Domain domainObj = mapper.apply(response.body());
                     liveData.postValue(Result.success(domainObj));
+
                 } else {
-                    String msg = "Error al " + action + " (" + response.code() + ")";
+                    String msg = "❌ Error al " + action + " (" + response.code() + ")";
                     Log.e(TAG, msg);
                     liveData.postValue(Result.error(msg));
                 }
             }
 
             @Override
-            public void onFailure(Call<T> call, Throwable t) {
-                String msg = "Error de red al " + action + ": " + t.getMessage();
+            public void onFailure(Call<Dto> call, Throwable t) {
+                String msg = "❌ Error de red al " + action + ": " + t.getMessage();
                 Log.e(TAG, msg);
                 liveData.postValue(Result.error(msg));
             }
@@ -107,23 +70,47 @@ public class OrderRepositoryImpl {
         return liveData;
     }
 
-    // =====================================================
-    // MÉTODOS PÚBLICOS
-    // =====================================================
+    // ======================================================
+    // MÉTODOS DEL REPOSITORY
+    // ======================================================
 
+    @Override
     public LiveData<Result<List<Order>>> getActiveOrders() {
-        return performListCall(api.getActiveOrders(), OrderMapper::fromResponse, "cargar órdenes activas");
+        return performCallGeneric(
+                api.getActiveOrders(),
+                "cargar órdenes activas",
+                responses -> responses.stream()
+                        .map(OrderMapper::fromResponse)
+                        .collect(Collectors.toList())
+        );
     }
 
-    public LiveData<Result<List<Order>>> getHistoryOrders() {
-        return performListCall(api.getHistoryOrders(), OrderMapper::fromResponse, "cargar historial de órdenes");
+    @Override
+    public LiveData<Result<List<Order>>> getOrderHistory() {
+        return performCallGeneric(
+                api.getOrderHistory(),
+                "cargar historial de órdenes",
+                responses -> responses.stream()
+                        .map(OrderMapper::fromResponse)
+                        .collect(Collectors.toList())
+        );
     }
 
+    @Override
     public LiveData<Result<Order>> getOrderById(long orderId) {
-        return performSingleCall(api.getOrderById(orderId), OrderMapper::fromResponse, "cargar orden");
+        return performCallGeneric(
+                api.getOrderById(orderId),
+                "cargar orden por ID",
+                OrderMapper::fromResponse
+        );
     }
 
+    @Override
     public LiveData<Result<OrderTracking>> getOrderTracking(long orderId) {
-        return performSingleCall(api.getOrderTracking(orderId), OrderMapper::toTrackingDomain, "cargar tracking");
+        return performCallGeneric(
+                api.getOrderTracking(orderId),
+                "cargar tracking",
+                OrderMapper::fromTrackingResponse
+        );
     }
 }

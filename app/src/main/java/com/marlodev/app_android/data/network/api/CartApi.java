@@ -14,36 +14,23 @@ import retrofit2.http.Path;
 
 public interface CartApi {
 
-    /**
-     * Obtiene el carrito activo del usuario.
-     */
+    //Mostrar carrito
     @GET("cart")
     Call<OrderResponse> getCart();
 
-    /**
-     * Agrega un producto al carrito.
-     */
+    //agregar item carrito
     @POST("cart/add")
     Call<OrderResponse> addToCart(@Body CartItemRequest request);
 
-    /**
-     * Elimina un ítem específico del carrito.
-     * @param itemId Id del ítem dentro del pedido.
-     */
+    //Eliminar item del carrito
     @DELETE("cart/remove/{itemId}")
     Call<OrderResponse> removeFromCart(@Path("itemId") Long itemId);
 
-    /**
-     * Actualiza un ítem del carrito (por ejemplo cantidad).
-     * @param itemId Id del ítem dentro del pedido.
-     * @param request Objeto con los datos a actualizar (CartItemRequest).
-     */
+    //Actualizar item del carrito
     @PUT("cart/update/{itemId}")
     Call<OrderResponse> updateItem(@Path("itemId") Long itemId, @Body CartItemRequest request);
 
-    /**
-     * Finaliza la compra del carrito activo.
-     */
+    //Realizar compra del carrito
     @POST("cart/checkout")
     Call<OrderResponse> checkout();
 }

@@ -3,7 +3,6 @@ package com.marlodev.app_android.domain.model;
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,21 +19,17 @@ public class Order {
 
     // Usuario que realizó el pedido
     private Integer userId;
-    private String username; // viene del backend
+    private String username;
 
-    // Estado actual del pedido
-    private String status;
+    // Estado actual del pedido (ENUM en dominio)
+    private OrderStatus status;
 
-    // Mensaje del backend (opcional)
     private String message;
 
-    // Total del pedido
     private BigDecimal totalAmount;
-
-    // Items de carrito asociados
     private List<CartItem> items;
 
-    // Fechas de flujo
+    // Fechas
     private ZonedDateTime createdAt;
     private ZonedDateTime updatedAt;
     private ZonedDateTime confirmedAt;
@@ -43,12 +38,12 @@ public class Order {
     private ZonedDateTime readyAt;
     private ZonedDateTime deliveredAt;
 
-    // Datos de entrega
+    // Dirección
     private String deliveryAddress;
     private Double deliveryLat;
     private Double deliveryLng;
 
-    // Store asignada (solo id y name si deseas)
+    // Store
     private Long storeId;
     private String storeName;
 
@@ -56,19 +51,16 @@ public class Order {
     private Integer baristaId;
     private Integer deliveryId;
 
+    // Métodos útiles
     public int getTotalItemCount() {
-        if (items == null) {
-            return 0;
-        }
-        return items.stream().mapToInt(CartItem::getQuantity).sum();
+        return items == null ? 0 :
+                items.stream().mapToInt(CartItem::getQuantity).sum();
     }
 
     public BigDecimal calculateTotalPrice() {
-        if (items == null) {
-            return BigDecimal.ZERO;
-        }
-        return items.stream()
-                .map(CartItem::getTotalPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return items == null ? BigDecimal.ZERO :
+                items.stream()
+                        .map(CartItem::getTotalPrice)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

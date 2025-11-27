@@ -8,14 +8,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Mapper para CartItem
- * Convierte entre DTOs de red (Request / Response) y modelo de dominio.
- */
 public class CartItemMapper {
 
     // ========================================
-    // RESPONSE -> DOMINIO
+    // RESPONSE → DOMINIO
     // ========================================
     public static CartItem toDomain(CartItemResponse response) {
         if (response == null) return null;
@@ -39,7 +35,7 @@ public class CartItemMapper {
     }
 
     // ========================================
-    // DOMINIO -> REQUEST
+    // DOMINIO → REQUEST
     // ========================================
     public static CartItemRequest toRequest(CartItem item) {
         if (item == null) return null;
@@ -47,18 +43,15 @@ public class CartItemMapper {
         CartItemRequest req = new CartItemRequest();
         req.setProductId(item.getProduct() != null ? item.getProduct().getId() : null);
         req.setVariantId(item.getVariant() != null ? item.getVariant().getId() : null);
-        req.setExtrasIds(item.getExtras() != null
-                ? item.getExtras().stream().map(e -> e.getId()).collect(Collectors.toList())
-                : Collections.emptyList());
+        req.setExtrasIds(
+                item.getExtras() != null
+                        ? item.getExtras().stream().map(e -> e.getId()).collect(Collectors.toList())
+                        : Collections.emptyList()
+        );
         req.setQuantity(item.getQuantity());
         req.setUnitPrice(item.getUnitPrice());
+
         return req;
     }
 
-    public static List<CartItemRequest> toRequestList(List<CartItem> items) {
-        if (items == null || items.isEmpty()) return Collections.emptyList();
-        return items.stream()
-                .map(CartItemMapper::toRequest)
-                .collect(Collectors.toList());
-    }
 }

@@ -38,6 +38,8 @@ public class Product {
     @Builder.Default
     private boolean isSkeleton = false;
 
+
+
     // --------------------------
     // 🔹 Conversión desde evento WebSocket
     // --------------------------

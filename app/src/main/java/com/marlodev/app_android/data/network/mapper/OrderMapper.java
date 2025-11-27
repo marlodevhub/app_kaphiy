@@ -6,36 +6,32 @@ import com.marlodev.app_android.data.network.model.order.OrderResponse;
 import com.marlodev.app_android.data.network.model.order.OrderTrackingResponse;
 import com.marlodev.app_android.domain.model.CartItem;
 import com.marlodev.app_android.domain.model.Order;
-import com.marlodev.app_android.domain.model.OrderStatus;
 import com.marlodev.app_android.domain.model.OrderTracking;
+import com.marlodev.app_android.domain.model.OrderTrackingHistory;
+import com.marlodev.app_android.domain.model.OrderStatus;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-/**
- * Mapper profesional para la entidad Order
- * Convierte entre DTOs de red (Request/Response) y modelos de dominio
- */
 public class OrderMapper {
 
-    // ========================================
-    // RESPONSE -> DOMINIO (ORDEN)
-    // ========================================
+    // RESPONSE -> DOMINIO (Order)
     public static Order fromResponse(OrderResponse dto) {
         if (dto == null) return null;
 
-        List<CartItem> items = dto.getItems() == null
-                ? Collections.emptyList()
-                : dto.getItems().stream()
-                .map(CartItemMapper::toDomain)
-                .collect(Collectors.toList());
+        List<CartItem> items = new ArrayList<>();
+        if (dto.getItems() != null) {
+            for (var ci : dto.getItems()) {
+                items.add(CartItemMapper.toDomain(ci));
+            }
+        }
 
         return Order.builder()
                 .id(dto.getId())
                 .userId(dto.getUserId())
                 .username(dto.getUsername())
-                .status(dto.getStatus()) // OrderStatus como enum de dominio
+                .status(toStatus(dto.getStatus())) // <--- CORREGIDO
                 .message(dto.getMessage())
                 .totalAmount(dto.getTotalAmount())
                 .createdAt(dto.getCreatedAt())
@@ -46,22 +42,23 @@ public class OrderMapper {
 
     public static List<Order> fromResponseList(List<OrderResponse> dtos) {
         if (dtos == null || dtos.isEmpty()) return Collections.emptyList();
-        return dtos.stream()
-                .map(OrderMapper::fromResponse)
-                .collect(Collectors.toList());
+        List<Order> list = new ArrayList<>();
+        for (OrderResponse dto : dtos) {
+            list.add(fromResponse(dto));
+        }
+        return list;
     }
 
-    // ========================================
-    // DOMINIO -> REQUEST (ORDEN)
-    // ========================================
+    // DOMINIO -> REQUEST
     public static OrderRequest toRequest(Order domain) {
         if (domain == null) return null;
 
-        List<CartItemRequest> itemsReq = domain.getItems() == null
-                ? Collections.emptyList()
-                : domain.getItems().stream()
-                .map(CartItemMapper::toRequest)
-                .collect(Collectors.toList());
+        List<CartItemRequest> itemsReq = new ArrayList<>();
+        if (domain.getItems() != null) {
+            for (CartItem ci : domain.getItems()) {
+                itemsReq.add(CartItemMapper.toRequest(ci));
+            }
+        }
 
         return OrderRequest.builder()
                 .userId(domain.getUserId())
@@ -71,41 +68,55 @@ public class OrderMapper {
 
     public static List<OrderRequest> toRequestList(List<Order> domains) {
         if (domains == null || domains.isEmpty()) return Collections.emptyList();
-        return domains.stream()
-                .map(OrderMapper::toRequest)
-                .collect(Collectors.toList());
+        List<OrderRequest> list = new ArrayList<>();
+        for (Order domain : domains) {
+            list.add(toRequest(domain));
+        }
+        return list;
     }
 
-    // ========================================
-    // RESPONSE -> DOMINIO (TRACKING)
-    // ========================================
+    // RESPONSE -> DOMINIO (OrderTracking)
+    public static OrderTracking fromTrackingResponse(OrderTrackingResponse res) {
+        if (res == null) return null;
 
-    public static OrderTracking toTrackingDomain(OrderTrackingResponse dto) {
-        if (dto == null) return null;
+        List<CartItem> items = new ArrayList<>();
+        if (res.getItems() != null) {
+            for (var ci : res.getItems()) {
+                items.add(CartItemMapper.toDomain(ci));
+            }
+        }
 
-        List<CartItem> items = dto.getItems() == null
-                ? Collections.emptyList()
-                : dto.getItems().stream()
-                .map(CartItemMapper::toDomain)
-                .collect(Collectors.toList());
-
-        List<OrderTracking.OrderStatusHistory> history = dto.getHistory() == null
-                ? Collections.emptyList()
-                : dto.getHistory().stream()
-                .map(h -> new OrderTracking.OrderStatusHistory(
-                        OrderStatus.fromString(h.getStatus()), // <-- aquí convertimos
-                        h.getTimestamp(),
-                        h.getPerformedBy()
-                ))
-                .collect(Collectors.toList());
+        List<OrderTrackingHistory> history = new ArrayList<>();
+        if (res.getHistory() != null) {
+            for (var h : res.getHistory()) {
+                history.add(OrderTrackingHistoryMapper.fromResponse(h));
+            }
+        }
 
         return OrderTracking.builder()
-                .orderId(dto.getOrderId())
-                .currentStatus(OrderStatus.fromString(dto.getCurrentStatus())) // <-- aquí también
-                .totalAmount(dto.getTotalAmount())
+                .orderId(res.getOrderId())
+                .currentStatus(toStatus(res.getCurrentStatus())) // <--- CORREGIDO
+                .totalAmount(res.getTotalAmount())
                 .items(items)
                 .history(history)
                 .build();
     }
 
+    /**
+     * Convierte un String a un Enum OrderStatus de forma segura.
+     * @param status El estado como texto (ej. "PENDING").
+     * @return El Enum correspondiente o null si no se reconoce.
+     */
+    private static OrderStatus toStatus(String status) {
+        if (status == null || status.isEmpty()) {
+            return null;
+        }
+        try {
+            // Convierte a mayúsculas para coincidir con los nombres de los Enums.
+            return OrderStatus.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            // Si el backend envía un estado no reconocido, no rompemos la app.
+            return null; // O podrías tener un OrderStatus.UNKNOWN por defecto.
+        }
+    }
 }

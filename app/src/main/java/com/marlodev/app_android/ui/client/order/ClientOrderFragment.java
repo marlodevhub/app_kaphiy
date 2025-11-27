@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,17 +12,14 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.google.android.material.snackbar.Snackbar;
 import com.marlodev.app_android.MainApplication;
 import com.marlodev.app_android.databinding.FragmentClientOrderBinding;
 import com.marlodev.app_android.ui.client.order.components.active_orders.ActiveOrderAdapter;
-import com.marlodev.app_android.utils.Result;
 
 public class ClientOrderFragment extends Fragment {
     private FragmentClientOrderBinding binding;
     private ClientOrderViewModel orderVM;
     private ActiveOrderAdapter activeOrdersAdapter;
-    private ActiveOrderAdapter historyOrdersAdapter;
 
     @Nullable
     @Override
@@ -34,73 +32,55 @@ public class ClientOrderFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        binding = null; // prevenir memory leaks
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setupRecyclerView();
+        setupViewModel();
     }
 
-    // ----------------------------------------
-    // Inicialización de Adapters
-    // ----------------------------------------
-    private void setupAdapters() {
-        activeOrdersAdapter = new ActiveOrderAdapter();
-        historyOrdersAdapter = new ActiveOrderAdapter();
-
-        binding.activeOrdersRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        binding.activeOrdersRecyclerView.setAdapter(activeOrdersAdapter);
-        binding.activeOrdersRecyclerView.setNestedScrollingEnabled(false);
-
-        binding.historyRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        binding.historyRecyclerView.setAdapter(historyOrdersAdapter);
-        binding.historyRecyclerView.setNestedScrollingEnabled(false);
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (orderVM != null) {
+        }
     }
 
-    // ----------------------------------------
-    // Inicialización de ViewModel
-    // ----------------------------------------
+    private void  setupListeners(){}
+
     private void setupViewModel() {
-//        ClientOrderViewModelFactory factory = DependencyProvider.provideClientOrderViewModelFactory(requireContext());
-//        orderVM = new ViewModelProvider(this, factory).get(ClientOrderViewModel.class);
-//
-        // Obtienes el AppContainer desde MainApplication
         MainApplication app = (MainApplication) requireActivity().getApplicationContext();
 
-        // Usas la factory centralizada en AppContainer
         ClientOrderViewModelFactory factory = app.appContainer.clientOrderViewModelFactory;
+        orderVM = new ViewModelProvider(requireActivity(), factory).get(ClientOrderViewModel.class);
 
-        // Inicializas el ViewModel con la factory
-        orderVM = new ViewModelProvider(this, factory).get(ClientOrderViewModel.class);
-    }
+        orderVM.orders.observe(getViewLifecycleOwner(), activeOrdersAdapter::submitList);
 
-    // ----------------------------------------
-    // Observadores de LiveData
-    // ----------------------------------------
-    private void observeViewModel() {
-
-        // Órdenes activas
-        orderVM.getActiveOrders().observe(getViewLifecycleOwner(), result -> {
-//            handleOrderResult(result, activeOrdersAdapter, binding.activeOrdersProgress);
-        });
-
-        // Historial de órdenes
-        orderVM.getHistoryOrders().observe(getViewLifecycleOwner(), result -> {
-//            handleOrderResult(result, historyOrdersAdapter, binding.historyProgress);
-        });
-
-        // Resultado del Checkout
-        orderVM.getCheckoutResult().observe(getViewLifecycleOwner(), result -> {
-            if (result.status == Result.Status.SUCCESS) {
-                Snackbar.make(binding.getRoot(), "Compra realizada con éxito", Snackbar.LENGTH_LONG).show();
-            } else if (result.status == Result.Status.ERROR) {
-                Snackbar.make(binding.getRoot(), "Error al realizar la compra: " + result.message, Snackbar.LENGTH_LONG).show();
+        orderVM.errorMessage.observe(getViewLifecycleOwner(), event -> {
+            String message = event.getContentIfNotHandled();
+            if (message != null) {
+                showError(message);
             }
         });
 
-        // Errores genéricos
-        orderVM.getErrorMessage().observe(getViewLifecycleOwner(), msg -> {
-            if (msg != null) {
-                Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_LONG).show();
-            }
-        });
     }
+
+
+    private void setupRecyclerView() {
+        activeOrdersAdapter = new ActiveOrderAdapter();
+        binding.activeOrdersRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.activeOrdersRecyclerView.setAdapter(activeOrdersAdapter);
+    }
+
+    private void showError(String message) {
+        if (message != null && !message.isBlank()) {
+            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show();
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
+    }
+
 }
