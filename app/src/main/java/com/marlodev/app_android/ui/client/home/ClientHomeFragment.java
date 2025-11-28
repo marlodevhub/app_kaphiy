@@ -55,14 +55,11 @@ public class ClientHomeFragment extends Fragment {
         // 1. Obtener el contenedor de dependencias desde la clase Application
         AppContainer appContainer = ((MainApplication) requireActivity().getApplication()).appContainer;
 
-        // 2. Usar los repositorios ya creados del contenedor para construir la Factory
-        ClientHomeViewModelFactory factory = new ClientHomeViewModelFactory(
-                appContainer.productRepository,
-                appContainer.tagRepository,
-                appContainer.bannerRepository
-        );
+        // 2. Pedir la factory pre-construida directamente del contenedor.
+        // El Fragment ya no necesita saber CÓMO se construye la factory.
+        ClientHomeViewModelFactory factory = appContainer.clientHomeViewModelFactory;
 
-        // 3. Crear el ViewModel. El Fragment ya no construye nada, solo pide las piezas.
+        // 3. Crear el ViewModel.
         clientHomeVM = new ViewModelProvider(requireActivity(), factory).get(ClientHomeViewModel.class);
     }
 
@@ -143,8 +140,7 @@ public class ClientHomeFragment extends Fragment {
         if (product.isSkeleton()) return;
         Intent intent = new Intent(requireContext(), ProductDetailActivity.class);
         intent.putExtra("productId", product.getId());
-        startActivity(intent);
-    }
+        startActivity(intent);    }
 
     private int dpToPx(int dp) {
         return Math.round(dp * getResources().getDisplayMetrics().density);

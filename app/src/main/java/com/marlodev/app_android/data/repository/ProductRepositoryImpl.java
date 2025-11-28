@@ -40,20 +40,20 @@ public class ProductRepositoryImpl implements ProductRepository {
     public final LiveData<String> errorMessage = _errorMessage;
     public final LiveData<Boolean> isLoading = _isLoading;
 
-    // constructor con WebSocket
-    public ProductRepositoryImpl(ProductApiService apiService,
-                                 GenericWebSocketManager<ProductWebSocketEvent> wsManager) {
+    // Constructor principal con WebSocket (el que necesitamos)
+    public ProductRepositoryImpl(ProductApiService apiService, GenericWebSocketManager<ProductWebSocketEvent> wsManager) {
         this.apiService = apiService;
         this.wsManager = wsManager;
+        // El observador se crea aquí y se enlaza al LiveData del WebSocketManager
         this.webSocketObserver = this::handleWebSocketEvent;
-        this.wsManager.getEventLiveData().observeForever(webSocketObserver);
+        if (this.wsManager != null) {
+            this.wsManager.getEventLiveData().observeForever(webSocketObserver);
+        }
     }
 
-    // constructor sin WebSocket
+    // Constructor sin WebSocket (para retrocompatibilidad o pruebas) que llama al principal
     public ProductRepositoryImpl(ProductApiService apiService) {
-        this.apiService = apiService;
-        this.wsManager = null;
-        this.webSocketObserver = null;
+        this(apiService, null);
     }
 
     // -----------------------------
@@ -62,25 +62,25 @@ public class ProductRepositoryImpl implements ProductRepository {
 
     @Override
     public LiveData<List<Product>> getAllProducts() {
-        loadProducts(); // Asegura que se inicie la carga si aún no se ha hecho.
-        return products; // Devuelve el LiveData público existente.
+        loadProducts();
+        return products;
     }
 
     // -----------------------------    
     // WEBSOCKET
     // -----------------------------
     public void connectWebSocket() {
-        wsManager.connect();
+        if (wsManager != null) wsManager.connect();
     }
     public void disconnectWebSocket() {
-        wsManager.disconnect();
+        if (wsManager != null) wsManager.disconnect();
     }
     private void handleWebSocketEvent(ProductWebSocketEvent event) {
         if (event == null || event.getAction() == null) return;
 
         List<Product> currentList = _products.getValue();
         if (currentList == null) {
-            currentList = new ArrayList<>(); // Asegurarse de no operar sobre nulos
+            currentList = new ArrayList<>();
         }
 
         Product product = Product.fromWebSocketEvent(event);
@@ -128,7 +128,9 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     public void shutdown() {
-        wsManager.getEventLiveData().removeObserver(webSocketObserver);
+        if (wsManager != null && webSocketObserver != null) {
+            wsManager.getEventLiveData().removeObserver(webSocketObserver);
+        }
         disconnectWebSocket();
     }
 
