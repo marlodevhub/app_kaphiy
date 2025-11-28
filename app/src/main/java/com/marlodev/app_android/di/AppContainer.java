@@ -30,27 +30,27 @@ import com.marlodev.app_android.utils.SessionManager;
 import retrofit2.Retrofit;
 
 /**
- * Contenedor de dependencias manual.
+ * Contenedor de dependencias manual y centralizado.
  */
 public class AppContainer {
 
     private final SessionManager sessionManager;
     private final Retrofit retrofit;
 
-    // --- REPOSITORIOS ---
+    // --- REPOSITORIOS (EXPUESTOS) ---
     public final BannerRepositoryImpl bannerRepository;
     public final TagRepositoryImpl tagRepository;
     public final ProductRepositoryImpl productRepository;
     public final CartRepositoryImpl cartRepository;
     public final OrderRepositoryImpl orderRepository;
 
-    // --- CASOS DE USO ---
+    // --- CASOS DE USO (EXPUESTOS) ---
     public final ProductUseCases productUseCases;
     public final CartUseCases cartUseCases;
     public final OrderUseCases orderUseCases;
     public final CheckoutUseCase checkoutUseCase;
 
-    // --- VIEWMODEL FACTORIES ---
+    // --- VIEWMODEL FACTORIES (EXPUESTOS) ---
     public final ProductDetailViewModelFactory productDetailViewModelFactory;
     public final ClientCartViewModelFactory clientCartViewModelFactory;
     public final ClientOrderViewModelFactory clientOrderViewModelFactory;
@@ -73,7 +73,7 @@ public class AppContainer {
         // --- Repositorios ---
         this.bannerRepository = new BannerRepositoryImpl(retrofit.create(BannerApiService.class), bannerWsManager);
         this.tagRepository = new TagRepositoryImpl(retrofit.create(TagApiService.class));
-        // El repositorio de productos es el responsable de gestionar el WebSocket
+        // El repositorio de productos es el único responsable de gestionar el WebSocket de productos
         this.productRepository = new ProductRepositoryImpl(retrofit.create(ProductApiService.class), productWsManager);
         this.cartRepository = new CartRepositoryImpl(retrofit.create(CartApi.class));
         this.orderRepository = new OrderRepositoryImpl(retrofit.create(OrderApi.class));

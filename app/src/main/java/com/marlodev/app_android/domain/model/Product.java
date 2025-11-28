@@ -1,6 +1,5 @@
 package com.marlodev.app_android.domain.model;
 
-import com.marlodev.app_android.data.network.websocket.dto.ProductWebSocketEvent;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,30 +33,6 @@ public class Product {
     private List<String> imageUrls = new ArrayList<>();
     private List<String> imagePublicIds = new ArrayList<>();
 
-    // Flag para la UI de carga de esqueletos
     @Builder.Default
     private boolean isSkeleton = false;
-
-
-
-    // --------------------------
-    // 🔹 Conversión desde evento WebSocket
-    // --------------------------
-    public static Product fromWebSocketEvent(ProductWebSocketEvent event) {
-        if (event == null) return null;
-
-        Product product = new Product();
-        product.setId(event.getId());
-        product.setName(event.getName());
-        product.setIsNew(event.getIsNew() != null && event.getIsNew());
-        product.setPrice(event.getPrice() != null ? event.getPrice() : BigDecimal.ZERO);
-
-        if (event.getImageUrl() != null && !event.getImageUrl().trim().isEmpty()) {
-            product.setImageUrls(List.of(event.getImageUrl()));
-        } else {
-            product.setImageUrls(new ArrayList<>());
-        }
-
-        return product;
-    }
 }
