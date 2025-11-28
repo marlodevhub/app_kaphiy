@@ -60,7 +60,7 @@
             android:id="@+id/txtStore"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="By. Store"
+            android:text="By. Kaphiy"
             android:textColor="@color/colorGrey600"
             android:textSize="10sp"
             android:textStyle="bold"
