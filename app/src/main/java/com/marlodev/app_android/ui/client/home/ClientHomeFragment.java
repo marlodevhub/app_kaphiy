@@ -35,13 +35,17 @@ public class ClientHomeFragment extends Fragment {
     private boolean isInitialBannerLoad = true;
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container,
+                             Bundle savedInstanceState) {
+
         binding = FragmentClientHomeBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
         super.onViewCreated(view, savedInstanceState);
 
         initViewModel();
@@ -56,7 +60,6 @@ public class ClientHomeFragment extends Fragment {
         AppContainer appContainer = ((MainApplication) requireActivity().getApplication()).appContainer;
 
         // 2. Pedir la factory pre-construida directamente del contenedor.
-        // El Fragment ya no necesita saber CÓMO se construye la factory.
         ClientHomeViewModelFactory factory = appContainer.clientHomeViewModelFactory;
 
         // 3. Crear el ViewModel.

@@ -40,7 +40,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     public final LiveData<String> errorMessage = _errorMessage;
     public final LiveData<Boolean> isLoading = _isLoading;
 
-    // Constructor principal con WebSocket (el que necesitamos)
+    // Constructor principal con WebSocket
     public ProductRepositoryImpl(ProductApiService apiService, GenericWebSocketManager<ProductWebSocketEvent> wsManager) {
         this.apiService = apiService;
         this.wsManager = wsManager;
