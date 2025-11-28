@@ -5,7 +5,6 @@ import android.content.Context;
 import com.marlodev.app_android.BuildConfig;
 import com.marlodev.app_android.data.network.api.CartApi;
 import com.marlodev.app_android.data.network.api.OrderApi;
-import com.marlodev.app_android.data.network.websocket.ProductWebSocketService;
 import com.marlodev.app_android.data.network.websocket.dto.BannerWebSocketEvent;
 import com.marlodev.app_android.data.network.websocket.dto.ProductWebSocketEvent;
 import com.marlodev.app_android.data.network.retrofit.ApiClient;
@@ -30,28 +29,28 @@ import com.marlodev.app_android.utils.SessionManager;
 
 import retrofit2.Retrofit;
 
+/**
+ * Contenedor de dependencias manual.
+ */
 public class AppContainer {
 
     private final SessionManager sessionManager;
     private final Retrofit retrofit;
 
-    // --- SERVICIOS (EXPUESTOS) ---
-    public final ProductWebSocketService productWebSocketService;
-
-    // --- REPOSITORIOS (EXPUESTOS) ---
+    // --- REPOSITORIOS ---
     public final BannerRepositoryImpl bannerRepository;
     public final TagRepositoryImpl tagRepository;
     public final ProductRepositoryImpl productRepository;
     public final CartRepositoryImpl cartRepository;
     public final OrderRepositoryImpl orderRepository;
 
-    // --- CASOS DE USO (EXPUESTOS) ---
+    // --- CASOS DE USO ---
     public final ProductUseCases productUseCases;
     public final CartUseCases cartUseCases;
     public final OrderUseCases orderUseCases;
     public final CheckoutUseCase checkoutUseCase;
 
-    // --- VIEWMODEL FACTORIES (EXPUESTOS) ---
+    // --- VIEWMODEL FACTORIES ---
     public final ProductDetailViewModelFactory productDetailViewModelFactory;
     public final ClientCartViewModelFactory clientCartViewModelFactory;
     public final ClientOrderViewModelFactory clientOrderViewModelFactory;
@@ -71,13 +70,10 @@ public class AppContainer {
                 BuildConfig.WS_URL, token, "/topic/banners", BannerWebSocketEvent.class
         );
 
-        // --- Servicio WS: Se crea y se asigna a la propiedad de la clase ---
-        this.productWebSocketService = new ProductWebSocketService(productWsManager);
-
         // --- Repositorios ---
         this.bannerRepository = new BannerRepositoryImpl(retrofit.create(BannerApiService.class), bannerWsManager);
         this.tagRepository = new TagRepositoryImpl(retrofit.create(TagApiService.class));
-        // El repositorio de productos ahora también necesita el WebSocket Manager
+        // El repositorio de productos es el responsable de gestionar el WebSocket
         this.productRepository = new ProductRepositoryImpl(retrofit.create(ProductApiService.class), productWsManager);
         this.cartRepository = new CartRepositoryImpl(retrofit.create(CartApi.class));
         this.orderRepository = new OrderRepositoryImpl(retrofit.create(OrderApi.class));
@@ -92,8 +88,8 @@ public class AppContainer {
         this.productDetailViewModelFactory = new ProductDetailViewModelFactory(productUseCases);
         this.clientCartViewModelFactory = new ClientCartViewModelFactory(cartUseCases);
         this.clientOrderViewModelFactory = new ClientOrderViewModelFactory(orderUseCases);
-        // El AppContainer es responsable de construir la factory con todas sus dependencias
-        this.clientHomeViewModelFactory = new ClientHomeViewModelFactory(productRepository, productWebSocketService, tagRepository, bannerRepository);
+        // La factory ahora solo necesita los repositorios, ya que el ViewModel se ha simplificado.
+        this.clientHomeViewModelFactory = new ClientHomeViewModelFactory(productRepository, tagRepository, bannerRepository);
     }
 
     public SessionManager getSessionManager() {

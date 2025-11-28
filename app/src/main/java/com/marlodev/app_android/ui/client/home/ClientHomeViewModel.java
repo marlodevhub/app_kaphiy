@@ -8,7 +8,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.marlodev.app_android.data.network.websocket.ProductWebSocketService;
 import com.marlodev.app_android.data.repository.ProductRepositoryImpl;
 import com.marlodev.app_android.data.repository.TagRepositoryImpl;
 import com.marlodev.app_android.data.repository.BannerRepositoryImpl;
@@ -23,14 +22,15 @@ import java.util.stream.IntStream;
 
 /**
  * ViewModel profesional para ClientHomeFragment.
- * Combina repositorio REST con WebSocket para productos.
+ * El ProductRepository es la única fuente de la verdad para los productos,
+ * combinando REST y WebSocket internamente.
  */
 public class ClientHomeViewModel extends ViewModel {
 
     private static final long MIN_SKELETON_DISPLAY_TIME = 800L; // ms
 
+    // El ViewModel solo depende de los repositorios, no de los detalles de implementación (como WebSockets)
     private final ProductRepositoryImpl productRepository;
-    private final ProductWebSocketService productWebSocketService;
     private final TagRepositoryImpl tagRepository;
     private final BannerRepositoryImpl bannerRepository;
 
@@ -41,26 +41,24 @@ public class ClientHomeViewModel extends ViewModel {
 
     public ClientHomeViewModel(
             @NonNull ProductRepositoryImpl productRepository,
-            @NonNull ProductWebSocketService productWebSocketService,
             @NonNull TagRepositoryImpl tagRepository,
             @NonNull BannerRepositoryImpl bannerRepository
     ) {
         this.productRepository = productRepository;
-        this.productWebSocketService = productWebSocketService;
         this.tagRepository = tagRepository;
         this.bannerRepository = bannerRepository;
 
         loadInitialData();
-        observeWebSocket();
     }
 
     private void loadInitialData() {
-        // Productos
+        // Productos: El ViewModel simplemente observa el LiveData del repositorio.
+        // El repositorio se encarga de la carga inicial y las actualizaciones por WebSocket.
         loadDataWithSkeleton(
                 products,
-                productRepository.getAllProducts(),
+                productRepository.products, // Se observa el LiveData público del repositorio
                 this::createProductSkeletonList,
-                () -> productRepository.getAllProducts()
+                productRepository::loadProducts // La función de carga es la del propio repositorio
         );
 
         // Tags
@@ -80,9 +78,9 @@ public class ClientHomeViewModel extends ViewModel {
         );
 
         // Centraliza errores
-        errorMessage.addSource(productRepository.products, list -> { if (list == null) errorMessage.setValue("Error cargando productos"); });
-        errorMessage.addSource(tagRepository.tags, list -> { if (list == null) errorMessage.setValue("Error cargando tags"); });
-        errorMessage.addSource(bannerRepository.banners, list -> { if (list == null) errorMessage.setValue("Error cargando banners"); });
+        errorMessage.addSource(productRepository.errorMessage, errorMessage::setValue);
+        errorMessage.addSource(tagRepository.errorMessage, errorMessage::setValue);
+        errorMessage.addSource(bannerRepository.errorMessage, errorMessage::setValue);
     }
 
     private <T> void loadDataWithSkeleton(
@@ -116,21 +114,16 @@ public class ClientHomeViewModel extends ViewModel {
         loadFunction.load();
     }
 
-    private void observeWebSocket() {
-        // Observa WS de productos
-        productWebSocketService.productsLive.observeForever(wsProducts -> {
-            products.postValue(wsProducts);
-        });
-    }
-
+    // El ViewModel delega el control del ciclo de vida del WebSocket al repositorio
     public void startWebSocket() {
-        productWebSocketService.connect();
+        productRepository.connectWebSocket();
     }
 
     @Override
     protected void onCleared() {
         super.onCleared();
-        productWebSocketService.disconnect();
+        // El repositorio es responsable de limpiar sus propias conexiones
+        productRepository.shutdown();
     }
 
     // Skeletons
@@ -142,7 +135,7 @@ public class ClientHomeViewModel extends ViewModel {
 
     private List<Tag> createTagSkeletonList(int count) {
         return IntStream.range(0, count)
-                .mapToObj(i -> Tag.builder().isSkeleton(true).id(-i).build()) // <--- CORREGIDO
+                .mapToObj(i -> Tag.builder().isSkeleton(true).id(-i).build())
                 .collect(Collectors.toList());
     }
 

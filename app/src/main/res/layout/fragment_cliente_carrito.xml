@@ -282,7 +282,6 @@
                 android:layout_height="wrap_content"
                 android:text="Carrito Vacío"
                 android:textSize="22sp"
-                android:textStyle="bold"
                 android:textColor="@color/colorGrey600"/>
         </LinearLayout>
 
