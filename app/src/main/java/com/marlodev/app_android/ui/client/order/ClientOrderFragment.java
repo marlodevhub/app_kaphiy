@@ -73,7 +73,7 @@ public class ClientOrderFragment extends Fragment {
 
     private void showError(String message) {
         if (message != null && !message.isBlank()) {
-            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show();
+//            Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show();
         }
     }
 
