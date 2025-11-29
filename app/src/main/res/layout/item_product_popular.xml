@@ -11,19 +11,29 @@
     android:clipToPadding="false"
     >
 
-    <ImageView
-        android:id="@+id/pic"
+
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/container_pic"
         android:layout_width="0dp"
-        android:layout_height="105dp"
         android:scaleType="centerCrop"
+        android:layout_height="105dp"
         android:adjustViewBounds="true"
-        android:background="@drawable/container_img_product"
-        android:clipToOutline="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars"
-       />
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        >
+
+        <ImageView
+            android:id="@+id/pic"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            tools:src="@tools:sample/backgrounds/scenic" />
+    </androidx.cardview.widget.CardView>
 
     <TextView
 
@@ -41,8 +51,8 @@
         android:background="@drawable/bg_txt_nuevo"
         android:elevation="4dp"
         android:visibility="visible"
-        app:layout_constraintStart_toStartOf="@+id/pic"
-        app:layout_constraintTop_toTopOf="@+id/pic"
+        app:layout_constraintStart_toStartOf="@+id/container_pic"
+        app:layout_constraintTop_toTopOf="@+id/container_pic"
 
         />
 
@@ -52,7 +62,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:background="@drawable/bg_white_opacity_50"
-        app:layout_constraintTop_toBottomOf="@+id/pic"
+        app:layout_constraintTop_toBottomOf="@+id/container_pic"
         tools:layout_editor_absoluteX="8dp">
 
         <!-- Texto a la izquierda -->

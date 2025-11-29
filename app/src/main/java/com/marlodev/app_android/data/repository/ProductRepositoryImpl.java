@@ -2,22 +2,24 @@ package com.marlodev.app_android.data.repository;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 
-import com.marlodev.app_android.data.network.websocket.adapter.ProductWsAdapter;
-import com.marlodev.app_android.domain.model.Product;
+import com.marlodev.app_android.data.network.api.ProductApiService;
 import com.marlodev.app_android.data.network.mapper.ProductMapper;
 import com.marlodev.app_android.data.network.model.product.ProductResponse;
-import com.marlodev.app_android.data.network.websocket.dto.ProductWebSocketEvent;
 import com.marlodev.app_android.data.network.websocket.GenericWebSocketManager;
-import com.marlodev.app_android.data.network.api.ProductApiService;
+import com.marlodev.app_android.data.network.websocket.adapter.ProductWsAdapter;
+import com.marlodev.app_android.data.network.websocket.dto.ProductWebSocketEvent;
+import com.marlodev.app_android.domain.model.Product;
 import com.marlodev.app_android.domain.repository.ProductRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -25,6 +27,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * Repositorio optimizado de productos.
+ * Maneja:
+ *  - LiveData seguro y observable
+ *  - WebSocket sin memory leaks
+ *  - CRUD con Retrofit
+ *  - Loading concurrente
+ */
 public class ProductRepositoryImpl implements ProductRepository {
 
     private static final String TAG = "ProductRepositoryImpl";
@@ -32,43 +42,42 @@ public class ProductRepositoryImpl implements ProductRepository {
     private final ProductApiService apiService;
     private final GenericWebSocketManager<ProductWebSocketEvent> wsManager;
 
-    private final MutableLiveData<List<Product>> _products = new MutableLiveData<>(new ArrayList<>());
+    // LiveData internos
+    private final MediatorLiveData<List<Product>> _products = new MediatorLiveData<>();
     private final MutableLiveData<String> _errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> _isLoading = new MutableLiveData<>(false);
 
+    // LiveData públicos
     public final LiveData<List<Product>> products = _products;
     public final LiveData<String> errorMessage = _errorMessage;
     public final LiveData<Boolean> isLoading = _isLoading;
 
-    private final Observer<ProductWebSocketEvent> webSocketObserver;
+    // Contador de operaciones concurrentes para isLoading
+    private final AtomicInteger loadingCounter = new AtomicInteger(0);
 
-    // ---------------------------------------------------
-    // 🔹 CONSTRUCTOR
-    // ---------------------------------------------------
-    public ProductRepositoryImpl(
-            ProductApiService apiService,
-            GenericWebSocketManager<ProductWebSocketEvent> wsManager
-    ) {
+    // Observer para WebSocket
+    private final androidx.lifecycle.Observer<ProductWebSocketEvent> webSocketObserver = this::handleWebSocketEvent;
+
+    public ProductRepositoryImpl(@NonNull ProductApiService apiService,
+                                 GenericWebSocketManager<ProductWebSocketEvent> wsManager) {
         this.apiService = apiService;
         this.wsManager = wsManager;
 
-        this.webSocketObserver = this::handleWebSocketEvent;
+        // Inicializamos la lista vacía para evitar nulls
+        _products.setValue(new ArrayList<>());
 
+        // Observamos WebSocket si existe
         if (this.wsManager != null) {
-            this.wsManager.getEventLiveData().observeForever(webSocketObserver);
+            _products.addSource(this.wsManager.getEventLiveData(), webSocketObserver);
         }
-    }
 
-    @Override
-    public LiveData<List<Product>> getAllProducts() {
+        // Carga inicial
         loadProducts();
-        return products;
     }
 
     // ---------------------------------------------------
-    // 🔹 WEBSOCKET
+    // WebSocket
     // ---------------------------------------------------
-
     public void connectWebSocket() {
         if (wsManager != null) wsManager.connect();
     }
@@ -78,7 +87,6 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     private void handleWebSocketEvent(ProductWebSocketEvent event) {
-
         if (event == null || event.getAction() == null) return;
 
         List<Product> currentList = _products.getValue();
@@ -87,12 +95,10 @@ public class ProductRepositoryImpl implements ProductRepository {
         Product updatedProduct = ProductWsAdapter.fromEvent(event);
         if (updatedProduct == null || updatedProduct.getId() == null) return;
 
+        List<Product> newList = new ArrayList<>(currentList);
         long productId = updatedProduct.getId();
 
-        List<Product> newList = new ArrayList<>(currentList);
-
         switch (event.getAction()) {
-
             case "CREATE":
                 if (newList.stream().noneMatch(p -> Objects.equals(p.getId(), productId))) {
                     newList.add(0, updatedProduct);
@@ -131,104 +137,60 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     public void shutdown() {
-        if (wsManager != null && webSocketObserver != null) {
-            wsManager.getEventLiveData().removeObserver(webSocketObserver);
+        if (wsManager != null) {
+            _products.removeSource(wsManager.getEventLiveData());
+            disconnectWebSocket();
         }
-        disconnectWebSocket();
     }
 
     // ---------------------------------------------------
-    // 🔹 REST - CRUD
+    // CRUD REST
     // ---------------------------------------------------
 
     @Override
     public void createProduct(RequestBody productJson, MultipartBody.Part[] images) {
-        apiService.createProduct(productJson, images)
-                .enqueue(new Callback<ProductResponse>() {
+        executeCall(apiService.createProduct(productJson, images), new Callback<ProductResponse>() {
+            @Override
+            public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
+                if (!response.isSuccessful() || response.body() == null)
+                    _errorMessage.postValue("Error al crear producto (" + response.code() + ")");
+            }
 
-                    @Override
-                    public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
-                        if (!response.isSuccessful()) {
-                            _errorMessage.postValue("Error al crear producto (" + response.code() + ")");
-                            return;
-                        }
-                        Log.d(TAG, "Petición CREATE enviada al servidor.");
-                    }
-
-                    @Override
-                    public void onFailure(Call<ProductResponse> call, Throwable t) {
-                        _errorMessage.postValue("Error al crear: " + t.getMessage());
-                    }
-                });
+            @Override
+            public void onFailure(Call<ProductResponse> call, Throwable t) {
+                _errorMessage.postValue("Error al crear: " + t.getMessage());
+            }
+        });
     }
 
     @Override
     public void updateProduct(long productId, RequestBody productJson, MultipartBody.Part[] images) {
-        apiService.updateProduct(productId, productJson, images)
-                .enqueue(new Callback<ProductResponse>() {
+        executeCall(apiService.updateProduct(productId, productJson, images), new Callback<ProductResponse>() {
+            @Override
+            public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
+                if (!response.isSuccessful())
+                    _errorMessage.postValue("Error al actualizar producto (" + response.code() + ")");
+            }
 
-                    @Override
-                    public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
-                        if (!response.isSuccessful()) {
-                            _errorMessage.postValue("Error al actualizar producto (" + response.code() + ")");
-                            return;
-                        }
-                        Log.d(TAG, "Petición UPDATE enviada para ID: " + productId);
-                    }
-
-                    @Override
-                    public void onFailure(Call<ProductResponse> call, Throwable t) {
-                        _errorMessage.postValue("Error al actualizar: " + t.getMessage());
-                    }
-                });
+            @Override
+            public void onFailure(Call<ProductResponse> call, Throwable t) {
+                _errorMessage.postValue("Error al actualizar: " + t.getMessage());
+            }
+        });
     }
 
     @Override
     public void deleteProduct(long productId) {
-        apiService.deleteProduct(productId)
-                .enqueue(new Callback<Void>() {
-
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        if (!response.isSuccessful()) {
-                            _errorMessage.postValue("Error al eliminar producto (" + response.code() + ")");
-                            return;
-                        }
-                        Log.d(TAG, "Petición DELETE enviada para ID: " + productId);
-                    }
-
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                        _errorMessage.postValue("Error al eliminar: " + t.getMessage());
-                    }
-                });
-    }
-
-    public void loadProducts() {
-        _isLoading.postValue(true);
-
-        apiService.getProducts().enqueue(new Callback<List<ProductResponse>>() {
-
+        executeCall(apiService.deleteProduct(productId), new Callback<Void>() {
             @Override
-            public void onResponse(Call<List<ProductResponse>> call, Response<List<ProductResponse>> response) {
-                _isLoading.postValue(false);
-
-                if (!response.isSuccessful() || response.body() == null) {
-                    _errorMessage.postValue("Error al cargar productos (" + response.code() + ")");
-                    return;
-                }
-
-                List<Product> domainList = ProductMapper.fromResponseList(response.body());
-
-                _products.postValue(domainList);
-
-                Log.d(TAG, "Productos cargados correctamente: " + domainList.size());
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (!response.isSuccessful())
+                    _errorMessage.postValue("Error al eliminar producto (" + response.code() + ")");
             }
 
             @Override
-            public void onFailure(Call<List<ProductResponse>> call, Throwable t) {
-                _isLoading.postValue(false);
-                _errorMessage.postValue("Error de conexión: " + t.getMessage());
+            public void onFailure(Call<Void> call, Throwable t) {
+                _errorMessage.postValue("Error al eliminar: " + t.getMessage());
             }
         });
     }
@@ -246,15 +208,12 @@ public class ProductRepositoryImpl implements ProductRepository {
             }
         }
 
-        apiService.getProductById(id).enqueue(new Callback<ProductResponse>() {
-
+        executeCall(apiService.getProductById(id), new Callback<ProductResponse>() {
             @Override
             public void onResponse(Call<ProductResponse> call, Response<ProductResponse> response) {
-                liveData.postValue(
-                        response.isSuccessful() && response.body() != null
-                                ? ProductMapper.fromResponse(response.body())
-                                : null
-                );
+                liveData.postValue(response.isSuccessful() && response.body() != null
+                        ? ProductMapper.fromResponse(response.body())
+                        : null);
             }
 
             @Override
@@ -264,5 +223,64 @@ public class ProductRepositoryImpl implements ProductRepository {
         });
 
         return liveData;
+    }
+
+    @Override
+    public LiveData<List<Product>> getAllProducts() {
+        loadProducts();
+        return products;
+    }
+
+    public void loadProducts() {
+        executeCall(apiService.getProducts(), new Callback<List<ProductResponse>>() {
+            @Override
+            public void onResponse(Call<List<ProductResponse>> call, Response<List<ProductResponse>> response) {
+                if (!response.isSuccessful() || response.body() == null) {
+                    _errorMessage.postValue("Error al cargar productos (" + response.code() + ")");
+                    return;
+                }
+                _products.postValue(ProductMapper.fromResponseList(response.body()));
+            }
+
+            @Override
+            public void onFailure(Call<List<ProductResponse>> call, Throwable t) {
+                _errorMessage.postValue("Error de conexión: " + t.getMessage());
+            }
+        });
+    }
+
+    // ---------------------------------------------------
+    // Helpers
+    // ---------------------------------------------------
+
+    // Ejecuta cualquier llamada Retrofit con loading automático
+    private <T> void executeCall(Call<T> call, Callback<T> callback) {
+        startLoading();
+        call.enqueue(new Callback<T>() {
+            @Override
+            public void onResponse(Call<T> call, Response<T> response) {
+                stopLoading();
+                callback.onResponse(call, response);
+            }
+
+            @Override
+            public void onFailure(Call<T> call, Throwable t) {
+                stopLoading();
+                callback.onFailure(call, t);
+            }
+        });
+    }
+
+    private void startLoading() {
+        if (loadingCounter.getAndIncrement() == 0) {
+            _isLoading.postValue(true);
+        }
+    }
+
+    private void stopLoading() {
+        if (loadingCounter.decrementAndGet() <= 0) {
+            loadingCounter.set(0);
+            _isLoading.postValue(false);
+        }
     }
 }

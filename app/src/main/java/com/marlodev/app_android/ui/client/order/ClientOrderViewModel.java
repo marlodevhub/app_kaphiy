@@ -38,6 +38,10 @@ public class ClientOrderViewModel extends ViewModel {
         loadActiveOrders();
     }
 
+    public void refreshOrders() {
+        loadActiveOrders();
+    }
+
 
     private void loadActiveOrders() {
         LiveData<Result<List<Order>>> useCaseLiveData = orderUseCases.getActiveOrders().execute();

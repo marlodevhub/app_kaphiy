@@ -151,23 +151,11 @@ public class GenericWebSocketManager<T> {
         }
     }
 
-    /** Reconexión manual con delay seguro */
-    public void reconnectWithDelay(long delayMillis) {
-        scheduler.schedule(this::connect, delayMillis, TimeUnit.MILLISECONDS);
-    }
 
-    /** Verifica si el WS está conectado */
-    public boolean isConnected() {
-        return connectionState.getValue() == ConnectionState.CONNECTED;
-    }
 
     /** Eventos emitidos por el servidor */
     public LiveData<T> getEventLiveData() {
         return eventLiveData;
     }
 
-    /** Estado actual del WebSocket */
-    public LiveData<ConnectionState> getConnectionState() {
-        return connectionState;
-    }
 }

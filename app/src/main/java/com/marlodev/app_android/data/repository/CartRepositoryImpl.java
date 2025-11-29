@@ -28,9 +28,6 @@ public class CartRepositoryImpl implements CartRepository {
         this.api = api;
     }
 
-    // ======================================================
-    // Generic Handler para llamadas que retornan OrderResponse
-    // ======================================================
     private LiveData<Result<Order>> performCall(Call<OrderResponse> call, String action) {
         MutableLiveData<Result<Order>> liveData = new MutableLiveData<>();
         liveData.postValue(Result.loading());

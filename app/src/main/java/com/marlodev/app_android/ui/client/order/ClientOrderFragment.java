@@ -42,6 +42,7 @@ public class ClientOrderFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (orderVM != null) {
+            orderVM.refreshOrders();
         }
     }
 
