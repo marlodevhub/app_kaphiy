@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android/tools"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F5F5F5"
-    tools:context=".ui.barista.BaristaInicioFragment">
+    tools:context=".ui.barista.BaristaHomeFragment">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
@@ -39,7 +40,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Métricas y Rendimiento"
+                        android:text="Dashboard"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:textColor="#FFFFFF" />
@@ -52,9 +53,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
-                <!-- Filtros de Tiempo -->
-
-
                 <!-- TÍTULO: Resumen de Hoy -->
                 <TextView
                     android:layout_width="match_parent"
@@ -66,10 +64,12 @@
                     android:paddingHorizontal="16dp"
                     android:layout_marginBottom="16dp"/>
 
+
+
                 <!-- Tarjetas de Rendimiento (3 tarjetas) -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="100dp"
                     android:orientation="horizontal"
                     android:layout_marginBottom="24dp"
                     android:paddingHorizontal="16dp"
@@ -78,15 +78,15 @@
                     <!-- Pedidos Completados -->
                     <androidx.cardview.widget.CardView
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:layout_height="match_parent"
                         android:layout_marginEnd="8dp"
                         app:cardBackgroundColor="#348B87"
                         app:cardCornerRadius="12dp"
                         app:cardElevation="2dp">
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:orientation="vertical"
                             android:padding="12dp"
                             android:gravity="center">
@@ -111,15 +111,15 @@
                     <!-- Tiempo Promedio -->
                     <androidx.cardview.widget.CardView
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_marginHorizontal="4dp"
+                        android:layout_marginEnd="8dp"
                         app:cardBackgroundColor="#348B87"
                         app:cardCornerRadius="12dp"
                         app:cardElevation="2dp">
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:orientation="vertical"
                             android:padding="12dp"
                             android:gravity="center">
@@ -139,24 +139,25 @@
                                 android:gravity="center"
                                 android:textColor="#E0F2F1" />
                         </LinearLayout>
+
                     </androidx.cardview.widget.CardView>
 
                     <!-- Más que ayer -->
                     <androidx.cardview.widget.CardView
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
                         app:cardBackgroundColor="#348B87"
                         app:cardCornerRadius="12dp"
                         app:cardElevation="2dp">
 
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="96dp"
-                            android:gravity="center"
+                            android:layout_height="match_parent"
                             android:orientation="vertical"
-                            android:padding="12dp">
+                            android:padding="12dp"
+                            android:gravity="center">
 
                             <TextView
                                 android:id="@+id/tvRendimientoAyer"
@@ -189,35 +190,41 @@
                     android:paddingHorizontal="16dp"
                     android:layout_marginBottom="8dp"/>
 
-                <!-- RECYCLER VIEW: Productos Populares (Configuración solicitada) -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvProductosPopulares"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
                     android:clipToPadding="false"
+                    android:orientation="horizontal"
                     android:paddingStart="20dp"
                     android:paddingEnd="24dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    android:orientation="vertical"
-                    tools:listitem="@layout/item_product_popular"
-                    tools:itemCount="3"/>
+                    tools:itemCount="3"
+                    tools:listitem="@layout/item_product_popular" />
 
-
-                <!-- TÍTULO: Tendencia Semanal -->
-
-                <!-- Contenedor del Gráfico -->
-
-                <!-- Mensaje de Rendimiento -->
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
                     android:text="¡Tu rendimiento está mejorando! +15% esta semana"
                     android:textColor="#1E655C"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:gravity="center_horizontal"
                     android:paddingHorizontal="16dp"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Mi Horario"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="#333333"
+                    android:paddingHorizontal="16dp"
+                    android:layout_marginBottom="8dp"/>
+
+                di
+
 
             </LinearLayout>
         </LinearLayout>

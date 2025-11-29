@@ -1,19 +1,25 @@
 package com.marlodev.app_android.ui.barista;
 
-import android.content.Intent;
 import android.os.Bundle;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
-import com.marlodev.app_android.MainActivity;
 import com.marlodev.app_android.R;
-import com.marlodev.app_android.utils.SessionManager;
+
 public class BaristaPerfilFragment extends Fragment {
 
+    public BaristaPerfilFragment() {
+    }
 
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_barista_perfil, container, false);
+    }
 }

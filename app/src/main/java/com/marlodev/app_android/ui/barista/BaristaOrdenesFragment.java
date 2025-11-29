@@ -1,20 +1,18 @@
 package com.marlodev.app_android.ui.barista;
 
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.marlodev.app_android.R;
 
-public class BaristaHomeFragment extends Fragment {
+public class BaristaOrdenesFragment extends Fragment {
 
-    public BaristaHomeFragment() {
+    public BaristaOrdenesFragment() {
     }
 
     @Nullable
@@ -22,6 +20,6 @@ public class BaristaHomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_barista_home, container, false);
+        return inflater.inflate(R.layout.fragment_barista_gestion, container, false);
     }
 }

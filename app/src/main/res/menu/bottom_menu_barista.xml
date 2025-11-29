@@ -9,9 +9,9 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
     app:cnb_backgroundColor="@color/colorPrimary"
     app:cnb_iconColor="@color/colorWhite"/>
 <item
-    android:id="@+id/menu_detalle_barista"
+    android:id="@+id/menu_ordenes_barista"
     android:icon="@drawable/icon_detalle_barista"
-    android:title="Detalle"
+    android:title="Ordenes"
     app:cnb_backgroundColor="@color/colorPrimary"
     app:cnb_iconColor="@color/colorWhite"/>
 <item
@@ -21,9 +21,9 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
     app:cnb_iconColor="@color/colorWhite"
     app:cnb_backgroundColor="@color/colorPrimary"/>
 <item
-    android:id="@+id/menu_notificaciones_barista"
+    android:id="@+id/menu_inventario_barista"
     android:icon="@drawable/icon_notificaciones_barista"
-    android:title="Notificaciones"
+    android:title="Inventario"
     app:cnb_iconColor="@color/colorWhite"
     app:cnb_backgroundColor="@color/colorPrimary"/>
 <item

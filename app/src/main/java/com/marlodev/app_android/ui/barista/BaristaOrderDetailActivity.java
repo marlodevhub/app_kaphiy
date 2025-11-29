@@ -10,13 +10,13 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.marlodev.app_android.R;
 
-public class BaristaHistorialFrag extends AppCompatActivity {
+public class BaristaOrderDetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_barista_historial_frag);
+        setContentView(R.layout.activity_barista_order_detail);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);

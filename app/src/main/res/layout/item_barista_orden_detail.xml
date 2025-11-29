@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="12dp"
+    android:background="@drawable/bg_item_card"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:minHeight="112dp">
+
+    <!-- Imagen del producto -->
+    <ImageView
+        android:id="@+id/imgDrink"
+        android:layout_width="88dp"
+        android:layout_height="88dp"
+        android:adjustViewBounds="true"
+        android:clipToOutline="true"
+        android:scaleType="centerCrop"
+        android:background="@drawable/container_img_product"
+        android:contentDescription="Imagen de bebida"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:srcCompat="@tools:sample/avatars"/>
+
+    <!-- Badge de cantidad -->
+    <TextView
+        android:id="@+id/txtQuantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_quantity_badge"
+        android:paddingStart="6dp"
+        android:paddingTop="4dp"
+        android:layout_marginEnd="20"
+        android:paddingEnd="6dp"
+        android:paddingBottom="4dp"
+        android:text="4"
+        android:textColor="@color/colorGrey600"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/selectionIcon"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Contenedor de texto -->
+    <LinearLayout
+        android:id="@+id/textContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@id/imgDrink"
+        app:layout_constraintStart_toEndOf="@id/imgDrink"
+        app:layout_constraintTop_toTopOf="@id/imgDrink">
+
+        <!-- Nombre -->
+        <TextView
+            android:id="@+id/txtTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Frappé Mocha"
+            android:textColor="#222222"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <!-- Atributos -->
+        <TextView
+            android:id="@+id/txtAttributes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Grande | Leche | Crema"
+            android:textColor="#666666"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- Icono de selección -->
+    <ImageView
+        android:id="@+id/selectionIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginEnd="20"
+        android:contentDescription="Seleccionado"
+        android:src="@drawable/ic_check"
+        android:tint="@color/colorSecondary"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="@+id/txtQuantity"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/txtQuantity" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

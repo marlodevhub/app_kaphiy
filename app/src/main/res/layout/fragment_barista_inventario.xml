@@ -137,7 +137,8 @@
                     android:clipToPadding="false"
                     android:orientation="vertical"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    tools:itemCount="3"/>
+                    tools:listitem="@layout/item_pedido_historial"
+                    tools:itemCount="2"/>
 
 
                 <TextView
