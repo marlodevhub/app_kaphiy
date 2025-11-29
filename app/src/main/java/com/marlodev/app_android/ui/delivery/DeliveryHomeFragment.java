@@ -68,8 +68,6 @@ public class DeliveryHomeFragment extends Fragment implements PedidoAdapter.OnPe
 
     private void setupRecyclerView() {
         pedidoAdapter = new PedidoAdapter(this);
-        binding.recyclerViewPedidos.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.recyclerViewPedidos.setAdapter(pedidoAdapter);
     }
 
     private void setupLogoutButton() {
@@ -94,7 +92,6 @@ public class DeliveryHomeFragment extends Fragment implements PedidoAdapter.OnPe
 
     @Override
     public void onAceptarClick(Pedido pedido) {
-        Toast.makeText(getContext(), "Pedido de " + pedido.getCliente() + " aceptado", Toast.LENGTH_SHORT).show();
     }
 
     @Override
