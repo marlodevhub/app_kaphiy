@@ -1,5 +1,5 @@
 package com.marlodev.app_android.data.network.websocket.adapter;
-import com.marlodev.app_android.data.network.websocket.dto.ProductWebSocketEvent;
+import com.marlodev.app_android.data.network.websocket.events.ProductWebSocketEvent;
 import com.marlodev.app_android.domain.model.Product;
 
 public class ProductWsAdapter {

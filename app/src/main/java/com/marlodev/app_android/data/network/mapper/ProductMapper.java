@@ -10,7 +10,9 @@ import java.util.stream.Collectors;
 
 public class ProductMapper {
 
-    // 🔹 De Response (API) a Product
+    // ========================================
+    // RESPONSE → DOMINIO
+    // ========================================
     public static Product fromResponse(ProductResponse dto) {
         if (dto == null) return null;
 
@@ -38,12 +40,16 @@ public class ProductMapper {
 
     public static List<Product> fromResponseList(List<ProductResponse> dtoList) {
         if (dtoList == null || dtoList.isEmpty()) return Collections.emptyList();
-        return dtoList.stream().map(ProductMapper::fromResponse).collect(Collectors.toList());
+        return dtoList.stream()
+                .map(ProductMapper::fromResponse)
+                .collect(Collectors.toList());
     }
 
 
 
-    // 🔹 De Product a Request (para enviar a API)
+    // ========================================
+    // DOMINIO → REQUEST
+    // ========================================
     public static ProductRequest toRequest(Product p) {
         if (p == null) return null;
 

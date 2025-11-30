@@ -6,13 +6,14 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 import com.marlodev.app_android.data.network.api.ProductApiService;
 import com.marlodev.app_android.data.network.mapper.ProductMapper;
 import com.marlodev.app_android.data.network.model.product.ProductResponse;
 import com.marlodev.app_android.data.network.websocket.GenericWebSocketManager;
 import com.marlodev.app_android.data.network.websocket.adapter.ProductWsAdapter;
-import com.marlodev.app_android.data.network.websocket.dto.ProductWebSocketEvent;
+import com.marlodev.app_android.data.network.websocket.events.ProductWebSocketEvent;
 import com.marlodev.app_android.domain.model.Product;
 import com.marlodev.app_android.domain.repository.ProductRepository;
 
@@ -56,7 +57,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     private final AtomicInteger loadingCounter = new AtomicInteger(0);
 
     // Observer para WebSocket
-    private final androidx.lifecycle.Observer<ProductWebSocketEvent> webSocketObserver = this::handleWebSocketEvent;
+    private final Observer<ProductWebSocketEvent> webSocketObserver = this::handleWebSocketEvent;
 
     public ProductRepositoryImpl(@NonNull ProductApiService apiService,
                                  GenericWebSocketManager<ProductWebSocketEvent> wsManager) {

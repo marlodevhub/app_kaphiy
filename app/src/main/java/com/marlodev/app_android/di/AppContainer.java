@@ -5,8 +5,9 @@ import android.content.Context;
 import com.marlodev.app_android.BuildConfig;
 import com.marlodev.app_android.data.network.api.CartApi;
 import com.marlodev.app_android.data.network.api.OrderApi;
-import com.marlodev.app_android.data.network.websocket.dto.BannerWebSocketEvent;
-import com.marlodev.app_android.data.network.websocket.dto.ProductWebSocketEvent;
+import com.marlodev.app_android.data.network.websocket.events.BannerWebSocketEvent;
+import com.marlodev.app_android.data.network.websocket.events.CartItemWebSocketEvent;
+import com.marlodev.app_android.data.network.websocket.events.ProductWebSocketEvent;
 import com.marlodev.app_android.data.network.retrofit.ApiClient;
 import com.marlodev.app_android.data.network.api.BannerApiService;
 import com.marlodev.app_android.data.network.websocket.GenericWebSocketManager;
@@ -63,19 +64,25 @@ public class AppContainer {
 
         // --- WebSockets ---
         String token = sessionManager.getToken();
-        GenericWebSocketManager<ProductWebSocketEvent> productWsManager = new GenericWebSocketManager<>(
-                BuildConfig.WS_URL, token, "/topic/products", ProductWebSocketEvent.class
-        );
         GenericWebSocketManager<BannerWebSocketEvent> bannerWsManager = new GenericWebSocketManager<>(
                 BuildConfig.WS_URL, token, "/topic/banners", BannerWebSocketEvent.class
         );
+        GenericWebSocketManager<ProductWebSocketEvent> productWsManager = new GenericWebSocketManager<>(
+                BuildConfig.WS_URL, token, "/topic/products", ProductWebSocketEvent.class
+        );
+        GenericWebSocketManager<CartItemWebSocketEvent> cartItemWsManager = new GenericWebSocketManager<>(
+                BuildConfig.WS_URL, token, "/topic/cart", CartItemWebSocketEvent.class
+        );
+
 
         // --- Repositorios ---
         this.bannerRepository = new BannerRepositoryImpl(retrofit.create(BannerApiService.class), bannerWsManager);
         this.tagRepository = new TagRepositoryImpl(retrofit.create(TagApiService.class));
         // El repositorio de productos es el único responsable de gestionar el WebSocket de productos
         this.productRepository = new ProductRepositoryImpl(retrofit.create(ProductApiService.class), productWsManager);
-        this.cartRepository = new CartRepositoryImpl(retrofit.create(CartApi.class));
+
+        this.cartRepository = new CartRepositoryImpl(retrofit.create(CartApi.class), cartItemWsManager);
+
         this.orderRepository = new OrderRepositoryImpl(retrofit.create(OrderApi.class));
 
         // --- Casos de uso ---

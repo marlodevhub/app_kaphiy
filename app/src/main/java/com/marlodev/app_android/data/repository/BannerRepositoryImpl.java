@@ -11,7 +11,7 @@ import com.marlodev.app_android.domain.model.Banner;
 import com.marlodev.app_android.data.network.mapper.BannerMapper;
 import com.marlodev.app_android.data.network.model.banner.BannerRequest;
 import com.marlodev.app_android.data.network.model.banner.BannerResponse;
-import com.marlodev.app_android.data.network.websocket.dto.BannerWebSocketEvent;
+import com.marlodev.app_android.data.network.websocket.events.BannerWebSocketEvent;
 import com.marlodev.app_android.data.network.api.BannerApiService;
 import com.marlodev.app_android.data.network.websocket.GenericWebSocketManager;
 

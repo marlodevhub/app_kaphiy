@@ -1,4 +1,4 @@
-package com.marlodev.app_android.data.network.websocket.dto;
+package com.marlodev.app_android.data.network.websocket.events;
 import com.google.gson.Gson;
 
 import lombok.Data;
