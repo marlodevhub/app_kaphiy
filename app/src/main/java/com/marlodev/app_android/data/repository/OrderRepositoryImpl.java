@@ -167,6 +167,9 @@ public class OrderRepositoryImpl implements OrderRepository {
     // ---------------------------------------------------
     // Métodos públicos del repository
     // ---------------------------------------------------
+    // ---------------------------------------------------
+    //🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢 ClIENTE  🟢🟢🟢🟢🟢🟢🟢🟢🟢🟢
+    // ---------------------------------------------------
 
     @Override
     public LiveData<Result<Order>> getOrderById(long orderId) {
@@ -203,4 +206,130 @@ public class OrderRepositoryImpl implements OrderRepository {
                 OrderMapper::fromTrackingResponse
         );
     }
+   // ---------------------------------------------------
+    //🔹🔹🔹🔹🔹🔹🔹🔹 BARISTA🔹🔹🔹🔹🔹🔹🔹🔹
+    // ---------------------------------------------------
+    @Override
+    public LiveData<Result<List<Order>>> getQueueBarista() {
+        return performCallGeneric(
+                api.getQueueBarista(),
+                "cargar pedidos en espera (barista)",
+                dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList())
+        );
+    }
+
+    @Override
+    public LiveData<Result<Order>> startPreparationBarista(long orderId) {
+        return performCallGeneric(
+                api.startPreparationBarista(orderId),
+                "iniciar preparación del pedido (barista)",
+                OrderMapper::fromResponse
+        );
+    }
+
+
+    @Override
+    public LiveData<Result<List<Order>>> getInPreparationBarista() {
+        return performCallGeneric(
+                api.getInPreparationBarista(),
+                "cargar pedidos en preparación (barista)",
+                dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList())
+        );
+    }
+
+    @Override
+    public LiveData<Result<Order>> markReadyBarista(long orderId) {
+        return performCallGeneric(
+                api.markReadyBarista(orderId),
+                "marcar pedido como listo para entrega (barista)",
+                OrderMapper::fromResponse
+        );
+    }
+
+    @Override
+    public LiveData<Result<List<Order>>> getReadyOrdersBarista() {
+        return performCallGeneric(
+                api.getReadyOrdersBarista(),
+                "cargar pedidos listos para entrega (barista)",
+                dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList())
+        );
+    }
+
+    @Override
+    public LiveData<Result<List<Order>>> getMyOrdersBarista() {
+        return performCallGeneric(
+                api.getMyOrdersBarista(),
+                "cargar pedidos asignados al barista",
+                dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList())
+        );
+    }
+    // ---------------------------------------------------
+    //🔸🔸🔸🔸🔸🔸🔸🔸 DELIVERY 🔸🔸🔸🔸🔸🔸🔸🔸
+    // ---------------------------------------------------
+
+    @Override
+    public LiveData<Result<List<Order>>> getReadyOrdersDelivery() {
+        return performCallGeneric(
+                api.getReadyOrdersDelivery(),
+                "cargar pedidos listos para entrega (delivery)",
+                dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList())
+        );
+    }
+
+    @Override
+    public LiveData<Result<Order>> pickupOrderDelivery(long orderId) {
+        return performCallGeneric(
+                api.pickupOrderDeilvery(orderId),
+                "marcar pedido como en camino (delivery)",
+                OrderMapper::fromResponse
+        );
+    }
+
+    @Override
+    public LiveData<Result<List<Order>>> getMyOrdersDelivery() {
+        return performCallGeneric(
+                api.getMyOrdersDelivery(),
+                "cargar pedidos activos del delivery",
+                dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList())
+        );
+    }
+
+    @Override
+    public LiveData<Result<List<Order>>> getHistoryOrdersDelivery() {
+        return performCallGeneric(
+                api.getHistoryOrdersDelivery(),
+                "cargar historial de pedidos entregados (delivery)",
+                dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList())
+        );
+    }
+
+    @Override
+    public LiveData<Result<Void>> updateLocationDelivery(long orderId, double lat, double lng) {
+        return performCallGeneric(
+                api.updateLocationDelivery(orderId, lat, lng),
+                "actualizar ubicación del pedido (delivery)",
+                response -> null // el endpoint no devuelve datos útiles
+        );
+    }
+
+    @Override
+    public LiveData<Result<Order>> cancelOrderDelivery(long orderId) {
+        return performCallGeneric(
+                api.cancelOrderDekivery(orderId),
+                "cancelar pedido (delivery)",
+                OrderMapper::fromResponse
+        );
+    }
+
+    @Override
+    public LiveData<Result<Order>> finishOrderDelivery(long orderId) {
+        return performCallGeneric(
+                api.finishOrderDelivery(orderId),
+                "marcar pedido como entregado (delivery)",
+                OrderMapper::fromResponse
+        );
+    }
+
+
+
 }
