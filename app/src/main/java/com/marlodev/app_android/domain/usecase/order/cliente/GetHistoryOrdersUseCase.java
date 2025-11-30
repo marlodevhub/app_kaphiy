@@ -1,4 +1,4 @@
-package com.marlodev.app_android.domain.usecase.order.barista;
+package com.marlodev.app_android.domain.usecase.order.cliente;
 
 import androidx.lifecycle.LiveData;
 import com.marlodev.app_android.domain.model.Order;
@@ -7,10 +7,8 @@ import com.marlodev.app_android.utils.Result;
 
 import java.util.List;
 
-/**
- * Caso de uso para que un barista obtenga el historial de sus órdenes.
- */
-public class GetBaristaOrderHistoryUseCase {
+//  Caso de uso para obtener el historial
+public class GetHistoryOrdersUseCase {
 
     private final OrderRepository repository;
 
@@ -19,16 +17,16 @@ public class GetBaristaOrderHistoryUseCase {
      *
      * @param repository El repositorio de órdenes (interfaz).
      */
-    public GetBaristaOrderHistoryUseCase(OrderRepository repository) {
+    public GetHistoryOrdersUseCase(OrderRepository repository) {
         this.repository = repository;
     }
 
     /**
-     * Ejecuta la acción de obtener el historial de órdenes del barista.
+     * Ejecuta la acción de obtener todas las órdenes del cliente.
      *
-     * @return LiveData con el resultado de la operación (lista de órdenes).
+     * @return LiveData con el resultado de la operación (lista de órdenes del cliente).
      */
     public LiveData<Result<List<Order>>> execute() {
-        return repository.getMyOrdersBarista();
+        return repository.getOrderHistory(); // O repository.getOrderHistory() si quieres historial
     }
 }

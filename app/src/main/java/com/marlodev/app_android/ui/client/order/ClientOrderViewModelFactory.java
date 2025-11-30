@@ -4,9 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.marlodev.app_android.data.repository.OrderRepositoryImpl;
-import com.marlodev.app_android.domain.usecase.cart.CheckoutUseCase;
-import com.marlodev.app_android.domain.usecase.order.cliente.OrderUseCases;
+import com.marlodev.app_android.domain.usecase.order.OrderUseCases;
 
 public class ClientOrderViewModelFactory implements ViewModelProvider.Factory {
 

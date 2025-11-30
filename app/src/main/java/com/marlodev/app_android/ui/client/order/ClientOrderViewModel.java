@@ -6,7 +6,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
 import com.marlodev.app_android.domain.model.Order;
-import com.marlodev.app_android.domain.usecase.order.cliente.OrderUseCases;
+import com.marlodev.app_android.domain.usecase.order.OrderUseCases;
 import com.marlodev.app_android.utils.Event;
 import com.marlodev.app_android.utils.Result;
 

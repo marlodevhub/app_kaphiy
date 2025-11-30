@@ -15,15 +15,6 @@ public class CartUseCases {
     private final DeleteCartItemUseCase deleteCartItem;
     private final CheckoutUseCase checkoutUseCase;
 
-    /**
-     * Constructor que agrupa todos los casos de uso del carrito.
-     *
-     * @param addOrUpdateItem Caso de uso para añadir o actualizar un item.
-     * @param getCart         Caso de uso para obtener el carrito completo.
-     * @param updateCartItem  Caso de uso para actualizar un item existente (ej. cambiar cantidad).
-     * @param deleteCartItem  Caso de uso para eliminar un item.
-     * @param checkoutUseCase Caso de uso para finalizar la compra.
-     */
     public CartUseCases(
             AddOrUpdateCartItemUseCase addOrUpdateItem,
             GetCartUseCase getCart,

@@ -35,6 +35,7 @@ public class OrderMapper {
                 .message(dto.getMessage())
                 .totalAmount(dto.getTotalAmount())
                 .createdAt(dto.getCreatedAt())
+                .confirmedAt(dto.getConfirmedAt())
                 .updatedAt(dto.getUpdatedAt())
                 .items(items)
                 .build();
@@ -74,6 +75,9 @@ public class OrderMapper {
         }
         return list;
     }
+
+
+
 
     // RESPONSE -> DOMINIO (OrderTracking)
     public static OrderTracking fromTrackingResponse(OrderTrackingResponse res) {

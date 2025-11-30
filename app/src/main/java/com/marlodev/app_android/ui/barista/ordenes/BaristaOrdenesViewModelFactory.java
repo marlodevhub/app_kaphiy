@@ -4,9 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.marlodev.app_android.domain.usecase.order.cliente.OrderUseCases;
+import com.marlodev.app_android.domain.usecase.order.OrderUseCases;
 
-public class BaristaOrdenesViewModelFactory implements ViewModelProvider.Factory{
+public class BaristaOrdenesViewModelFactory implements ViewModelProvider.Factory {
+
     private final OrderUseCases orderUseCases;
 
     public BaristaOrdenesViewModelFactory(OrderUseCases orderUseCases) {
@@ -17,7 +18,7 @@ public class BaristaOrdenesViewModelFactory implements ViewModelProvider.Factory
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(BaristaOrderViewModel.class)) {
-//            return (T) new BaristaOrderViewModel(orderUseCases);
+            return (T) new BaristaOrderViewModel(orderUseCases);
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

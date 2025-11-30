@@ -21,7 +21,7 @@ import com.marlodev.app_android.data.repository.ProductRepositoryImpl;
 import com.marlodev.app_android.data.repository.TagRepositoryImpl;
 import com.marlodev.app_android.domain.usecase.cart.CartUseCases;
 import com.marlodev.app_android.domain.usecase.cart.CheckoutUseCase;
-import com.marlodev.app_android.domain.usecase.order.cliente.OrderUseCases;
+import com.marlodev.app_android.domain.usecase.order.OrderUseCases;
 import com.marlodev.app_android.domain.usecase.product.ProductUseCases;
 import com.marlodev.app_android.ui.client.cart.ClientCartViewModelFactory;
 import com.marlodev.app_android.ui.client.home.ClientHomeViewModelFactory;
@@ -90,7 +90,7 @@ public class AppContainer {
         // --- Casos de uso ---
         this.productUseCases = ProductModule.provideProductUseCases(productRepository);
         this.cartUseCases = CartModule.provideCartUseCases(cartRepository);
-        this.orderUseCases = OrderModule.provideCartUseCases(orderRepository);
+        this.orderUseCases = OrderModule.provideOrderUseCases(orderRepository);
 
         this.checkoutUseCase = cartUseCases.getCheckoutUseCase();
 
