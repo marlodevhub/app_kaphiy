@@ -1,13 +1,8 @@
 package com.marlodev.app_android.data.network.websocket.adapter;
 
-import java.util.ArrayList;
-import java.util.List;
 
 import com.marlodev.app_android.data.network.websocket.events.CartItemWebSocketEvent;
 import com.marlodev.app_android.domain.model.CartItem;
-import com.marlodev.app_android.domain.model.Extra;
-import com.marlodev.app_android.domain.model.Product;
-import com.marlodev.app_android.domain.model.ProductVariant;
 
 public class CartItemWsAdapter {
 

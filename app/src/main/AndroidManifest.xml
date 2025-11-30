@@ -19,7 +19,7 @@
         android:theme="@style/Theme.app_android"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ui.barista.BaristaOrderDetailActivity"
+            android:name=".ui.barista.mas.BaristaOrderDetailActivity"
             android:exported="false" />
         <activity
             android:name=".ui.auth.register.RegisterActivity"
@@ -28,7 +28,7 @@
             android:name=".ui.barista.BaristaHistorialFrag"
             android:exported="false" />
         <activity
-            android:name=".ui.barista.BaristaInventarioFragment"
+            android:name=".ui.barista.inventario.BaristaInventarioFragment"
             android:exported="false" />
         <activity
             android:name=".ui.delivery.DeliveryMainActivity"

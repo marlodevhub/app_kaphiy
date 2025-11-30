@@ -7,6 +7,7 @@ import com.marlodev.app_android.data.network.api.CartApi;
 import com.marlodev.app_android.data.network.api.OrderApi;
 import com.marlodev.app_android.data.network.websocket.events.BannerWebSocketEvent;
 import com.marlodev.app_android.data.network.websocket.events.CartItemWebSocketEvent;
+import com.marlodev.app_android.data.network.websocket.events.OrderWebSocketEvent;
 import com.marlodev.app_android.data.network.websocket.events.ProductWebSocketEvent;
 import com.marlodev.app_android.data.network.retrofit.ApiClient;
 import com.marlodev.app_android.data.network.api.BannerApiService;
@@ -53,9 +54,9 @@ public class AppContainer {
 
     // --- VIEWMODEL FACTORIES (EXPUESTOS) ---
     public final ProductDetailViewModelFactory productDetailViewModelFactory;
+    public final ClientHomeViewModelFactory clientHomeViewModelFactory;
     public final ClientCartViewModelFactory clientCartViewModelFactory;
     public final ClientOrderViewModelFactory clientOrderViewModelFactory;
-    public final ClientHomeViewModelFactory clientHomeViewModelFactory;
 
     public AppContainer(Context context) {
         // --- Dependencias base ---
@@ -73,22 +74,24 @@ public class AppContainer {
         GenericWebSocketManager<CartItemWebSocketEvent> cartItemWsManager = new GenericWebSocketManager<>(
                 BuildConfig.WS_URL, token, "/topic/cart", CartItemWebSocketEvent.class
         );
+        GenericWebSocketManager<OrderWebSocketEvent> orderWsManager = new GenericWebSocketManager<>(
+                BuildConfig.WS_URL, token, "/topic/orders", OrderWebSocketEvent.class
+        );
 
 
         // --- Repositorios ---
-        this.bannerRepository = new BannerRepositoryImpl(retrofit.create(BannerApiService.class), bannerWsManager);
         this.tagRepository = new TagRepositoryImpl(retrofit.create(TagApiService.class));
         // El repositorio de productos es el único responsable de gestionar el WebSocket de productos
+        this.bannerRepository = new BannerRepositoryImpl(retrofit.create(BannerApiService.class), bannerWsManager);
         this.productRepository = new ProductRepositoryImpl(retrofit.create(ProductApiService.class), productWsManager);
-
         this.cartRepository = new CartRepositoryImpl(retrofit.create(CartApi.class), cartItemWsManager);
-
-        this.orderRepository = new OrderRepositoryImpl(retrofit.create(OrderApi.class));
+        this.orderRepository = new OrderRepositoryImpl(retrofit.create(OrderApi.class),orderWsManager);
 
         // --- Casos de uso ---
         this.productUseCases = ProductModule.provideProductUseCases(productRepository);
         this.cartUseCases = CartModule.provideCartUseCases(cartRepository);
         this.orderUseCases = OrderModule.provideCartUseCases(orderRepository);
+
         this.checkoutUseCase = cartUseCases.getCheckoutUseCase();
 
         // --- ViewModel Factories ---

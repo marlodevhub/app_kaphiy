@@ -1,4 +1,4 @@
-package com.marlodev.app_android.ui.barista;
+package com.marlodev.app_android.ui.barista.perfil;
 
 import android.content.Intent;
 import android.os.Bundle;

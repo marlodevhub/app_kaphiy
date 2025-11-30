@@ -107,16 +107,9 @@ public class OrderMapper {
      * @param status El estado como texto (ej. "PENDING").
      * @return El Enum correspondiente o null si no se reconoce.
      */
-    private static OrderStatus toStatus(String status) {
-        if (status == null || status.isEmpty()) {
-            return null;
-        }
-        try {
-            // Convierte a mayúsculas para coincidir con los nombres de los Enums.
-            return OrderStatus.valueOf(status.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            // Si el backend envía un estado no reconocido, no rompemos la app.
-            return null; // O podrías tener un OrderStatus.UNKNOWN por defecto.
-        }
+    private static OrderStatus toStatus(OrderStatus status) {
+        // Si ya es null, simplemente retorna null
+        return status;
     }
+
 }

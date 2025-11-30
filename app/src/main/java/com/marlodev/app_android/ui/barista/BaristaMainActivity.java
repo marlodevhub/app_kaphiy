@@ -12,8 +12,12 @@ import androidx.fragment.app.Fragment;
 
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.marlodev.app_android.R;
-import com.marlodev.app_android.ui.admin.AdminInventarioFragment;
 import com.marlodev.app_android.ui.auth.login.LoginActivity;
+import com.marlodev.app_android.ui.barista.historial.BaristaHistorialFragment;
+import com.marlodev.app_android.ui.barista.home.BaristaHomeFragment;
+import com.marlodev.app_android.ui.barista.inventario.BaristaInventarioFragment;
+import com.marlodev.app_android.ui.barista.ordenes.BaristaOrderFragment;
+import com.marlodev.app_android.ui.barista.perfil.BaristaPerfilFragment;
 import com.marlodev.app_android.utils.SessionManager;
 
 public class BaristaMainActivity extends AppCompatActivity {
@@ -61,7 +65,7 @@ public class BaristaMainActivity extends AppCompatActivity {
             if (id == R.id.menu_home_barista) {
                 fragment = new BaristaHomeFragment();
             } else if (id == R.id.menu_ordenes_barista) {
-                fragment = new BaristaOrdenesFragment();
+                fragment = new BaristaOrderFragment();
             } else if (id == R.id.menu_historial_barista) {
                 fragment = new BaristaHistorialFragment();
             } else if (id == R.id.menu_inventario_barista) {

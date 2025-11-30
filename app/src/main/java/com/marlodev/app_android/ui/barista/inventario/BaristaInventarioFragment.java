@@ -1,4 +1,4 @@
-package com.marlodev.app_android.ui.barista;
+package com.marlodev.app_android.ui.barista.inventario;
 
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -10,9 +10,9 @@ import android.view.ViewGroup;
 
 import com.marlodev.app_android.R;
 
-public class BaristaOrdenesFragment extends Fragment {
+public class BaristaInventarioFragment extends Fragment {
 
-    public BaristaOrdenesFragment() {
+    public BaristaInventarioFragment() {
     }
 
     @Nullable
@@ -20,6 +20,6 @@ public class BaristaOrdenesFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_barista_gestion, container, false);
+        return inflater.inflate(R.layout.fragment_barista_inventario, container, false);
     }
 }

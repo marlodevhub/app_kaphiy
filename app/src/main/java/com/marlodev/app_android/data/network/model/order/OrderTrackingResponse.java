@@ -1,5 +1,7 @@
 package com.marlodev.app_android.data.network.model.order;
 
+import com.marlodev.app_android.domain.model.OrderStatus;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -12,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OrderTrackingResponse {
     private Long orderId;
-    private String currentStatus;
+    private OrderStatus currentStatus;
     private BigDecimal totalAmount;
     private List<CartItemResponse> items;
     private List<OrderStatusLog> history;

@@ -51,8 +51,7 @@ public class CartRepositoryImpl implements CartRepository {
 
     private final Observer<CartItemWebSocketEvent> wsObserver = this::handleWebSocketEvent;
 
-    public CartRepositoryImpl(@NonNull CartApi api,
-                              @NonNull GenericWebSocketManager<CartItemWebSocketEvent> wsManager) {
+    public CartRepositoryImpl(@NonNull CartApi api, @NonNull GenericWebSocketManager<CartItemWebSocketEvent> wsManager) {
         this.api = api;
         this.wsManager = wsManager;
 

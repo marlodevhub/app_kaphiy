@@ -17,39 +17,41 @@ public class Order {
 
     private Long id;
 
-    // Usuario que realizó el pedido
+    // Cliente que realiza el pedido
     private Integer userId;
-    private String username;
+    private String username; // opcional: para UI sin otra llamada
 
-    // Estado actual del pedido (ENUM en dominio)
+    // Estado del pedido
     private OrderStatus status;
-
     private String message;
 
-    private BigDecimal totalAmount;
+    // Items y totales
     private List<CartItem> items;
+    private BigDecimal totalAmount;
 
-    // Fechas
+    // Fechas importantes
     private ZonedDateTime createdAt;
     private ZonedDateTime updatedAt;
     private ZonedDateTime confirmedAt;
     private ZonedDateTime preparedAt;
-    private ZonedDateTime purchaseDate;
     private ZonedDateTime readyAt;
     private ZonedDateTime deliveredAt;
 
-    // Dirección
+    // Dirección del pedido (copiada del cliente al momento de crear)
     private String deliveryAddress;
     private Double deliveryLat;
     private Double deliveryLng;
 
-    // Store
+    // Información del store
     private Long storeId;
     private String storeName;
 
-    // Roles asignados
+    // Roles asignados (IDs)
     private Integer baristaId;
+    private String baristaName; // opcional: para mostrar en UI
     private Integer deliveryId;
+    private String deliveryName; // opcional
+
 
     // Métodos útiles
     public int getTotalItemCount() {
