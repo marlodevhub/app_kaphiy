@@ -93,17 +93,17 @@ public class OrderCardBaristaAdapter extends ListAdapter<Order, OrderCardBarista
         }
 
         private void loadProductImage(List<String> imageUrls) {
-            if (imageUrls != null && !imageUrls.isEmpty() && imageUrls.get(0) != null) {
-                Glide.with(itemView.getContext())
-                        .load(imageUrls.get(0))
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .placeholder(R.drawable.ic_image_placeholder)
-                        .error(R.drawable.ic_image_placeholder)
-                        .into(imgeOrder);
-            } else {
-                imgeOrder.setImageResource(R.drawable.ic_image_placeholder);
-            }
+            String url = (imageUrls != null && !imageUrls.isEmpty()) ? imageUrls.get(0) : null;
+
+            Glide.with(itemView.getContext())
+                    .load(url) // si url es null, no hay problema, solo se mostrará placeholder
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .placeholder(R.drawable.ic_image_placeholder) // XML aquí sí está bien
+                    .error(R.drawable.ic_image_placeholder)
+                    .into(imgeOrder);
         }
+
+
     }
 
     public interface OnItemClickListener {

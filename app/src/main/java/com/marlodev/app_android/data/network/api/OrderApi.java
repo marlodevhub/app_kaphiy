@@ -65,7 +65,7 @@ public interface OrderApi {
 
     // Marca un pedido como en camino (EN_CAMINO) usando al delivery autenticado.
     @PUT("delivery/orders/{orderId}/pickup")
-    Call<OrderResponse> pickupOrderDeilvery(@Path("orderId") long orderId);
+    Call<OrderResponse> pickupOrderDelivery(@Path("orderId") long orderId);
 
     // Pedidos activos del delivery
     @GET("delivery/orders/my")
@@ -86,7 +86,7 @@ public interface OrderApi {
     // Cancelar o reportar un pedido, podría necesitar marcar un pedido como “no
     // pudo entregar” o reportar algún problema:
     @PUT("delivery/orders/{orderId}/cancel")
-    Call<OrderResponse> cancelOrderDekivery(@Path("orderId") long orderId);
+    Call<OrderResponse> cancelOrderDelivery(@Path("orderId") long orderId);
 
     // Marca un pedido como entregado (ENTREGADO) usando al delivery autenticado.
     @PUT("delivery/orders{orderId}/finish")

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
@@ -29,17 +30,33 @@ public class MainActivity extends AppCompatActivity {
 
         sessionManager = SessionManager.getInstance(this);
 
-        // --- ARQUITECTURA LIMPIA Y PROFESIONAL ---
-        // La apariencia de la barra de estado ahora es controlada 100% por el tema (themes.xml).
-        // Esta Activity ya no contiene lógica de UI del sistema.
-        // --- FIN DE LA ARQUITECTURA BASE ---
-
         if (checkSessionAndRedirect()) {
             return;
         }
 
         setupBottomNavigation();
+
+        // --- Manejar gesto de "back" para minimizar en lugar de cerrar ---
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+
+                // Si estamos en el Home o en el fragment principal, minimizamos
+                if (currentFragment instanceof ClientHomeFragment) {
+                    moveTaskToBack(true); // Esto envía la app al background
+                } else {
+                    // Si no, volvemos al fragment anterior (comportamiento normal)
+                    if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                        getSupportFragmentManager().popBackStack();
+                    } else {
+                        moveTaskToBack(true);
+                    }
+                }
+            }
+        });
     }
+
 
     private boolean checkSessionAndRedirect() {
         if (!sessionManager.isLoggedIn()) {

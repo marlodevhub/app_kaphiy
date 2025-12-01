@@ -23,7 +23,10 @@ public class ClientPerfilFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+
         binding = FragmentClientPerfilBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -45,7 +48,10 @@ public class ClientPerfilFragment extends Fragment {
     }
 
     private void loadUserData() {
+        if (binding == null || !isAdded()) return;
+
         SessionManager sessionManager = SessionManager.getInstance(requireContext());
+
         String email = sessionManager.getEmail();
         String role = sessionManager.getRole();
 
@@ -60,12 +66,20 @@ public class ClientPerfilFragment extends Fragment {
     }
 
     private void setupLogoutButton() {
+        if (binding == null) return;
+
         binding.btnLogout.setOnClickListener(v -> {
-            SessionManager.getInstance(requireContext()).clear();
+            SessionManager session = SessionManager.getInstance(requireContext());
+            session.clear(); // Limpia email, token, role, userId, etc.
+
             Intent intent = new Intent(requireContext(), MainActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
-            requireActivity().finish();
+
+            // Termine la actividad anfitriona por seguridad
+            if (getActivity() != null) {
+                getActivity().finish();
+            }
         });
     }
 }

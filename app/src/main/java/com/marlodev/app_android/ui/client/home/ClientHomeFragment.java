@@ -51,6 +51,7 @@ public class ClientHomeFragment extends Fragment {
         initViewModel();
         setupAdapters();
         observeViewModel();
+        observeWebSocketState();
 
         clientHomeVM.startWebSocket();
     }
@@ -129,6 +130,24 @@ public class ClientHomeFragment extends Fragment {
             if (isInitialBannerLoad && binding.bannerTabLayout.getTabCount() > 0) {
                 binding.bannerTabLayout.selectTab(binding.bannerTabLayout.getTabAt(0));
                 isInitialBannerLoad = false;
+            }
+        });
+    }
+    private void observeWebSocketState() {
+        clientHomeVM.getWebSocketState().observe(getViewLifecycleOwner(), state -> {
+            switch (state) {
+                case CONNECTED:
+                    binding.wsStatusIcon.setImageResource(R.drawable.ic_ws_connected);
+                    break;
+                case CONNECTING:
+                    binding.wsStatusIcon.setImageResource(R.drawable.ic_ws_connecting);
+                    break;
+                case DISCONNECTED:
+                    binding.wsStatusIcon.setImageResource(R.drawable.ic_ws_disconnected);
+                    break;
+                case ERROR:
+                    binding.wsStatusIcon.setImageResource(R.drawable.ic_ws_error);
+                    break;
             }
         });
     }

@@ -25,6 +25,14 @@ public class BaristaMainActivity extends AppCompatActivity {
     private SessionManager sessionManager;
     private ChipNavigationBar bottomNavigation;
 
+    // Fragments persistentes
+    private Fragment homeFragment;
+    private Fragment ordersFragment;
+    private Fragment historialFragment;
+    private Fragment inventarioFragment;
+    private Fragment perfilFragment;
+    private Fragment activeFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +41,7 @@ public class BaristaMainActivity extends AppCompatActivity {
         sessionManager = SessionManager.getInstance(this);
         bottomNavigation = findViewById(R.id.bottomNavigation);
 
-        // 🔷 Ajuste de padding para dispositivos con notch o barras de sistema
+        // Ajuste de padding para notch/barras de sistema
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.fragment_container), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -41,65 +49,74 @@ public class BaristaMainActivity extends AppCompatActivity {
         });
 
         checkSessionAndRedirect();
+        setupFragments();
         setupBottomNavigation();
     }
 
-    /**
-     * Configura la barra de navegación inferior.
-     * Define el fragmento inicial y los listeners de los menús.
-     */
+    /** Inicializa fragments y los mantiene persistentes */
+    private void setupFragments() {
+        homeFragment = new BaristaHomeFragment();
+        ordersFragment = new BaristaOrderFragment();
+        historialFragment = new BaristaHistorialFragment();
+        inventarioFragment = new BaristaInventarioFragment();
+        perfilFragment = new BaristaPerfilFragment();
 
+        getSupportFragmentManager().beginTransaction()
+                .add(R.id.fragment_container, homeFragment, "HOME")
+                .add(R.id.fragment_container, ordersFragment, "ORDERS").hide(ordersFragment)
+                .add(R.id.fragment_container, historialFragment, "HISTORIAL").hide(historialFragment)
+                .add(R.id.fragment_container, inventarioFragment, "INVENTARIO").hide(inventarioFragment)
+                .add(R.id.fragment_container, perfilFragment, "PERFIL").hide(perfilFragment)
+                .commit();
+
+        activeFragment = homeFragment;
+    }
+
+    /** Configura bottom navigation */
     private void setupBottomNavigation() {
         bottomNavigation.setBackgroundColor(getResources().getColor(R.color.colorGrey100));
+        bottomNavigation.setItemSelected(R.id.menu_home_barista, true);
 
-        // Fragmento por defecto al iniciar
-        if (getSupportFragmentManager().findFragmentById(R.id.fragment_container) == null) {
-            loadFragment(new BaristaHomeFragment());
-            bottomNavigation.setItemSelected(R.id.menu_home_barista, true);
-        }
-
-        // Escucha de selección de ítems en el menú
         bottomNavigation.setOnItemSelectedListener(id -> {
-            Fragment fragment = null;
+            Fragment target = null;
 
-            if (id == R.id.menu_home_barista) {
-                fragment = new BaristaHomeFragment();
-            } else if (id == R.id.menu_ordenes_barista) {
-                fragment = new BaristaOrderFragment();
-            } else if (id == R.id.menu_historial_barista) {
-                fragment = new BaristaHistorialFragment();
-            } else if (id == R.id.menu_inventario_barista) {
-                fragment = new BaristaInventarioFragment();
-            } else if (id == R.id.menu_perfil_barista) {
+            if (id == R.id.menu_home_barista) target = homeFragment;
+            else if (id == R.id.menu_ordenes_barista) target = ordersFragment;
+            else if (id == R.id.menu_historial_barista) target = historialFragment;
+            else if (id == R.id.menu_inventario_barista) target = inventarioFragment;
+            else if (id == R.id.menu_perfil_barista) {
                 openProfileOrGuest();
                 return;
             }
-            if (fragment != null) loadFragment(fragment);
+
+            if (target != null && target != activeFragment) {
+                getSupportFragmentManager().beginTransaction()
+                        .hide(activeFragment)
+                        .show(target)
+                        .commit();
+                activeFragment = target;
+            }
         });
     }
 
-    // Muestra mensaje de bienvenida si el usuario no está logueado.
+    /** Comprueba sesión y muestra mensaje de invitado */
     private void checkSessionAndRedirect() {
         if (!sessionManager.isLoggedIn()) {
             Toast.makeText(this, "Bienvenido, estás navegando como invitado", Toast.LENGTH_SHORT).show();
         }
     }
 
-    // Abre el perfil si hay sesión, o redirige al login si es invitado.
+    /** Abre perfil o login sin destruir fragments */
     private void openProfileOrGuest() {
         if (sessionManager.isLoggedIn()) {
-            loadFragment(new BaristaPerfilFragment());
+            getSupportFragmentManager().beginTransaction()
+                    .hide(activeFragment)
+                    .show(perfilFragment)
+                    .commit();
+            activeFragment = perfilFragment;
         } else {
             Toast.makeText(this, "Inicia sesión para acceder al perfil", Toast.LENGTH_SHORT).show();
             startActivity(new Intent(this, LoginActivity.class));
         }
-    }
-
-    // Metodo auxiliar para cargar fragmentos.
-    private void loadFragment(Fragment fragment) {
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .commit();
     }
 }

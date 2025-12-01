@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.marlodev.app_android.data.network.websocket.GenericWebSocketManager;
 import com.marlodev.app_android.data.repository.ProductRepositoryImpl;
 import com.marlodev.app_android.data.repository.TagRepositoryImpl;
 import com.marlodev.app_android.data.repository.BannerRepositoryImpl;
@@ -150,6 +151,13 @@ public class ClientHomeViewModel extends ViewModel {
     public LiveData<List<Tag>> getTags() { return tags; }
     public LiveData<List<Banner>> getBanners() { return banners; }
     public LiveData<String> getErrorMessage() { return errorMessage; }
+
+    // LiveData del estado del WS para la UI
+    public LiveData<GenericWebSocketManager.ConnectionState> getWebSocketState() {
+        return productRepository.getWebSocketState();
+    }
+
+
 
     @FunctionalInterface interface SkeletonProvider<T> { List<T> create(int count); }
     @FunctionalInterface interface LoadFunction { void load(); }

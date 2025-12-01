@@ -52,6 +52,10 @@ public class ProductRepositoryImpl implements ProductRepository {
     public final LiveData<List<Product>> products = _products;
     public final LiveData<String> errorMessage = _errorMessage;
     public final LiveData<Boolean> isLoading = _isLoading;
+    public LiveData<GenericWebSocketManager.ConnectionState> getWebSocketState() {
+        return wsManager != null ? wsManager.getConnectionState() : new MutableLiveData<>(GenericWebSocketManager.ConnectionState.DISCONNECTED);
+    }
+
 
     // Contador de operaciones concurrentes para isLoading
     private final AtomicInteger loadingCounter = new AtomicInteger(0);

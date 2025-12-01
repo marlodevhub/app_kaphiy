@@ -68,12 +68,6 @@ public class BaristaPerfilFragment extends Fragment {
         binding.tvUserName.setText(username);
         binding.tvEmail.setText(email != null ? email : "No disponible");
         binding.tvRole.setText(role != null ? "Rol: " + role : "Rol: Invitado");
-
-        // Si tienes avatar y usas Glide o similar:
-        // String avatarUrl = session.getAvatarUrl();
-        // if (avatarUrl != null && !avatarUrl.isEmpty()) {
-        //     Glide.with(requireContext()).load(avatarUrl).into(binding.ivUserAvatar);
-        // }
     }
 
     // -------------------------------

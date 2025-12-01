@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.gson.Gson;
+import com.marlodev.app_android.data.network.retrofit.GsonProvider;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ public class GenericWebSocketManager<T> {
     private static final String TAG = "GenericWebSocket";
 
     private final StompClient stompClient;
-    private final Gson gson = new Gson();
+    private final Gson gson = GsonProvider.getGson();
     private final Class<T> eventClass;
     private final String wsUrl;
     private final String token;
@@ -43,6 +44,7 @@ public class GenericWebSocketManager<T> {
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private int retryDelay = 3; // segundos
     private boolean reconnecting = false;
+    private boolean forceShutdown = false;
 
     public enum ConnectionState {
         CONNECTING,
@@ -109,13 +111,18 @@ public class GenericWebSocketManager<T> {
 
     /** Reconexión automática con backoff exponencial */
     private void scheduleReconnect() {
-        if (reconnecting) return; // evita múltiples hilos
+        if (forceShutdown) {
+            Log.w(TAG, "⛔ Reconexión cancelada: shutdown forzado.");
+            return;
+        }
+
+        if (reconnecting) return;
         reconnecting = true;
 
         scheduler.schedule(() -> {
             Log.i(TAG, "🔁 Intentando reconectar al WS...");
             connect();
-            retryDelay = Math.min(retryDelay * 2, 30); // backoff hasta 30s
+            retryDelay = Math.min(retryDelay * 2, 30);
             reconnecting = false;
         }, retryDelay, TimeUnit.SECONDS);
     }
@@ -144,18 +151,28 @@ public class GenericWebSocketManager<T> {
             stompClient.disconnect();
             connectionState.postValue(ConnectionState.DISCONNECTED);
             reconnecting = false;
-            scheduler.shutdownNow(); // evita fugas de hilos
+
+            if (forceShutdown) {
+                scheduler.shutdownNow();
+            }
+
             Log.i(TAG, "❎ WebSocket desconectado");
         } catch (Exception e) {
             Log.e(TAG, "❌ Exception en disconnect()", e);
         }
     }
 
-
-
     /** Eventos emitidos por el servidor */
     public LiveData<T> getEventLiveData() {
         return eventLiveData;
+    }
+
+
+
+
+    /** Estado actual del WebSocket */
+    public LiveData<ConnectionState> getConnectionState() {
+        return connectionState;
     }
 
 }
