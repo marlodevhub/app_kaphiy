@@ -237,13 +237,15 @@ public class OrderRepositoryImpl implements OrderRepository {
     // ---------------------------------------------------
     // Métodos públicos - Barista
     // ---------------------------------------------------
+
     @Override
     public LiveData<Result<List<Order>>> getQueueBarista() {
-        MutableLiveData<Result<List<Order>>> resultLiveData = new MutableLiveData<>();
-        resultLiveData.postValue(Result.success(
+        // Retornamos directamente un LiveData que siempre cambia cuando WS llega
+        MediatorLiveData<Result<List<Order>>> resultLiveData = new MediatorLiveData<>();
+        resultLiveData.setValue(Result.success(
                 _baristaOrdersLiveData.getValue() != null ? _baristaOrdersLiveData.getValue() : new ArrayList<>()
         ));
-        _baristaOrdersLiveData.observeForever(orders -> resultLiveData.postValue(Result.success(orders)));
+        resultLiveData.addSource(_baristaOrdersLiveData, orders -> resultLiveData.postValue(Result.success(orders)));
         return resultLiveData;
     }
 

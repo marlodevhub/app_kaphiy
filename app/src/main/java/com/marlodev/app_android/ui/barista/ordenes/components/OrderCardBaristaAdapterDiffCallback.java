@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.DiffUtil;
 
 import com.marlodev.app_android.domain.model.Order;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -21,16 +22,25 @@ public class OrderCardBaristaAdapterDiffCallback extends DiffUtil.ItemCallback<O
 
     @Override
     public boolean areContentsTheSame(@NonNull Order oldItem, @NonNull Order newItem) {
-        // Compara todos los campos importantes
-        return Objects.equals(oldItem.getId(), newItem.getId()) &&
-                Objects.equals(oldItem.getStatus(), newItem.getStatus()) &&
-//                Objects.equals(oldItem.getClientName(), newItem.getClientName()) &&
-                Objects.equals(oldItem.getCreatedAt(), newItem.getCreatedAt()) ;
-//                &&
-//                Objects.equals(oldItem.getLocation(), newItem.getLocation()) &&
-//                Objects.equals(oldItem.getProducts(), newItem.getProducts()) &&
-//                Objects.equals(oldItem.getTotalPrice(), newItem.getTotalPrice());
+        if (!Objects.equals(oldItem.getId(), newItem.getId())) return false;
+        if (!Objects.equals(oldItem.getStatus(), newItem.getStatus())) return false;
+        if (!Objects.equals(oldItem.getCreatedAt(), newItem.getCreatedAt())) return false;
+
+        // Compara items / productos
+        if (oldItem.getItems() == null && newItem.getItems() == null) return true;
+        if (oldItem.getItems() == null || newItem.getItems() == null) return false;
+        if (oldItem.getItems().size() != newItem.getItems().size()) return false;
+
+        for (int i = 0; i < oldItem.getItems().size(); i++) {
+            List<String> oldImages = oldItem.getItems().get(i).getProduct().getImageUrls();
+            List<String> newImages = newItem.getItems().get(i).getProduct().getImageUrls();
+            if (!Objects.equals(oldImages, newImages)) return false;
+        }
+
+        return true;
     }
+
+
 
     @Override
     public Object getChangePayload(@NonNull Order oldItem, @NonNull Order newItem) {

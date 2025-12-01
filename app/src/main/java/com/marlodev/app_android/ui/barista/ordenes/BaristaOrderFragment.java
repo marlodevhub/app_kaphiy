@@ -17,6 +17,8 @@ import com.marlodev.app_android.MainApplication;
 import com.marlodev.app_android.di.AppContainer;
 import com.marlodev.app_android.ui.barista.ordenes.components.OrderCardBaristaAdapter;
 
+import java.util.ArrayList;
+
 public class BaristaOrderFragment extends Fragment {
 
     private BaristaOrderViewModel viewModel;
@@ -35,11 +37,27 @@ public class BaristaOrderFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        setupRecyclerView(view);
-        setupViewModel();
-        observePendingOrders();
-        observePreparationResult();
+        recyclerView = view.findViewById(R.id.recycle_ordenes_espera);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new OrderCardBaristaAdapter();
+        recyclerView.setAdapter(adapter);
+
+        AppContainer container = ((MainApplication) requireActivity().getApplication()).appContainer;
+        viewModel = new ViewModelProvider(requireActivity(),
+                new BaristaOrdenesViewModelFactory(container.orderUseCases))
+                .get(BaristaOrderViewModel.class);
+
+        // Observa cambios de pedidos
+        viewModel.getPendingOrders().observe(getViewLifecycleOwner(), result -> {
+            if (result != null && result.isSuccess() && result.data != null) {
+                adapter.submitList(new ArrayList<>(result.data)); // ✅ Nueva lista
+            }
+        });
+
+        adapter.setOnItemClickListener(order -> viewModel.startPreparation(order.getId()));
     }
+
+
 
     private void setupRecyclerView(View view) {
         recyclerView = view.findViewById(R.id.recycle_ordenes_espera);
@@ -52,7 +70,9 @@ public class BaristaOrderFragment extends Fragment {
 
     private void setupViewModel() {
         AppContainer container = ((MainApplication) requireActivity().getApplication()).appContainer;
-        viewModel = new ViewModelProvider(this,
+
+        // ⚡ Usamos requireActivity() para que el ViewModel sea compartido y reactivo
+        viewModel = new ViewModelProvider(requireActivity(),
                 new BaristaOrdenesViewModelFactory(container.orderUseCases))
                 .get(BaristaOrderViewModel.class);
     }
@@ -60,16 +80,12 @@ public class BaristaOrderFragment extends Fragment {
     private void observePendingOrders() {
         viewModel.getPendingOrders().observe(getViewLifecycleOwner(), result -> {
             if (result != null && result.isSuccess() && result.data != null) {
-                // submitList con copia de la lista para DiffUtil
-                adapter.submitList(result.data);
+                // ❌ Esto NO funciona si la lista se modifica internamente
+                // adapter.submitList(result.data);
+
+                // ✅ Creamos una nueva lista para forzar la actualización
+                adapter.submitList(new ArrayList<>(result.data));
             }
         });
-    }
-
-
-    private void observePreparationResult() {
-//        viewModel.getPreparationResult().observe(getViewLifecycleOwner(), result -> {
-            // Opcional: mostrar mensaje de éxito o error
-//        });
     }
 }

@@ -1,9 +1,12 @@
 package com.marlodev.app_android.data.network.websocket.adapter;
 
 import com.marlodev.app_android.data.network.websocket.events.OrderWebSocketEvent;
+import com.marlodev.app_android.domain.model.CartItem;
 import com.marlodev.app_android.domain.model.Order;
+import com.marlodev.app_android.domain.model.Product;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class OrderWsAdapter {
     // Crear un Order desde evento WS
@@ -49,10 +52,30 @@ public class OrderWsAdapter {
         order.setBaristaId(e.getBaristaId());
         order.setDeliveryId(e.getDeliveryId());
 
-//        if (e.getItems() != null) {
-//            order.setItems(new ArrayList<>(e.getItems()));
-//        } else {
-//            order.setItems(new ArrayList<>());
-//        }
+        // Mapear items correctamente
+        List<CartItem> items = new ArrayList<>();
+        if (e.getItems() != null) {
+            for (var itemResponse : e.getItems()) {
+                CartItem item = new CartItem();
+                item.setId(itemResponse.getId());
+                item.setQuantity(itemResponse.getQuantity());
+                item.setUnitPrice(itemResponse.getUnitPrice());
+                item.setTotalPrice(itemResponse.getTotalPrice());
+
+                // Mapear producto
+                if (itemResponse.getProduct() != null) {
+                    Product product = new Product();
+                    product.setId(itemResponse.getProduct().getId());
+                    product.setName(itemResponse.getProduct().getName());
+                    product.setImageUrls(itemResponse.getProduct().getImageUrls() != null
+                            ? itemResponse.getProduct().getImageUrls()
+                            : new ArrayList<>());
+                    item.setProduct(product);
+                }
+
+                items.add(item);
+            }
+        }
+        order.setItems(items);
     }
 }
