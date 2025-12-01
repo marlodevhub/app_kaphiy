@@ -2,6 +2,7 @@ package com.marlodev.app_android.domain.usecase.order;
 
 import com.marlodev.app_android.domain.usecase.order.barista.AcceptOrderUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.GetBaristaOrderHistoryUseCase;
+import com.marlodev.app_android.domain.usecase.order.barista.GetBaristaOrdersPageUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.GetInPreparationOrdersUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.GetPendingOrdersUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.GetReadyOrdersBaristaUseCase;
@@ -15,6 +16,7 @@ public class OrderUseCases {
 
     // CASOS DE USO DE BARISTA
     private final AcceptOrderUseCase acceptOrder;
+    private final GetBaristaOrdersPageUseCase getBaristaOrdersPage;
     private final GetBaristaOrderHistoryUseCase getBaristaHistory;
     private final GetInPreparationOrdersUseCase getInPreparationOrders;
     private final GetPendingOrdersUseCase getPendingOrders;
@@ -28,7 +30,8 @@ public class OrderUseCases {
             GetInPreparationOrdersUseCase getInPreparationOrders,
             GetPendingOrdersUseCase getPendingOrders,
             GetReadyOrdersBaristaUseCase getReadyOrdersBarista,
-            SetOrderReadyUseCase setOrderReady
+            SetOrderReadyUseCase setOrderReady,
+            GetBaristaOrdersPageUseCase getBaristaOrdersPage
     ) {
         this.getActiveOrders = getActiveOrders;
         this.acceptOrder = acceptOrder;
@@ -37,6 +40,7 @@ public class OrderUseCases {
         this.getPendingOrders = getPendingOrders;
         this.getReadyOrdersBarista = getReadyOrdersBarista;
         this.setOrderReady = setOrderReady;
+        this.getBaristaOrdersPage = getBaristaOrdersPage;
     }
 
     // GETTERS
@@ -60,6 +64,10 @@ public class OrderUseCases {
     public GetPendingOrdersUseCase getPendingOrders() {
         return getPendingOrders;
     }
+    public GetBaristaOrdersPageUseCase getBaristaOrdersPage() {
+        return getBaristaOrdersPage;
+    }
+
 
     public GetReadyOrdersBaristaUseCase getReadyOrdersBarista() {
         return getReadyOrdersBarista;

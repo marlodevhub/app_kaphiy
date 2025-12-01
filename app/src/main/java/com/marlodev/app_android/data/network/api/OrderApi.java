@@ -1,5 +1,6 @@
 package com.marlodev.app_android.data.network.api;
 
+import com.marlodev.app_android.data.network.model.PageResponse;
 import com.marlodev.app_android.data.network.model.order.OrderResponse;
 import com.marlodev.app_android.data.network.model.order.OrderTrackingResponse;
 
@@ -34,8 +35,12 @@ public interface OrderApi {
 
     //    BARISTA
     // Pedidos en espera (EN_ESPERA)
+    // Pedidos en cola (EN_ESPERA)
     @GET("barista/orders/queue")
-    Call<List<OrderResponse>> getQueueBarista();
+    Call<PageResponse<OrderResponse>> getQueueBarista(
+            @Query("page") int page,
+            @Query("size") int size
+    );
 
     // Cambiar un pedido a EN_PREPARACION
     @PUT("barista/orders/{orderId}/start")

@@ -2,6 +2,7 @@ package com.marlodev.app_android.domain.repository;
 
 import androidx.lifecycle.LiveData;
 
+import com.marlodev.app_android.data.network.model.PageResponse;
 import com.marlodev.app_android.domain.model.Order;
 import com.marlodev.app_android.domain.model.OrderTracking;
 import com.marlodev.app_android.utils.Result;
@@ -25,6 +26,7 @@ public interface OrderRepository {
 // BARISTA
 // --------------------------
     LiveData<Result<List<Order>>> getQueueBarista();
+    LiveData<Result<PageResponse<Order>>> getBaristaOrdersPage(int page, int size);
 
     LiveData<Result<Order>> startPreparationBarista(long orderId);
 

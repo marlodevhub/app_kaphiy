@@ -218,6 +218,34 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="3"
                     tools:listitem="@layout/item_barista_orden" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:paddingTop="8dp">
+
+                    <Button
+                        android:id="@+id/btn_previous"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Anterior" />
+
+                    <TextView
+                        android:id="@+id/tv_page_info"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginHorizontal="16dp"
+                        android:text="Página 1"
+                        android:textSize="16sp" />
+
+                    <Button
+                        android:id="@+id/btn_next"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Siguiente" />
+
+                </LinearLayout>
 
 
             </LinearLayout>

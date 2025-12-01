@@ -10,6 +10,7 @@ import androidx.lifecycle.Observer;
 
 import com.marlodev.app_android.data.network.api.OrderApi;
 import com.marlodev.app_android.data.network.mapper.OrderMapper;
+import com.marlodev.app_android.data.network.model.PageResponse;
 import com.marlodev.app_android.data.network.websocket.GenericWebSocketManager;
 import com.marlodev.app_android.data.network.websocket.adapter.OrderWsAdapter;
 import com.marlodev.app_android.data.network.websocket.events.OrderWebSocketEvent;
@@ -197,16 +198,23 @@ public class OrderRepositoryImpl implements OrderRepository {
     // Inicializar Barista (REST + WS)
     // ---------------------------------------------------
     private void loadInitialBaristaQueue() {
+        int page = 0;       // primera página
+        int size = 20;      // 20 pedidos por página
+
         performCallGeneric(
-                api.getQueueBarista(),
+                api.getQueueBarista(0, 20),
                 "cargar pedidos iniciales barista",
-                dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList())
-        ).observeForever(result -> {
-            if (result != null && result.isSuccess() && result.data != null) {
-                _baristaOrdersLiveData.postValue(result.data);
-            }
-        });
+                pageResponse -> pageResponse.content.stream()
+                        .map(OrderMapper::fromResponse)
+                        .collect(Collectors.toList())
+        )
+                .observeForever(result -> {
+                    if (result != null && result.isSuccess() && result.data != null) {
+                        _baristaOrdersLiveData.postValue(result.data);
+                    }
+                });
     }
+
 
     // ---------------------------------------------------
     // Métodos públicos - Cliente
@@ -238,6 +246,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     // Métodos públicos - Barista
     // ---------------------------------------------------
 
+
     @Override
     public LiveData<Result<List<Order>>> getQueueBarista() {
         // Retornamos directamente un LiveData que siempre cambia cuando WS llega
@@ -248,6 +257,28 @@ public class OrderRepositoryImpl implements OrderRepository {
         resultLiveData.addSource(_baristaOrdersLiveData, orders -> resultLiveData.postValue(Result.success(orders)));
         return resultLiveData;
     }
+
+    public LiveData<Result<PageResponse<Order>>> getBaristaOrdersPage(int page, int size) {
+        return performCallGeneric(
+                api.getQueueBarista(page, size),
+                "cargar pedidos EN_ESPERA pagina " + page,
+                pageResponse -> {
+                    List<Order> orders = pageResponse.content.stream()
+                            .map(OrderMapper::fromResponse)
+                            .collect(Collectors.toList());
+
+                    PageResponse<Order> domainPage = new PageResponse<>();
+                    domainPage.content = orders;
+                    domainPage.totalPages = pageResponse.totalPages;
+                    domainPage.number = pageResponse.number;
+                    domainPage.size = pageResponse.size;
+                    domainPage.totalElements = pageResponse.totalElements;
+
+                    return domainPage;
+                }
+        );
+    }
+
 
     @Override
     public LiveData<Result<Order>> startPreparationBarista(long orderId) {
