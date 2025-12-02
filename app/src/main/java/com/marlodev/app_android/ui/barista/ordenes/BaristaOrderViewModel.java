@@ -1,5 +1,6 @@
 package com.marlodev.app_android.ui.barista.ordenes;
 
+import androidx.core.util.Consumer;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -8,6 +9,7 @@ import androidx.lifecycle.ViewModel;
 import com.marlodev.app_android.data.network.model.PageResponse;
 import com.marlodev.app_android.domain.model.Order;
 import com.marlodev.app_android.domain.usecase.order.OrderUseCases;
+import com.marlodev.app_android.utils.Result;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -39,16 +41,14 @@ public class BaristaOrderViewModel extends ViewModel {
         this.orderUseCases = orderUseCases;
 
         // --- WebSocket — escucha en tiempo real ---
-        visibleOrders.addSource(orderUseCases.getPendingOrders().execute(), result -> {
-            if (result != null && result.isSuccess() && result.data != null) {
-                updateOrders(result.data);
-
-                // 👉 Siempre regresar a la primera página cuando llega un nuevo pedido
-                currentPage = 0;
-
-                emitVisiblePage();
-            }
+        observeResult(orderUseCases.barista.getPendingOrders.execute(), orders -> {
+            updateOrders(orders);
+            currentPage = 0;
+            emitVisiblePage();
         });
+
+        // Cargar la primera página
+        loadPage(0);
     }
 
     // --------------------
@@ -59,19 +59,13 @@ public class BaristaOrderViewModel extends ViewModel {
         if (page < 0) page = 0;
         if (page >= totalPages) page = totalPages - 1;
 
-        orderUseCases.getBaristaOrdersPage().execute(page, pageSize)
-                .observeForever(result -> {
-                    if (result != null && result.isSuccess() && result.data != null) {
-
-                        PageResponse<Order> data = result.data;
-
-                        currentPage = data.number;
-                        totalPages = data.totalPages;
-
-                        updateOrders(data.content);
-                        emitVisiblePage();
-                    }
-                });
+        LiveData<Result<PageResponse<Order>>> liveData = orderUseCases.barista.getOrdersPage.execute(page, pageSize);
+        observeResult(liveData, data -> {
+            currentPage = data.number;
+            totalPages = data.totalPages;
+            updateOrders(data.content);
+            emitVisiblePage();
+        });
     }
 
     public void nextPage() {
@@ -83,7 +77,7 @@ public class BaristaOrderViewModel extends ViewModel {
     }
 
     public void startPreparation(long orderId) {
-        orderUseCases.getAcceptOrder().execute(orderId);
+        orderUseCases.barista.acceptOrder.execute(orderId);
     }
 
     // --------------------
@@ -112,5 +106,16 @@ public class BaristaOrderViewModel extends ViewModel {
         visibleOrders.setValue(pageList);
 
         pageInfo.setValue("Página " + (currentPage + 1) + " / " + totalPages);
+    }
+
+    // --------------------
+    //  METODO GENÉRICO PARA OBSERVAR Result<T>
+    // --------------------
+    private <T> void observeResult(LiveData<Result<T>> liveData, Consumer<T> onSuccess) {
+        liveData.observeForever(result -> {
+            if (result != null && result.isSuccess() && result.data != null) {
+                onSuccess.accept(result.data);
+            }
+        });
     }
 }

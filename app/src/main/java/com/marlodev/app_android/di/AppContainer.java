@@ -5,101 +5,118 @@ import android.content.Context;
 import com.marlodev.app_android.BuildConfig;
 import com.marlodev.app_android.data.network.api.CartApi;
 import com.marlodev.app_android.data.network.api.OrderApi;
+import com.marlodev.app_android.data.network.api.ProductApiService;
+import com.marlodev.app_android.data.network.api.TagApiService;
+import com.marlodev.app_android.data.network.api.BannerApiService;
+import com.marlodev.app_android.data.network.retrofit.ApiClient;
+
+import com.marlodev.app_android.data.network.websocket.GenericWebSocketManager;
 import com.marlodev.app_android.data.network.websocket.events.BannerWebSocketEvent;
 import com.marlodev.app_android.data.network.websocket.events.CartItemWebSocketEvent;
 import com.marlodev.app_android.data.network.websocket.events.OrderWebSocketEvent;
 import com.marlodev.app_android.data.network.websocket.events.ProductWebSocketEvent;
-import com.marlodev.app_android.data.network.retrofit.ApiClient;
-import com.marlodev.app_android.data.network.api.BannerApiService;
-import com.marlodev.app_android.data.network.websocket.GenericWebSocketManager;
-import com.marlodev.app_android.data.network.api.ProductApiService;
-import com.marlodev.app_android.data.network.api.TagApiService;
-import com.marlodev.app_android.data.repository.BannerRepositoryImpl;
-import com.marlodev.app_android.data.repository.CartRepositoryImpl;
-import com.marlodev.app_android.data.repository.OrderRepositoryImpl;
-import com.marlodev.app_android.data.repository.ProductRepositoryImpl;
-import com.marlodev.app_android.data.repository.TagRepositoryImpl;
+
+import com.marlodev.app_android.data.repository.*;
+
 import com.marlodev.app_android.domain.usecase.cart.CartUseCases;
-import com.marlodev.app_android.domain.usecase.cart.CheckoutUseCase;
 import com.marlodev.app_android.domain.usecase.order.OrderUseCases;
 import com.marlodev.app_android.domain.usecase.product.ProductUseCases;
+
 import com.marlodev.app_android.ui.client.cart.ClientCartViewModelFactory;
 import com.marlodev.app_android.ui.client.home.ClientHomeViewModelFactory;
 import com.marlodev.app_android.ui.client.order.ClientOrderViewModelFactory;
 import com.marlodev.app_android.ui.client.products.ProductDetailViewModelFactory;
+
 import com.marlodev.app_android.utils.SessionManager;
 
 import retrofit2.Retrofit;
 
 /**
- * Contenedor de dependencias manual y centralizado.
+ * AppContainer profesional y escalable.
+ * Punto central de inyección manual de dependencias.
  */
 public class AppContainer {
 
+    // ------------------------ DEPENDENCIAS BASE ------------------------
+    private final Context appContext;
     private final SessionManager sessionManager;
     private final Retrofit retrofit;
 
-    // --- REPOSITORIOS (EXPUESTOS) ---
+    // ------------------------ REPOSITORIOS ------------------------
     public final BannerRepositoryImpl bannerRepository;
     public final TagRepositoryImpl tagRepository;
     public final ProductRepositoryImpl productRepository;
     public final CartRepositoryImpl cartRepository;
     public final OrderRepositoryImpl orderRepository;
 
-    // --- CASOS DE USO (EXPUESTOS) ---
+    // ------------------------ USE CASES ------------------------
     public final ProductUseCases productUseCases;
     public final CartUseCases cartUseCases;
     public final OrderUseCases orderUseCases;
-    public final CheckoutUseCase checkoutUseCase;
 
-    // --- VIEWMODEL FACTORIES (EXPUESTOS) ---
-    public final ProductDetailViewModelFactory productDetailViewModelFactory;
+    // ------------------------ VIEWMODEL FACTORIES ------------------------
+    public final ProductDetailViewModelFactory productDetailViewModelFactory;;
     public final ClientHomeViewModelFactory clientHomeViewModelFactory;
     public final ClientCartViewModelFactory clientCartViewModelFactory;
     public final ClientOrderViewModelFactory clientOrderViewModelFactory;
 
     public AppContainer(Context context) {
-        // --- Dependencias base ---
-        this.sessionManager = SessionManager.getInstance(context.getApplicationContext());
-        this.retrofit = ApiClient.getClient(context.getApplicationContext());
 
-        // --- WebSockets ---
+        // ------------------------ BASE ------------------------
+        this.appContext = context.getApplicationContext();
+        this.sessionManager = SessionManager.getInstance(appContext);
+        this.retrofit = ApiClient.getClient(appContext);
+
         String token = sessionManager.getToken();
-        GenericWebSocketManager<BannerWebSocketEvent> bannerWsManager = new GenericWebSocketManager<>(
-                BuildConfig.WS_URL, token, "/topic/banners", BannerWebSocketEvent.class
-        );
-        GenericWebSocketManager<ProductWebSocketEvent> productWsManager = new GenericWebSocketManager<>(
-                BuildConfig.WS_URL, token, "/topic/products", ProductWebSocketEvent.class
-        );
-        GenericWebSocketManager<CartItemWebSocketEvent> cartItemWsManager = new GenericWebSocketManager<>(
-                BuildConfig.WS_URL, token, "/topic/cart", CartItemWebSocketEvent.class
-        );
-        GenericWebSocketManager<OrderWebSocketEvent> orderWsManager = new GenericWebSocketManager<>(
-                BuildConfig.WS_URL, token, "/topic/orders", OrderWebSocketEvent.class
-        );
+
+        // ------------------------ WEBSOCKETS ------------------------
+        GenericWebSocketManager<BannerWebSocketEvent> bannerWs =
+                new GenericWebSocketManager<>(BuildConfig.WS_URL, token, "/topic/banners", BannerWebSocketEvent.class);
+
+        GenericWebSocketManager<ProductWebSocketEvent> productWs =
+                new GenericWebSocketManager<>(BuildConfig.WS_URL, token, "/topic/products", ProductWebSocketEvent.class);
+
+        GenericWebSocketManager<CartItemWebSocketEvent> cartWs =
+                new GenericWebSocketManager<>(BuildConfig.WS_URL, token, "/topic/cart", CartItemWebSocketEvent.class);
+
+        GenericWebSocketManager<OrderWebSocketEvent> orderWs =
+                new GenericWebSocketManager<>(BuildConfig.WS_URL, token, "/topic/orders", OrderWebSocketEvent.class);
 
 
-        // --- Repositorios ---
+        // ------------------------ REPOSITORIOS ------------------------
         this.tagRepository = new TagRepositoryImpl(retrofit.create(TagApiService.class));
-        // El repositorio de productos es el único responsable de gestionar el WebSocket de productos
-        this.bannerRepository = new BannerRepositoryImpl(retrofit.create(BannerApiService.class), bannerWsManager);
-        this.productRepository = new ProductRepositoryImpl(retrofit.create(ProductApiService.class), productWsManager);
-        this.cartRepository = new CartRepositoryImpl(retrofit.create(CartApi.class), cartItemWsManager);
-        this.orderRepository = new OrderRepositoryImpl(retrofit.create(OrderApi.class),orderWsManager);
 
-        // --- Casos de uso ---
+        this.bannerRepository = new BannerRepositoryImpl(
+                retrofit.create(BannerApiService.class), bannerWs
+        );
+
+        this.productRepository = new ProductRepositoryImpl(
+                retrofit.create(ProductApiService.class), productWs
+        );
+
+        this.cartRepository = new CartRepositoryImpl(
+                retrofit.create(CartApi.class), cartWs
+        );
+
+        this.orderRepository = new OrderRepositoryImpl(
+                retrofit.create(OrderApi.class), orderWs
+        );
+
+        // ------------------------ USE CASES (MÓDULOS) ------------------------
         this.productUseCases = ProductModule.provideProductUseCases(productRepository);
         this.cartUseCases = CartModule.provideCartUseCases(cartRepository);
         this.orderUseCases = OrderModule.provideOrderUseCases(orderRepository);
 
-        this.checkoutUseCase = cartUseCases.getCheckoutUseCase();
-
-        // --- ViewModel Factories ---
+        // ------------------------ VIEWMODELS ------------------------
         this.productDetailViewModelFactory = new ProductDetailViewModelFactory(productUseCases);
         this.clientCartViewModelFactory = new ClientCartViewModelFactory(cartUseCases);
         this.clientOrderViewModelFactory = new ClientOrderViewModelFactory(orderUseCases);
-        // La factory ahora solo necesita los repositorios, ya que el ViewModel se ha simplificado.
-        this.clientHomeViewModelFactory = new ClientHomeViewModelFactory(productRepository, tagRepository, bannerRepository);
+
+        this.clientHomeViewModelFactory = new ClientHomeViewModelFactory(
+                productRepository,
+                tagRepository,
+                bannerRepository
+        );
     }
 
     public SessionManager getSessionManager() {

@@ -11,32 +11,31 @@ import com.marlodev.app_android.domain.usecase.order.barista.GetReadyOrdersBaris
 import com.marlodev.app_android.domain.usecase.order.barista.SetOrderReadyUseCase;
 import com.marlodev.app_android.domain.usecase.order.cliente.GetActiveOrdersUseCase;
 
+/**
+ * OrderModule: Ensambla casos de uso por contexto (Cliente / Barista)
+ * Eliminando redundancia y asegurando escalabilidad.
+ */
 public class OrderModule {
 
     public static OrderUseCases provideOrderUseCases(OrderRepositoryImpl repository) {
 
-        // CASOS DE USO DE CLIENTE
-        GetActiveOrdersUseCase getActiveOrders = new GetActiveOrdersUseCase(repository);
-
-        // CASOS DE USO DE BARISTA
-        AcceptOrderUseCase acceptOrder = new AcceptOrderUseCase(repository);
-        GetBaristaOrderHistoryUseCase getBaristaHistory = new GetBaristaOrderHistoryUseCase(repository);
-        GetInPreparationOrdersUseCase getInPreparationOrders = new GetInPreparationOrdersUseCase(repository);
-        GetPendingOrdersUseCase getPendingOrders = new GetPendingOrdersUseCase(repository);
-        GetReadyOrdersBaristaUseCase getReadyOrdersBarista = new GetReadyOrdersBaristaUseCase(repository);
-        SetOrderReadyUseCase setOrderReady = new SetOrderReadyUseCase(repository);
-        GetBaristaOrdersPageUseCase getBaristaOrdersPage = new GetBaristaOrdersPageUseCase(repository);
-
-
-        return new OrderUseCases(
-                getActiveOrders,
-                acceptOrder,
-                getBaristaHistory,
-                getInPreparationOrders,
-                getPendingOrders,
-                getReadyOrdersBarista,
-                setOrderReady,
-                getBaristaOrdersPage
+        // -------- CLIENTE --------
+        OrderUseCases.Cliente cliente = new OrderUseCases.Cliente(
+                new GetActiveOrdersUseCase(repository)
         );
+
+        // -------- BARISTA --------
+        OrderUseCases.Barista barista = new OrderUseCases.Barista(
+                new AcceptOrderUseCase(repository),
+                new GetBaristaOrdersPageUseCase(repository),
+                new GetBaristaOrderHistoryUseCase(repository),
+                new GetInPreparationOrdersUseCase(repository),
+                new GetPendingOrdersUseCase(repository),
+                new GetReadyOrdersBaristaUseCase(repository),
+                new SetOrderReadyUseCase(repository)
+        );
+
+        // -------- RETORNAR AGRUPADO --------
+        return new OrderUseCases(cliente, barista);
     }
 }

@@ -9,71 +9,55 @@ import com.marlodev.app_android.domain.usecase.order.barista.GetReadyOrdersBaris
 import com.marlodev.app_android.domain.usecase.order.barista.SetOrderReadyUseCase;
 import com.marlodev.app_android.domain.usecase.order.cliente.GetActiveOrdersUseCase;
 
+/**
+ * OrderUseCases agrupados por contexto (Cliente, Barista).
+ * Organización altamente escalable y de código limpio.
+ */
 public class OrderUseCases {
 
-    // CASOS DE USO DE CLIENTE
-    private final GetActiveOrdersUseCase getActiveOrders;
+    public final Cliente cliente;
+    public final Barista barista;
 
-    // CASOS DE USO DE BARISTA
-    private final AcceptOrderUseCase acceptOrder;
-    private final GetBaristaOrdersPageUseCase getBaristaOrdersPage;
-    private final GetBaristaOrderHistoryUseCase getBaristaHistory;
-    private final GetInPreparationOrdersUseCase getInPreparationOrders;
-    private final GetPendingOrdersUseCase getPendingOrders;
-    private final GetReadyOrdersBaristaUseCase getReadyOrdersBarista;
-    private final SetOrderReadyUseCase setOrderReady;
-
-    public OrderUseCases(
-            GetActiveOrdersUseCase getActiveOrders,
-            AcceptOrderUseCase acceptOrder,
-            GetBaristaOrderHistoryUseCase getBaristaHistory,
-            GetInPreparationOrdersUseCase getInPreparationOrders,
-            GetPendingOrdersUseCase getPendingOrders,
-            GetReadyOrdersBaristaUseCase getReadyOrdersBarista,
-            SetOrderReadyUseCase setOrderReady,
-            GetBaristaOrdersPageUseCase getBaristaOrdersPage
-    ) {
-        this.getActiveOrders = getActiveOrders;
-        this.acceptOrder = acceptOrder;
-        this.getBaristaHistory = getBaristaHistory;
-        this.getInPreparationOrders = getInPreparationOrders;
-        this.getPendingOrders = getPendingOrders;
-        this.getReadyOrdersBarista = getReadyOrdersBarista;
-        this.setOrderReady = setOrderReady;
-        this.getBaristaOrdersPage = getBaristaOrdersPage;
+    public OrderUseCases(Cliente cliente, Barista barista) {
+        this.cliente = cliente;
+        this.barista = barista;
     }
 
-    // GETTERS
+    // --------------------- CONTEXTO CLIENTE ---------------------
+    public static class Cliente {
+        public final GetActiveOrdersUseCase getActiveOrders;
 
-    public GetActiveOrdersUseCase getActiveOrders() {
-        return getActiveOrders;
+        public Cliente(GetActiveOrdersUseCase getActiveOrders) {
+            this.getActiveOrders = getActiveOrders;
+        }
     }
 
-    public AcceptOrderUseCase getAcceptOrder() {
-        return acceptOrder;
-    }
+    // --------------------- CONTEXTO BARISTA ---------------------
+    public static class Barista {
+        public final AcceptOrderUseCase acceptOrder;
+        public final GetBaristaOrdersPageUseCase getOrdersPage;
+        public final GetBaristaOrderHistoryUseCase getHistory;
+        public final GetInPreparationOrdersUseCase getInPreparationOrders;
+        public final GetPendingOrdersUseCase getPendingOrders;
+        public final GetReadyOrdersBaristaUseCase getReadyOrders;
+        public final SetOrderReadyUseCase setOrderReady;
 
-    public GetBaristaOrderHistoryUseCase getBaristaHistory() {
-        return getBaristaHistory;
-    }
-
-    public GetInPreparationOrdersUseCase getInPreparationOrders() {
-        return getInPreparationOrders;
-    }
-
-    public GetPendingOrdersUseCase getPendingOrders() {
-        return getPendingOrders;
-    }
-    public GetBaristaOrdersPageUseCase getBaristaOrdersPage() {
-        return getBaristaOrdersPage;
-    }
-
-
-    public GetReadyOrdersBaristaUseCase getReadyOrdersBarista() {
-        return getReadyOrdersBarista;
-    }
-
-    public SetOrderReadyUseCase getSetOrderReady() {
-        return setOrderReady;
+        public Barista(
+                AcceptOrderUseCase acceptOrder,
+                GetBaristaOrdersPageUseCase getOrdersPage,
+                GetBaristaOrderHistoryUseCase getHistory,
+                GetInPreparationOrdersUseCase getInPreparationOrders,
+                GetPendingOrdersUseCase getPendingOrders,
+                GetReadyOrdersBaristaUseCase getReadyOrders,
+                SetOrderReadyUseCase setOrderReady
+        ) {
+            this.acceptOrder = acceptOrder;
+            this.getOrdersPage = getOrdersPage;
+            this.getHistory = getHistory;
+            this.getInPreparationOrders = getInPreparationOrders;
+            this.getPendingOrders = getPendingOrders;
+            this.getReadyOrders = getReadyOrders;
+            this.setOrderReady = setOrderReady;
+        }
     }
 }

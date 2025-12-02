@@ -44,7 +44,7 @@ public class ClientOrderViewModel extends ViewModel {
 
 
     private void loadActiveOrders() {
-        LiveData<Result<List<Order>>> useCaseLiveData = orderUseCases.getActiveOrders().execute();
+        LiveData<Result<List<Order>>> useCaseLiveData = orderUseCases.cliente.getActiveOrders.execute();
         observeUseCaseResult(useCaseLiveData, this::handleOrdersSuccess, msg -> _errorMessage.postValue(new Event<>(msg)));
     }
 
