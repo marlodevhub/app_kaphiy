@@ -35,7 +35,6 @@ public interface OrderApi {
 
     //    BARISTA
     // Pedidos en espera (EN_ESPERA)
-    // Pedidos en cola (EN_ESPERA)
     @GET("barista/orders/queue")
     Call<PageResponse<OrderResponse>> getQueueBarista(
             @Query("page") int page,
