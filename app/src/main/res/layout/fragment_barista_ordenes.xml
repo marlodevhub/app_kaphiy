@@ -136,64 +136,61 @@
                     android:clipToPadding="false"
                     android:scrollbars="none">
 
+
                     <LinearLayout
                         android:paddingStart="16dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal">
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnNuevos"
-                            android:layout_width="120dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="12dp"
-                            android:backgroundTint="#348B87"
-                            android:minWidth="0dp"
-                            android:minHeight="0dp"
-                            android:paddingVertical="12dp"
+                            android:background="@drawable/btn_barista_selector"
+                            app:backgroundTint="@null"
+                            android:textColor="@color/btn_barista_text_selector"
                             android:text="Nuevos"
-                            android:textColor="#FFFFFF"
                             android:textSize="16sp"
                             android:textStyle="bold"
-                            app:cornerRadius="12dp"
-                            tools:ignore="UnusedAttribute" />
+                            android:minWidth="0dp"
+                            android:minHeight="0dp" />
 
-                        <Button
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnPreparando"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="12dp"
-                            android:backgroundTint="#FFFFFF"
-                            android:minWidth="0dp"
-                            android:minHeight="0dp"
-                            android:paddingVertical="12dp"
+                            android:background="@drawable/btn_barista_selector"
+                            app:backgroundTint="@null"
+                            android:textColor="@color/btn_barista_text_selector"
                             android:text="Preparando"
-                            android:textColor="#333333"
-                            android:textSize="14sp"
+                            android:textSize="16sp"
                             android:textStyle="bold"
-                            app:cornerRadius="12dp"
-                            app:strokeColor="#DDDDDD"
-                            app:strokeWidth="1dp"
-                            tools:ignore="UnusedAttribute" />
-
-                        <Button
-                            android:id="@+id/btnListos"
-                            android:layout_width="120dp"
-                            android:layout_height="wrap_content"
-                            android:backgroundTint="#FFFFFF"
                             android:minWidth="0dp"
-                            android:minHeight="0dp"
-                            android:paddingVertical="12dp"
+                            android:minHeight="0dp" />
+
+
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnListos"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="12dp"
+                            android:background="@drawable/btn_barista_selector"
+                            app:backgroundTint="@null"
+                            android:textColor="@color/btn_barista_text_selector"
                             android:text="Listos"
-                            android:textColor="#333333"
-                            android:textSize="14sp"
+                            android:textSize="16sp"
                             android:textStyle="bold"
-                            app:cornerRadius="12dp"
-                            app:strokeColor="#DDDDDD"
-                            app:strokeWidth="1dp"
-                            tools:ignore="UnusedAttribute" />
+                            android:minWidth="0dp"
+                            android:minHeight="0dp" />
+
+
 
                     </LinearLayout>
+
                 </HorizontalScrollView>
 
                 <TextView

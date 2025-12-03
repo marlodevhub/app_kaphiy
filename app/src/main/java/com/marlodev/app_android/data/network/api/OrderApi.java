@@ -47,7 +47,11 @@ public interface OrderApi {
 
     // Pedidos en preparación del barista autenticado
     @GET("barista/orders/in-preparation")
-    Call<List<OrderResponse>> getInPreparationBarista();
+    Call<PageResponse<OrderResponse>> getInPreparationBarista(
+            @Query("page") int page,
+            @Query("size") int size
+    );
+
 
     // Cambiar un pedido a LISTO_PARA_ENTREGA
     @PUT("barista/orders/{orderId}/ready")

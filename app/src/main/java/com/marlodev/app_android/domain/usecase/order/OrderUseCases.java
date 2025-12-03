@@ -6,6 +6,7 @@ import com.marlodev.app_android.domain.usecase.order.barista.GetBaristaOrdersPag
 import com.marlodev.app_android.domain.usecase.order.barista.GetInPreparationOrdersUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.GetPendingOrdersUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.GetReadyOrdersBaristaUseCase;
+import com.marlodev.app_android.domain.usecase.order.barista.GetinPreparationOrdersInPreparationUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.SetOrderReadyUseCase;
 import com.marlodev.app_android.domain.usecase.order.cliente.GetActiveOrdersUseCase;
 
@@ -41,6 +42,7 @@ public class OrderUseCases {
         public final GetPendingOrdersUseCase getPendingOrders;
         public final GetReadyOrdersBaristaUseCase getReadyOrders;
         public final SetOrderReadyUseCase setOrderReady;
+        public final GetinPreparationOrdersInPreparationUseCase getOrdersPreparationPage;
 
         public Barista(
                 AcceptOrderUseCase acceptOrder,
@@ -49,7 +51,8 @@ public class OrderUseCases {
                 GetInPreparationOrdersUseCase getInPreparationOrders,
                 GetPendingOrdersUseCase getPendingOrders,
                 GetReadyOrdersBaristaUseCase getReadyOrders,
-                SetOrderReadyUseCase setOrderReady
+                SetOrderReadyUseCase setOrderReady,
+                GetinPreparationOrdersInPreparationUseCase getOrdersPreparationPage
         ) {
             this.acceptOrder = acceptOrder;
             this.getOrdersPage = getOrdersPage;
@@ -58,6 +61,7 @@ public class OrderUseCases {
             this.getPendingOrders = getPendingOrders;
             this.getReadyOrders = getReadyOrders;
             this.setOrderReady = setOrderReady;
+            this.getOrdersPreparationPage = getOrdersPreparationPage;
         }
     }
 }

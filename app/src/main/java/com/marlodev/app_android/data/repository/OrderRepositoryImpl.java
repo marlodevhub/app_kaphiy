@@ -245,8 +245,6 @@ public class OrderRepositoryImpl implements OrderRepository {
     // ---------------------------------------------------
     // Métodos públicos - Barista
     // ---------------------------------------------------
-
-
     @Override
     public LiveData<Result<List<Order>>> getQueueBarista() {
         // Retornamos directamente un LiveData que siempre cambia cuando WS llega
@@ -257,7 +255,35 @@ public class OrderRepositoryImpl implements OrderRepository {
         resultLiveData.addSource(_baristaOrdersLiveData, orders -> resultLiveData.postValue(Result.success(orders)));
         return resultLiveData;
     }
+    @Override
+    public LiveData<Result<Order>> startPreparationBarista(long orderId) {
+        return performCallGeneric(api.startPreparationBarista(orderId), "iniciar preparación del pedido (barista)", OrderMapper::fromResponse);
+    }
+    @Override
+    public LiveData<Result<List<Order>>> getInPreparationBarista() {
+        MediatorLiveData<Result<List<Order>>> resultLiveData = new MediatorLiveData<>();
+        resultLiveData.setValue(Result.success(
+                _baristaOrdersLiveData.getValue() != null ? _baristaOrdersLiveData.getValue() : new ArrayList<>()
+        ));
+        resultLiveData.addSource(_baristaOrdersLiveData, orders -> resultLiveData.postValue(Result.success(orders)));
+        return resultLiveData;
+    }
+    @Override
+    public LiveData<Result<List<Order>>> getReadyOrdersBarista() {
+        return performCallGeneric(api.getReadyOrdersBarista(), "cargar pedidos listos (barista)",
+                dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList()));
+    }
+    @Override
+    public LiveData<Result<List<Order>>> getMyOrdersBarista() {
+        return performCallGeneric(api.getMyOrdersBarista(), "cargar pedidos asignados al barista",
+                dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList()));
+    }
 
+    @Override
+    public LiveData<Result<Order>> markReadyBarista(long orderId){
+        return performCallGeneric(api.markReadyBarista(orderId), "iniciar preparación del pedido (barista)", OrderMapper::fromResponse);
+    }
+//  Paginacion de pedidos en espera
     public LiveData<Result<PageResponse<Order>>> getBaristaOrdersPage(int page, int size) {
         return performCallGeneric(
                 api.getQueueBarista(page, size),
@@ -278,35 +304,29 @@ public class OrderRepositoryImpl implements OrderRepository {
                 }
         );
     }
+//  Paginacion de pedidos en preparación
+    public LiveData<Result<PageResponse<Order>>> getBaristaOrdersInPreparationPage(int page, int size) {
+        return performCallGeneric(
+                api.getInPreparationBarista(page, size),
+                "cargar pedidos EN_PREPARACION pagina " + page,
+                pageResponse -> {
+                    List<Order> orders = pageResponse.content.stream()
+                            .map(OrderMapper::fromResponse)
+                            .collect(Collectors.toList());
 
+                    PageResponse<Order> domainPage = new PageResponse<>();
+                    domainPage.content = orders;
+                    domainPage.totalPages = pageResponse.totalPages;
+                    domainPage.number = pageResponse.number;
+                    domainPage.size = pageResponse.size;
+                    domainPage.totalElements = pageResponse.totalElements;
 
-    @Override
-    public LiveData<Result<Order>> startPreparationBarista(long orderId) {
-        return performCallGeneric(api.startPreparationBarista(orderId), "iniciar preparación del pedido (barista)", OrderMapper::fromResponse);
+                    return domainPage;
+                }
+        );
     }
 
-    @Override
-    public LiveData<Result<Order>> markReadyBarista(long orderId) {
-        return performCallGeneric(api.markReadyBarista(orderId), "marcar pedido listo (barista)", OrderMapper::fromResponse);
-    }
 
-    @Override
-    public LiveData<Result<List<Order>>> getInPreparationBarista() {
-        return performCallGeneric(api.getInPreparationBarista(), "cargar pedidos en preparación (barista)",
-                dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList()));
-    }
-
-    @Override
-    public LiveData<Result<List<Order>>> getReadyOrdersBarista() {
-        return performCallGeneric(api.getReadyOrdersBarista(), "cargar pedidos listos (barista)",
-                dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList()));
-    }
-
-    @Override
-    public LiveData<Result<List<Order>>> getMyOrdersBarista() {
-        return performCallGeneric(api.getMyOrdersBarista(), "cargar pedidos asignados al barista",
-                dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList()));
-    }
 
     // ---------------------------------------------------
     // Métodos públicos - Delivery

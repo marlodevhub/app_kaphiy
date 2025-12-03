@@ -8,6 +8,7 @@ import com.marlodev.app_android.domain.usecase.order.barista.GetBaristaOrdersPag
 import com.marlodev.app_android.domain.usecase.order.barista.GetInPreparationOrdersUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.GetPendingOrdersUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.GetReadyOrdersBaristaUseCase;
+import com.marlodev.app_android.domain.usecase.order.barista.GetinPreparationOrdersInPreparationUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.SetOrderReadyUseCase;
 import com.marlodev.app_android.domain.usecase.order.cliente.GetActiveOrdersUseCase;
 
@@ -32,7 +33,8 @@ public class OrderModule {
                 new GetInPreparationOrdersUseCase(repository),
                 new GetPendingOrdersUseCase(repository),
                 new GetReadyOrdersBaristaUseCase(repository),
-                new SetOrderReadyUseCase(repository)
+                new SetOrderReadyUseCase(repository),
+                new GetinPreparationOrdersInPreparationUseCase(repository)
         );
 
         // -------- RETORNAR AGRUPADO --------

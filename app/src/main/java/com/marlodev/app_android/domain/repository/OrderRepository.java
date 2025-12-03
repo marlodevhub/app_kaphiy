@@ -25,9 +25,11 @@ public interface OrderRepository {
     // --------------------------
 // BARISTA
 // --------------------------
-    LiveData<Result<List<Order>>> getQueueBarista();
+    LiveData<Result<List<Order>>> getQueueBarista(); //✅
     LiveData<Result<PageResponse<Order>>> getBaristaOrdersPage(int page, int size);
 
+
+    LiveData<Result<PageResponse<Order>>> getBaristaOrdersInPreparationPage(int page, int size);
     LiveData<Result<Order>> startPreparationBarista(long orderId);
 
     LiveData<Result<List<Order>>> getInPreparationBarista();

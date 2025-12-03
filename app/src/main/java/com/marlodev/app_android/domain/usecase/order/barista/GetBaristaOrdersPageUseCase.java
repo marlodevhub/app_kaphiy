@@ -16,14 +16,6 @@ public class GetBaristaOrdersPageUseCase {
     public GetBaristaOrdersPageUseCase(OrderRepository repository) {
         this.repository = repository;
     }
-
-    /**
-     * Ejecuta la obtención de una página de órdenes del barista.
-     *
-     * @param page número de página (0-indexed)
-     * @param size tamaño de página
-     * @return LiveData que emite el resultado con la página de órdenes
-     */
     public LiveData<Result<PageResponse<Order>>> execute(int page, int size) {
         return repository.getBaristaOrdersPage(page, size);
     }
