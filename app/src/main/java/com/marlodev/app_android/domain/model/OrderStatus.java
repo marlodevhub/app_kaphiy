@@ -6,6 +6,7 @@ public enum OrderStatus {
     EN_ESPERA,
     EN_PREPARACION,
     LISTO_PARA_ENTREGA,
+    ESPERANDO_REPARTIDOR, // <-- nuevo
     EN_CAMINO,
     ENTREGADO,
     CANCELADO;
@@ -18,6 +19,7 @@ public enum OrderStatus {
             case EN_ESPERA -> "En espera de preparación";
             case EN_PREPARACION -> "Preparando tu pedido";
             case LISTO_PARA_ENTREGA -> "Listo para entrega";
+            case ESPERANDO_REPARTIDOR -> "Esperando delivery"; // <-- texto legible
             case EN_CAMINO -> "Tu pedido está en camino";
             case ENTREGADO -> "Pedido entregado";
             case CANCELADO -> "Pedido cancelado";

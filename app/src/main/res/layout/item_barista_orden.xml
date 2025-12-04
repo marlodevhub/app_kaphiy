@@ -163,10 +163,11 @@
         <Button
             android:id="@+id/btnPreparar"
             android:layout_width="wrap_content"
+            android:paddingHorizontal="10dp"
             android:layout_height="40dp"
             android:backgroundTint="#1E5F5B"
             android:fontFamily="sans-serif-medium"
-            android:text="Aceptar"
+            android:text="Tomar"
             android:textAllCaps="false"
             android:textColor="@android:color/white"
             android:textSize="12sp"

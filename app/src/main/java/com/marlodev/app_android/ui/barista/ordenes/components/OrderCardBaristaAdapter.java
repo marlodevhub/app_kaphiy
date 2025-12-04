@@ -16,12 +16,22 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.marlodev.app_android.R;
 import com.marlodev.app_android.domain.model.CartItem;
 import com.marlodev.app_android.domain.model.Order;
+import com.marlodev.app_android.domain.model.OrderStatus;
 
 import java.util.List;
 
 public class OrderCardBaristaAdapter extends ListAdapter<Order, OrderCardBaristaAdapter.OrderViewHolder> {
 
     private OnItemClickListener listener;
+
+    public interface OnItemClickListener {
+        void onStartPreparation(Order order);
+        void onOpenOrderDetail(Order order);
+    }
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
+    }
 
     public OrderCardBaristaAdapter() {
         super(new OrderCardBaristaAdapterDiffCallback());
@@ -37,38 +47,30 @@ public class OrderCardBaristaAdapter extends ListAdapter<Order, OrderCardBarista
 
     @Override
     public void onBindViewHolder(@NonNull OrderViewHolder holder, int position) {
-        Order order = getItem(position);
-        holder.bind(order);
+        holder.bind(getItem(position));
     }
 
     class OrderViewHolder extends RecyclerView.ViewHolder {
-
-        private final TextView txtOrderNumber;
-        private final TextView txtStatus;
-        private final TextView txtTiempoLlegada;
-        private final TextView txtDirection;
-        private final TextView txtCantidad;
+        private final TextView txtOrderNumber, txtClientName;
         private final ImageView imgeOrder;
-        private final TextView txtTitleOrder;
-        private final TextView txtClientName;
         private final Button btnPreparar;
 
         public OrderViewHolder(@NonNull View itemView) {
             super(itemView);
             txtOrderNumber = itemView.findViewById(R.id.txtOrderNumber);
-            txtStatus = itemView.findViewById(R.id.txtStatus);
-            txtTiempoLlegada = itemView.findViewById(R.id.txtTiempoLlegada);
-            txtDirection = itemView.findViewById(R.id.textDirection);
-            txtCantidad = itemView.findViewById(R.id.txtCantidad);
-            imgeOrder = itemView.findViewById(R.id.imgeOrder);
-            txtTitleOrder = itemView.findViewById(R.id.textTitleOrder);
             txtClientName = itemView.findViewById(R.id.txtClientName);
+            imgeOrder = itemView.findViewById(R.id.imgeOrder);
             btnPreparar = itemView.findViewById(R.id.btnPreparar);
 
             btnPreparar.setOnClickListener(v -> {
-                int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION && listener != null) {
-                    listener.onPrepareClick(getItem(position));
+                int pos = getAdapterPosition();
+                if (pos != RecyclerView.NO_POSITION && listener != null) {
+                    Order order = getItem(pos);
+                    if (order.getStatus() == OrderStatus.EN_ESPERA) {
+                        listener.onStartPreparation(order);
+                    } else if (order.getStatus() == OrderStatus.EN_PREPARACION) {
+                        listener.onOpenOrderDetail(order);
+                    }
                 }
             });
         }
@@ -77,41 +79,36 @@ public class OrderCardBaristaAdapter extends ListAdapter<Order, OrderCardBarista
             txtOrderNumber.setText("#00" + order.getId());
             txtClientName.setText(order.getUsername());
 
-            // --- Cargar la imagen del último producto ---
+            OrderStatus status = order.getStatus();
+            if (status != null) {
+                switch (status) {
+                    case EN_ESPERA:
+                        btnPreparar.setText("Tomar orden"); btnPreparar.setEnabled(true);
+                        break;
+                    case EN_PREPARACION:
+                        btnPreparar.setText("Preparar"); btnPreparar.setEnabled(true);
+                        break;
+                    default:
+                        btnPreparar.setText("Acción"); btnPreparar.setEnabled(false);
+                        break;
+                }
+            }
+
+            // Imagen
             List<String> imageUrls = null;
             List<CartItem> items = order.getItems();
             if (items != null && !items.isEmpty()) {
-                // 1. Obtener el último item del carrito
                 CartItem lastItem = items.get(items.size() - 1);
-                if (lastItem != null && lastItem.getProduct() != null) {
-                    // 2. Obtener las URLs de la imagen de ese producto
+                if (lastItem != null && lastItem.getProduct() != null)
                     imageUrls = lastItem.getProduct().getImageUrls();
-                }
             }
-            // 3. Cargar la imagen (el metodo se encarga si es nulo)
-            loadProductImage(imageUrls);
-        }
-
-        private void loadProductImage(List<String> imageUrls) {
             String url = (imageUrls != null && !imageUrls.isEmpty()) ? imageUrls.get(0) : null;
-
             Glide.with(itemView.getContext())
-                    .load(url) // si url es null, no hay problema, solo se mostrará placeholder
+                    .load(url)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .placeholder(R.drawable.ic_image_placeholder) // XML aquí sí está bien
+                    .placeholder(R.drawable.ic_image_placeholder)
                     .error(R.drawable.ic_image_placeholder)
                     .into(imgeOrder);
         }
-
-
     }
-
-    public interface OnItemClickListener {
-        void onPrepareClick(Order order);
-    }
-
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        this.listener = listener;
-    }
-
 }
