@@ -124,7 +124,7 @@ public class BaristaOrderFragment extends Fragment {
         setSelectedButton(btnNuevo);
 
         // Primera carga
-        viewModel.loadPage(0, OrderStatus.EN_ESPERA);
+        viewModel.loadPage( OrderStatus.EN_ESPERA);
     }
 
     private void setSelectedButton(Button selected) {

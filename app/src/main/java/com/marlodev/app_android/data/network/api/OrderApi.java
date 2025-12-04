@@ -40,14 +40,17 @@ public interface OrderApi {
             @Query("page") int page,
             @Query("size") int size
     );
-
-    // Cambiar un pedido a EN_PREPARACION
-    @PUT("barista/orders/{orderId}/start")
-    Call<OrderResponse> startPreparationBarista(@Path("orderId") long orderId);
-
     // Pedidos en preparación del barista autenticado
+
     @GET("barista/orders/in-preparation")
     Call<PageResponse<OrderResponse>> getInPreparationBarista(
+            @Query("page") int page,
+            @Query("size") int size
+    );
+
+    // Pedidos listos para entrega (LISTO_PARA_ENTREGA)
+    @GET("barista/orders/ready")
+    Call<PageResponse<OrderResponse>> getReadyOrdersBarista(
             @Query("page") int page,
             @Query("size") int size
     );
@@ -57,9 +60,13 @@ public interface OrderApi {
     @PUT("barista/orders/{orderId}/ready")
     Call<OrderResponse> markReadyBarista(@Path("orderId") long orderId);
 
-    // Pedidos listos para entrega (LISTO_PARA_ENTREGA)
-    @GET("barista/orders/ready")
-    Call<List<OrderResponse>> getReadyOrdersBarista();
+
+
+    // Cambiar un pedido a EN_PREPARACION
+    @PUT("barista/orders/{orderId}/start")
+    Call<OrderResponse> startPreparationBarista(@Path("orderId") long orderId);
+
+
 
     // Todos los pedidos asignados al barista
     @GET("barista/orders/my-orders")

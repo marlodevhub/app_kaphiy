@@ -6,8 +6,10 @@ import com.marlodev.app_android.domain.usecase.order.barista.GetBaristaOrdersPag
 import com.marlodev.app_android.domain.usecase.order.barista.GetInPreparationOrdersUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.GetPendingOrdersUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.GetReadyOrdersBaristaUseCase;
+import com.marlodev.app_android.domain.usecase.order.barista.GetInPreparationOrdersUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.GetinPreparationOrdersInPreparationUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.SetOrderReadyUseCase;
+import com.marlodev.app_android.domain.usecase.order.barista.GetReadyOrdersPageUseCase;
 import com.marlodev.app_android.domain.usecase.order.cliente.GetActiveOrdersUseCase;
 
 /**
@@ -35,6 +37,7 @@ public class OrderUseCases {
 
     // --------------------- CONTEXTO BARISTA ---------------------
     public static class Barista {
+
         public final AcceptOrderUseCase acceptOrder;
         public final GetBaristaOrdersPageUseCase getOrdersPage;
         public final GetBaristaOrderHistoryUseCase getHistory;
@@ -43,6 +46,8 @@ public class OrderUseCases {
         public final GetReadyOrdersBaristaUseCase getReadyOrders;
         public final SetOrderReadyUseCase setOrderReady;
         public final GetinPreparationOrdersInPreparationUseCase getOrdersPreparationPage;
+        public final GetReadyOrdersPageUseCase getReadyOrdersPage;
+
 
         public Barista(
                 AcceptOrderUseCase acceptOrder,
@@ -52,7 +57,8 @@ public class OrderUseCases {
                 GetPendingOrdersUseCase getPendingOrders,
                 GetReadyOrdersBaristaUseCase getReadyOrders,
                 SetOrderReadyUseCase setOrderReady,
-                GetinPreparationOrdersInPreparationUseCase getOrdersPreparationPage
+                GetinPreparationOrdersInPreparationUseCase getOrdersPreparationPage,
+                GetReadyOrdersPageUseCase getReadyOrdersPage
         ) {
             this.acceptOrder = acceptOrder;
             this.getOrdersPage = getOrdersPage;
@@ -61,7 +67,8 @@ public class OrderUseCases {
             this.getPendingOrders = getPendingOrders;
             this.getReadyOrders = getReadyOrders;
             this.setOrderReady = setOrderReady;
-            this.getOrdersPreparationPage = getOrdersPreparationPage;
+            this.getOrdersPreparationPage= getOrdersPreparationPage;
+            this.getReadyOrdersPage = getReadyOrdersPage;
         }
     }
 }

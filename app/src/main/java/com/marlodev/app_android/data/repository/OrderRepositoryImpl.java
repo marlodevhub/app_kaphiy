@@ -77,7 +77,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     // ---------------------------------------------------
-    // WebSocket Cliente general
+    // WebSocket Cliente
     // ---------------------------------------------------
     private void handleWebSocketEvent(OrderWebSocketEvent event) {
         if (event == null || event.getAction() == null) return;
@@ -194,8 +194,9 @@ public class OrderRepositoryImpl implements OrderRepository {
         }
     }
 
+
     // ---------------------------------------------------
-    // Inicializar Barista (REST + WS)
+    // Inicializar BARISTA (REST + WS)
     // ---------------------------------------------------
     private void loadInitialBaristaQueue() {
         int page = 0;       // primera página
@@ -217,26 +218,26 @@ public class OrderRepositoryImpl implements OrderRepository {
 
 
     // ---------------------------------------------------
-    // Métodos públicos - Cliente
+    // Métodos públicos - CLIENTE
     // ---------------------------------------------------
-    @Override
+    @Override // ✅ Abrir una orden comppleta
     public LiveData<Result<Order>> getOrderById(long orderId) {
         return performCallGeneric(api.getOrderById(orderId), "cargar orden por ID", OrderMapper::fromResponse);
     }
 
-    @Override
+    @Override// ✅ Listar ordenes activas
     public LiveData<Result<List<Order>>> getActiveOrders() {
         return performCallGeneric(api.getActiveOrders(), "cargar órdenes activas",
                 dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList()));
     }
 
-    @Override
+    @Override// ✅ Listar ordenes historicas (Terminadas o Canceladas )
     public LiveData<Result<List<Order>>> getOrderHistory() {
         return performCallGeneric(api.getOrderHistory(), "cargar historial de órdenes",
                 dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList()));
     }
 
-    @Override
+    @Override//
     public LiveData<Result<OrderTracking>> getOrderTracking(long orderId) {
         return performCallGeneric(api.getOrderTracking(orderId), "cargar tracking",
                 OrderMapper::fromTrackingResponse);
@@ -245,7 +246,8 @@ public class OrderRepositoryImpl implements OrderRepository {
     // ---------------------------------------------------
     // Métodos públicos - Barista
     // ---------------------------------------------------
-    @Override
+
+    @Override // ✅ Listar ordenes en espera
     public LiveData<Result<List<Order>>> getQueueBarista() {
         // Retornamos directamente un LiveData que siempre cambia cuando WS llega
         MediatorLiveData<Result<List<Order>>> resultLiveData = new MediatorLiveData<>();
@@ -255,11 +257,8 @@ public class OrderRepositoryImpl implements OrderRepository {
         resultLiveData.addSource(_baristaOrdersLiveData, orders -> resultLiveData.postValue(Result.success(orders)));
         return resultLiveData;
     }
-    @Override
-    public LiveData<Result<Order>> startPreparationBarista(long orderId) {
-        return performCallGeneric(api.startPreparationBarista(orderId), "iniciar preparación del pedido (barista)", OrderMapper::fromResponse);
-    }
-    @Override
+
+    @Override // ✅ Listar Ordenes en preparación
     public LiveData<Result<List<Order>>> getInPreparationBarista() {
         MediatorLiveData<Result<List<Order>>> resultLiveData = new MediatorLiveData<>();
         resultLiveData.setValue(Result.success(
@@ -268,22 +267,19 @@ public class OrderRepositoryImpl implements OrderRepository {
         resultLiveData.addSource(_baristaOrdersLiveData, orders -> resultLiveData.postValue(Result.success(orders)));
         return resultLiveData;
     }
-    @Override
+
+    @Override //
     public LiveData<Result<List<Order>>> getReadyOrdersBarista() {
-        return performCallGeneric(api.getReadyOrdersBarista(), "cargar pedidos listos (barista)",
-                dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList()));
-    }
-    @Override
-    public LiveData<Result<List<Order>>> getMyOrdersBarista() {
-        return performCallGeneric(api.getMyOrdersBarista(), "cargar pedidos asignados al barista",
-                dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList()));
+        MediatorLiveData<Result<List<Order>>> resultLiveData = new MediatorLiveData<>();
+        resultLiveData.setValue(Result.success(
+                _baristaOrdersLiveData.getValue() != null ? _baristaOrdersLiveData.getValue() : new ArrayList<>()
+        ));
+        resultLiveData.addSource(_baristaOrdersLiveData, orders -> resultLiveData.postValue(Result.success(orders)));
+        return resultLiveData;
     }
 
-    @Override
-    public LiveData<Result<Order>> markReadyBarista(long orderId){
-        return performCallGeneric(api.markReadyBarista(orderId), "iniciar preparación del pedido (barista)", OrderMapper::fromResponse);
-    }
-//  Paginacion de pedidos en espera
+
+//  Paginación de pedidos en espera
     public LiveData<Result<PageResponse<Order>>> getBaristaOrdersPage(int page, int size) {
         return performCallGeneric(
                 api.getQueueBarista(page, size),
@@ -304,7 +300,7 @@ public class OrderRepositoryImpl implements OrderRepository {
                 }
         );
     }
-//  Paginacion de pedidos en preparación
+//  Paginación de pedidos en preparación
     public LiveData<Result<PageResponse<Order>>> getBaristaOrdersInPreparationPage(int page, int size) {
         return performCallGeneric(
                 api.getInPreparationBarista(page, size),
@@ -325,8 +321,46 @@ public class OrderRepositoryImpl implements OrderRepository {
                 }
         );
     }
+//  Paginación de pedidos listos para entrega
+    public LiveData<Result<PageResponse<Order>>> getBaristaOrdersReadyPage(int page, int size) {
+        return performCallGeneric(
+                api.getReadyOrdersBarista(page, size),
+                "cargar pedidos LISTO_PARA_ENTREGA pagina " + page,
+                pageResponse -> {
+                    List<Order> orders = pageResponse.content.stream()
+                            .map(OrderMapper::fromResponse)
+                            .collect(Collectors.toList());
+
+                    PageResponse<Order> domainPage = new PageResponse<>();
+                    domainPage.content = orders;
+                    domainPage.totalPages = pageResponse.totalPages;
+                    domainPage.number = pageResponse.number;
+                    domainPage.size = pageResponse.size;
+                    domainPage.totalElements = pageResponse.totalElements;
+
+                    return domainPage;
+                }
+        );
+    }
 
 
+    @Override // ✅ Aceptar una orden
+    public LiveData<Result<Order>> startPreparationBarista(long orderId) {
+        return performCallGeneric(api.startPreparationBarista(orderId),
+                "iniciar preparación del pedido (barista)",
+                OrderMapper::fromResponse);
+    }
+
+    @Override //  Terminar una orden en preparación
+    public LiveData<Result<Order>> markReadyBarista(long orderId){
+        return performCallGeneric(api.markReadyBarista(orderId), "iniciar preparación del pedido (barista)", OrderMapper::fromResponse);
+    }
+
+    @Override //
+    public LiveData<Result<List<Order>>> getMyOrdersBarista() {
+        return performCallGeneric(api.getMyOrdersBarista(), "cargar pedidos asignados al barista",
+                dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList()));
+    }
 
     // ---------------------------------------------------
     // Métodos públicos - Delivery
@@ -371,6 +405,7 @@ public class OrderRepositoryImpl implements OrderRepository {
         return performCallGeneric(api.finishOrderDelivery(orderId), "marcar entregado (delivery)", OrderMapper::fromResponse);
     }
 
+
     // ---------------------------------------------------
     // Shutdown seguro
     // ---------------------------------------------------
@@ -381,4 +416,5 @@ public class OrderRepositoryImpl implements OrderRepository {
             wsManager.disconnect();
         }
     }
+
 }
