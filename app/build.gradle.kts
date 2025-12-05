@@ -25,8 +25,8 @@ android {
             isMinifyEnabled = false
 
             // URL de desarrollo para celular en la misma red Wi-Fi comadno: ipconfig getifaddr en0
-            buildConfigField("String", "BASE_URL", "\"http://192.168.0.3:8080/api/\"")
-            buildConfigField("String", "WS_URL", "\"ws://192.168.0.3:8080/ws-products\"")
+            buildConfigField("String", "BASE_URL", "\"http://192.168.0.4:8080/api/\"")
+            buildConfigField("String", "WS_URL", "\"ws://192.168.0.4:8080/ws-products\"")
 
 
 
@@ -127,3 +127,4 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
 
 }
+

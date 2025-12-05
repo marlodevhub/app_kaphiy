@@ -15,6 +15,7 @@ import com.marlodev.app_android.data.network.websocket.GenericWebSocketManager;
 import com.marlodev.app_android.data.network.websocket.adapter.OrderWsAdapter;
 import com.marlodev.app_android.data.network.websocket.events.OrderWebSocketEvent;
 import com.marlodev.app_android.domain.model.Order;
+import com.marlodev.app_android.domain.model.OrderStatus;
 import com.marlodev.app_android.domain.model.OrderTracking;
 import com.marlodev.app_android.domain.repository.OrderRepository;
 import com.marlodev.app_android.utils.Result;
@@ -55,9 +56,15 @@ public class OrderRepositoryImpl implements OrderRepository {
     // Observers removibles
     private final Observer<OrderWebSocketEvent> wsObserver = this::handleWebSocketEvent;
 
-    // Barista
-    private final MediatorLiveData<List<Order>> _baristaOrdersLiveData = new MediatorLiveData<>();
-    public final LiveData<List<Order>> baristaOrdersLiveData = _baristaOrdersLiveData;
+    // ⚠️ SEPARAR: LiveData por cada estado de orden
+    private final MediatorLiveData<List<Order>> _pendingOrdersLiveData = new MediatorLiveData<>();
+    private final MediatorLiveData<List<Order>> _inPreparationOrdersLiveData = new MediatorLiveData<>();
+    private final MediatorLiveData<List<Order>> _readyOrdersLiveData = new MediatorLiveData<>();
+
+    public final LiveData<List<Order>> pendingOrdersLiveData = _pendingOrdersLiveData;
+    public final LiveData<List<Order>> inPreparationOrdersLiveData = _inPreparationOrdersLiveData;
+    public final LiveData<List<Order>> readyOrdersLiveData = _readyOrdersLiveData;
+
     private final Observer<OrderWebSocketEvent> wsBaristaObserver = this::handleBaristaEvent;
 
     public OrderRepositoryImpl(@NonNull OrderApi api,
@@ -68,16 +75,20 @@ public class OrderRepositoryImpl implements OrderRepository {
         // Conectar WS una sola vez
         if (wsManager != null) {
             _ordersLiveData.addSource(wsManager.getEventLiveData(), wsObserver);
-            _baristaOrdersLiveData.addSource(wsManager.getEventLiveData(), wsBaristaObserver);
+            _pendingOrdersLiveData.addSource(wsManager.getEventLiveData(), wsBaristaObserver);
+            _inPreparationOrdersLiveData.addSource(wsManager.getEventLiveData(), wsBaristaObserver);
+            _readyOrdersLiveData.addSource(wsManager.getEventLiveData(), wsBaristaObserver);
             wsManager.connect();
         }
 
-        // Inicializar lista Barista
-        loadInitialBaristaQueue();
+        // Inicializar listas separadas
+        _pendingOrdersLiveData.setValue(new ArrayList<>());
+        _inPreparationOrdersLiveData.setValue(new ArrayList<>());
+        _readyOrdersLiveData.setValue(new ArrayList<>());
     }
 
     // ---------------------------------------------------
-    // WebSocket Cliente general
+    // WebSocket Cliente
     // ---------------------------------------------------
     private void handleWebSocketEvent(OrderWebSocketEvent event) {
         if (event == null || event.getAction() == null) return;
@@ -109,7 +120,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     // ---------------------------------------------------
-    // WebSocket Barista
+    // WebSocket Barista - SEPARADO POR ESTADO
     // ---------------------------------------------------
     private void handleBaristaEvent(OrderWebSocketEvent event) {
         if (event == null || event.getAction() == null) return;
@@ -117,30 +128,105 @@ public class OrderRepositoryImpl implements OrderRepository {
         Order order = OrderWsAdapter.fromEvent(event);
         if (order == null) return;
 
-        List<Order> current = _baristaOrdersLiveData.getValue();
-        if (current == null) current = new ArrayList<>();
+        String action = event.getAction();
+        Log.d(TAG, "📨 WS Barista: " + action + " | Orden #" + order.getId() + " | Estado: " + order.getStatus());
 
-        switch (event.getAction()) {
+        switch (action) {
             case "CREATE":
-                current.add(0, order);
-                Log.d(TAG, "🟢 Orden Barista CREADA vía WS: " + order.getId());
+                handleCreateOrder(order);
                 break;
             case "UPDATE":
-                for (int i = 0; i < current.size(); i++) {
-                    if (current.get(i).getId() == order.getId()) {
-                        current.set(i, order);
-                        Log.d(TAG, "🟡 Orden Barista ACTUALIZADA vía WS: " + order.getId());
-                        break;
-                    }
-                }
+                handleUpdateOrder(order);
                 break;
             case "DELETE":
-                current.removeIf(o -> o.getId() == order.getId());
-                Log.d(TAG, "🔴 Orden Barista ELIMINADA vía WS: " + order.getId());
+                handleDeleteOrder(order);
                 break;
         }
+    }
 
-        _baristaOrdersLiveData.postValue(current);
+    private void handleCreateOrder(Order order) {
+        // Agregar a la lista correspondiente según su estado
+        switch (order.getStatus()) {
+            case EN_ESPERA:
+                addToList(_pendingOrdersLiveData, order);
+                Log.d(TAG, "🟢 Orden PENDING creada: " + order.getId());
+                break;
+            case EN_PREPARACION:
+                addToList(_inPreparationOrdersLiveData, order);
+                Log.d(TAG, "🟢 Orden IN_PREPARATION creada: " + order.getId());
+                break;
+            case LISTO_PARA_ENTREGA:
+                addToList(_readyOrdersLiveData, order);
+                Log.d(TAG, "🟢 Orden READY creada: " + order.getId());
+                break;
+        }
+    }
+
+    private void handleUpdateOrder(Order order) {
+        // Remover de todas las listas primero
+        removeFromList(_pendingOrdersLiveData, order.getId());
+        removeFromList(_inPreparationOrdersLiveData, order.getId());
+        removeFromList(_readyOrdersLiveData, order.getId());
+
+        // Agregar a la lista correcta según el nuevo estado
+        switch (order.getStatus()) {
+            case EN_ESPERA:
+                addToList(_pendingOrdersLiveData, order);
+                Log.d(TAG, "🟡 Orden movida a PENDING: " + order.getId());
+                break;
+            case EN_PREPARACION:
+                addToList(_inPreparationOrdersLiveData, order);
+                Log.d(TAG, "🟡 Orden movida a IN_PREPARATION: " + order.getId());
+                break;
+            case LISTO_PARA_ENTREGA:
+                addToList(_readyOrdersLiveData, order);
+                Log.d(TAG, "🟡 Orden movida a READY: " + order.getId());
+                break;
+            case ENTREGADO:
+            case CANCELADO:
+                Log.d(TAG, "🟡 Orden finalizada, removida de listas: " + order.getId());
+                break;
+        }
+    }
+
+    private void handleDeleteOrder(Order order) {
+        removeFromList(_pendingOrdersLiveData, order.getId());
+        removeFromList(_inPreparationOrdersLiveData, order.getId());
+        removeFromList(_readyOrdersLiveData, order.getId());
+        Log.d(TAG, "🔴 Orden eliminada de todas las listas: " + order.getId());
+    }
+
+    private void addToList(MediatorLiveData<List<Order>> liveData, Order order) {
+        List<Order> current = liveData.getValue();
+        if (current == null) current = new ArrayList<>();
+
+        // Evitar duplicados
+        current.removeIf(o -> o.getId().equals(order.getId()));
+        current.add(0, order); // Agregar al inicio
+
+        liveData.postValue(new ArrayList<>(current));
+    }
+
+    private void removeFromList(MediatorLiveData<List<Order>> liveData, Long orderId) {
+        List<Order> current = liveData.getValue();
+        if (current == null) return;
+
+        if (current.removeIf(o -> o.getId().equals(orderId))) {
+            liveData.postValue(new ArrayList<>(current));
+        }
+    }
+
+    private void updateInList(MediatorLiveData<List<Order>> liveData, Order order) {
+        List<Order> current = liveData.getValue();
+        if (current == null) return;
+
+        for (int i = 0; i < current.size(); i++) {
+            if (current.get(i).getId().equals(order.getId())) {
+                current.set(i, order);
+                liveData.postValue(new ArrayList<>(current));
+                return;
+            }
+        }
     }
 
     // ---------------------------------------------------
@@ -195,29 +281,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     // ---------------------------------------------------
-    // Inicializar Barista (REST + WS)
-    // ---------------------------------------------------
-    private void loadInitialBaristaQueue() {
-        int page = 0;       // primera página
-        int size = 20;      // 20 pedidos por página
-
-        performCallGeneric(
-                api.getQueueBarista(0, 20),
-                "cargar pedidos iniciales barista",
-                pageResponse -> pageResponse.content.stream()
-                        .map(OrderMapper::fromResponse)
-                        .collect(Collectors.toList())
-        )
-                .observeForever(result -> {
-                    if (result != null && result.isSuccess() && result.data != null) {
-                        _baristaOrdersLiveData.postValue(result.data);
-                    }
-                });
-    }
-
-
-    // ---------------------------------------------------
-    // Métodos públicos - Cliente
+    // Métodos públicos - CLIENTE
     // ---------------------------------------------------
     @Override
     public LiveData<Result<Order>> getOrderById(long orderId) {
@@ -243,47 +307,49 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     // ---------------------------------------------------
-    // Métodos públicos - Barista
+    // Métodos públicos - Barista (CORREGIDOS)
     // ---------------------------------------------------
+
     @Override
     public LiveData<Result<List<Order>>> getQueueBarista() {
-        // Retornamos directamente un LiveData que siempre cambia cuando WS llega
+        // Retornar solo las órdenes EN_ESPERA desde WebSocket
         MediatorLiveData<Result<List<Order>>> resultLiveData = new MediatorLiveData<>();
         resultLiveData.setValue(Result.success(
-                _baristaOrdersLiveData.getValue() != null ? _baristaOrdersLiveData.getValue() : new ArrayList<>()
+                _pendingOrdersLiveData.getValue() != null ? _pendingOrdersLiveData.getValue() : new ArrayList<>()
         ));
-        resultLiveData.addSource(_baristaOrdersLiveData, orders -> resultLiveData.postValue(Result.success(orders)));
+        resultLiveData.addSource(_pendingOrdersLiveData, orders ->
+                resultLiveData.postValue(Result.success(orders != null ? orders : new ArrayList<>()))
+        );
         return resultLiveData;
-    }
-    @Override
-    public LiveData<Result<Order>> startPreparationBarista(long orderId) {
-        return performCallGeneric(api.startPreparationBarista(orderId), "iniciar preparación del pedido (barista)", OrderMapper::fromResponse);
-    }
-    @Override
-    public LiveData<Result<List<Order>>> getInPreparationBarista() {
-        MediatorLiveData<Result<List<Order>>> resultLiveData = new MediatorLiveData<>();
-        resultLiveData.setValue(Result.success(
-                _baristaOrdersLiveData.getValue() != null ? _baristaOrdersLiveData.getValue() : new ArrayList<>()
-        ));
-        resultLiveData.addSource(_baristaOrdersLiveData, orders -> resultLiveData.postValue(Result.success(orders)));
-        return resultLiveData;
-    }
-    @Override
-    public LiveData<Result<List<Order>>> getReadyOrdersBarista() {
-        return performCallGeneric(api.getReadyOrdersBarista(), "cargar pedidos listos (barista)",
-                dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList()));
-    }
-    @Override
-    public LiveData<Result<List<Order>>> getMyOrdersBarista() {
-        return performCallGeneric(api.getMyOrdersBarista(), "cargar pedidos asignados al barista",
-                dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList()));
     }
 
     @Override
-    public LiveData<Result<Order>> markReadyBarista(long orderId){
-        return performCallGeneric(api.markReadyBarista(orderId), "iniciar preparación del pedido (barista)", OrderMapper::fromResponse);
+    public LiveData<Result<List<Order>>> getInPreparationBarista() {
+        // Retornar solo las órdenes EN_PREPARACION desde WebSocket
+        MediatorLiveData<Result<List<Order>>> resultLiveData = new MediatorLiveData<>();
+        resultLiveData.setValue(Result.success(
+                _inPreparationOrdersLiveData.getValue() != null ? _inPreparationOrdersLiveData.getValue() : new ArrayList<>()
+        ));
+        resultLiveData.addSource(_inPreparationOrdersLiveData, orders ->
+                resultLiveData.postValue(Result.success(orders != null ? orders : new ArrayList<>()))
+        );
+        return resultLiveData;
     }
-//  Paginacion de pedidos en espera
+
+    @Override
+    public LiveData<Result<List<Order>>> getReadyOrdersBarista() {
+        // Retornar solo las órdenes LISTO_PARA_ENTREGA desde WebSocket
+        MediatorLiveData<Result<List<Order>>> resultLiveData = new MediatorLiveData<>();
+        resultLiveData.setValue(Result.success(
+                _readyOrdersLiveData.getValue() != null ? _readyOrdersLiveData.getValue() : new ArrayList<>()
+        ));
+        resultLiveData.addSource(_readyOrdersLiveData, orders ->
+                resultLiveData.postValue(Result.success(orders != null ? orders : new ArrayList<>()))
+        );
+        return resultLiveData;
+    }
+
+    // Paginación de pedidos en espera
     public LiveData<Result<PageResponse<Order>>> getBaristaOrdersPage(int page, int size) {
         return performCallGeneric(
                 api.getQueueBarista(page, size),
@@ -304,7 +370,8 @@ public class OrderRepositoryImpl implements OrderRepository {
                 }
         );
     }
-//  Paginacion de pedidos en preparación
+
+    // Paginación de pedidos en preparación
     public LiveData<Result<PageResponse<Order>>> getBaristaOrdersInPreparationPage(int page, int size) {
         return performCallGeneric(
                 api.getInPreparationBarista(page, size),
@@ -326,7 +393,47 @@ public class OrderRepositoryImpl implements OrderRepository {
         );
     }
 
+    // Paginación de pedidos listos para entrega
+    public LiveData<Result<PageResponse<Order>>> getBaristaOrdersReadyPage(int page, int size) {
+        return performCallGeneric(
+                api.getReadyOrdersBarista(page, size),
+                "cargar pedidos LISTO_PARA_ENTREGA pagina " + page,
+                pageResponse -> {
+                    List<Order> orders = pageResponse.content.stream()
+                            .map(OrderMapper::fromResponse)
+                            .collect(Collectors.toList());
 
+                    PageResponse<Order> domainPage = new PageResponse<>();
+                    domainPage.content = orders;
+                    domainPage.totalPages = pageResponse.totalPages;
+                    domainPage.number = pageResponse.number;
+                    domainPage.size = pageResponse.size;
+                    domainPage.totalElements = pageResponse.totalElements;
+
+                    return domainPage;
+                }
+        );
+    }
+
+    @Override
+    public LiveData<Result<Order>> startPreparationBarista(long orderId) {
+        return performCallGeneric(api.startPreparationBarista(orderId),
+                "iniciar preparación del pedido (barista)",
+                OrderMapper::fromResponse);
+    }
+
+    @Override
+    public LiveData<Result<Order>> markReadyBarista(long orderId){
+        return performCallGeneric(api.markReadyBarista(orderId),
+                "marcar listo para entrega (barista)",
+                OrderMapper::fromResponse);
+    }
+
+    @Override
+    public LiveData<Result<List<Order>>> getMyOrdersBarista() {
+        return performCallGeneric(api.getMyOrdersBarista(), "cargar pedidos asignados al barista",
+                dtos -> dtos.stream().map(OrderMapper::fromResponse).collect(Collectors.toList()));
+    }
 
     // ---------------------------------------------------
     // Métodos públicos - Delivery
@@ -377,7 +484,9 @@ public class OrderRepositoryImpl implements OrderRepository {
     public void shutdown() {
         if (wsManager != null) {
             _ordersLiveData.removeSource(wsManager.getEventLiveData());
-            _baristaOrdersLiveData.removeSource(wsManager.getEventLiveData());
+            _pendingOrdersLiveData.removeSource(wsManager.getEventLiveData());
+            _inPreparationOrdersLiveData.removeSource(wsManager.getEventLiveData());
+            _readyOrdersLiveData.removeSource(wsManager.getEventLiveData());
             wsManager.disconnect();
         }
     }
