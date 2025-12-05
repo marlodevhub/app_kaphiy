@@ -15,9 +15,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.marlodev.app_android.MainActivity;
-import com.marlodev.app_android.ui.client.order.PedidoAdapter;
+import com.marlodev.app_android.data.repository.ChatRepository;
 import com.marlodev.app_android.databinding.FragmentDeliveryHomeBinding;
+import com.marlodev.app_android.domain.model.ChatPreview;
 import com.marlodev.app_android.domain.model.Pedido;
+import com.marlodev.app_android.ui.client.order.PedidoAdapter;
 import com.marlodev.app_android.utils.SessionManager;
 
 public class DeliveryHomeFragment extends Fragment implements PedidoAdapter.OnPedidoClickListener {
@@ -56,7 +58,6 @@ public class DeliveryHomeFragment extends Fragment implements PedidoAdapter.OnPe
         viewModel = new ViewModelProvider(this).get(DeliveryViewModel.class);
 
         setupRecyclerView();
-        setupLogoutButton();
         observeViewModel();
     }
 
@@ -68,22 +69,13 @@ public class DeliveryHomeFragment extends Fragment implements PedidoAdapter.OnPe
 
     private void setupRecyclerView() {
         pedidoAdapter = new PedidoAdapter(this);
-    }
-
-    private void setupLogoutButton() {
-        binding.btnLogout.setOnClickListener(v -> {
-            SessionManager.getInstance(requireContext()).clear();
-            Intent intent = new Intent(requireContext(), MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            requireActivity().finish();
-        });
+        binding.recyclerViewPedidos.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.recyclerViewPedidos.setAdapter(pedidoAdapter);
     }
 
     private void observeViewModel() {
         viewModel.pedidos.observe(getViewLifecycleOwner(), pedidos -> {
             // El Fragment solo se encarga de pasar la lista al adapter.
-            // El adapter y el ViewModel se encargan de la lógica del esqueleto.
             pedidoAdapter.submitList(pedidos);
         });
     }
@@ -92,6 +84,38 @@ public class DeliveryHomeFragment extends Fragment implements PedidoAdapter.OnPe
 
     @Override
     public void onAceptarClick(Pedido pedido) {
+
+        // marcar como aceptado
+        pedido.setAceptado(true);
+
+        Toast.makeText(getContext(),
+                "Pedido de " + pedido.getCliente() + " aceptado",
+                Toast.LENGTH_SHORT
+        ).show();
+
+        // ----------- AGREGAR CHATS AL ACEPTAR EL PEDIDO ----------
+        // Chat con el cliente
+        ChatPreview chatCliente = new ChatPreview(
+                "pedido_" + pedido.getIdPedido() + "_cliente",
+                pedido.getCliente(),
+                "Inicia un chat con el cliente",
+                "Ahora",
+                "cliente",
+                pedido.getIdPedido()
+        );
+
+        // Chat con la tienda
+        ChatPreview chatTienda = new ChatPreview(
+                "pedido_" + pedido.getIdPedido() + "_tienda",
+                pedido.getNombreTienda(),
+                "Inicia un chat con la tienda",
+                "Ahora",
+                "tienda",
+                pedido.getIdPedido()
+        );
+
+        ChatRepository.getInstance().agregarChat(chatCliente);
+        ChatRepository.getInstance().agregarChat(chatTienda);
     }
 
     @Override

@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.ismaeldivita.chipnavigation.ChipNavigationBar;
 import com.marlodev.app_android.R;
 import com.marlodev.app_android.domain.model.Pedido;
+import com.marlodev.app_android.ui.delivery.chat.DeliveryChatListFragment;
 
 public class DeliveryMainActivity extends AppCompatActivity implements DeliveryHomeFragment.OnPedidoSelectedListener {
 
@@ -33,7 +34,7 @@ public class DeliveryMainActivity extends AppCompatActivity implements DeliveryH
         homeFragment = new DeliveryHomeFragment();
         historialFragment = new DeliveryHistorialFragment();
         gananciasFragment = new DeliveryGananciasFragment();
-        mensajeriaFragment = new DeliveryMensajeriaFragment();
+        mensajeriaFragment = new DeliveryChatListFragment();
         perfilFragment = new DeliveryPerfilFragment();
 
         // Agregamos todos los fragmentos pero mostramos solo Home
@@ -82,7 +83,7 @@ public class DeliveryMainActivity extends AppCompatActivity implements DeliveryH
     }
 
     private void openDetallePedido(Pedido pedido) {
-        DeliveryHistorialFragment detalleFragment = new DeliveryHistorialFragment();
+        DeliveryDetallePedidoFragment detalleFragment = new DeliveryDetallePedidoFragment();
         Bundle args = new Bundle();
         args.putSerializable("pedido", pedido);
         detalleFragment.setArguments(args);

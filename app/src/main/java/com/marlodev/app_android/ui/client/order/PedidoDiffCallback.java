@@ -1,15 +1,20 @@
 package com.marlodev.app_android.ui.client.order;
 
+
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 
+
 import com.marlodev.app_android.domain.model.Pedido;
+
+import java.util.Objects;
 
 public class PedidoDiffCallback extends DiffUtil.ItemCallback<Pedido> {
 
     @Override
     public boolean areItemsTheSame(@NonNull Pedido oldItem, @NonNull Pedido newItem) {
-        return oldItem.getId() == newItem.getId();
+        return oldItem.getIdPedido() == newItem.getIdPedido();
     }
 
     @Override

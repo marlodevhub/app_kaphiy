@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     >
-<item
-    android:id="@+id/menu_home_delivery"
-    android:icon="@drawable/icon_home"
-    android:title="Inicio"
-    app:cnb_backgroundColor="@color/colorPrimary"
-    app:cnb_iconColor="@color/colorWhite"/>
+    <item
+        android:id="@+id/menu_home_delivery"
+        android:icon="@drawable/icon_home"
+        android:title="Inicio"
+        app:cnb_backgroundColor="@color/colorPrimary"
+        app:cnb_iconColor="@color/colorWhite"/>
 
-<item
-    android:id="@+id/menu_historial_delivery"
-    android:icon="@drawable/icon_historial"
-    android:title="Historial"
-    app:cnb_backgroundColor="@color/colorPrimary"
-    app:cnb_iconColor="@color/colorWhite"/>
+    <item
+        android:id="@+id/menu_historial_delivery"
+        android:icon="@drawable/icon_historial"
+        android:title="Historial"
+        app:cnb_backgroundColor="@color/colorPrimary"
+        app:cnb_iconColor="@color/colorWhite"/>
 
-<item
-    android:id="@+id/menu_ganancias_delivery"
-    android:icon="@drawable/icon_ganancias"
-    android:title="Ganancias"
-    app:cnb_iconColor="@color/colorWhite"
-    app:cnb_backgroundColor="@color/colorPrimary"/>
+    <item
+        android:id="@+id/menu_ganancias_delivery"
+        android:icon="@drawable/icon_ganancias"
+        android:title="Ganancias"
+        app:cnb_iconColor="@color/colorWhite"
+        app:cnb_backgroundColor="@color/colorPrimary"/>
 
-<item
-    android:id="@+id/menu_Mensajeria_delivery"
-    android:icon="@drawable/icon_mensajeria"
-    android:title="Mensajeria"
-    app:cnb_iconColor="@color/colorWhite"
-    app:cnb_backgroundColor="@color/colorPrimary"/>
+    <item
+        android:id="@+id/menu_Mensajeria_delivery"
+        android:icon="@drawable/icon_mensajeria"
+        android:title="Mensajeria"
+        app:cnb_iconColor="@color/colorWhite"
+        app:cnb_backgroundColor="@color/colorPrimary"/>
 
-<item
-    android:id="@+id/menu_perfil_delivery"
-    android:icon="@drawable/icon_perfil"
-    android:title="Perfil"
-    app:cnb_iconColor="@color/colorWhite"
-    app:cnb_backgroundColor="@color/colorPrimary" />
+    <item
+        android:id="@+id/menu_perfil_delivery"
+        android:icon="@drawable/icon_perfil"
+        android:title="Perfil"
+        app:cnb_iconColor="@color/colorWhite"
+        app:cnb_backgroundColor="@color/colorPrimary" />
 </menu>

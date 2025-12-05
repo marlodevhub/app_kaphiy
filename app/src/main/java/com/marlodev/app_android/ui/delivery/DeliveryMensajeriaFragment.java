@@ -1,5 +1,4 @@
 package com.marlodev.app_android.ui.delivery;
-
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -7,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.marlodev.app_android.R;
 import com.marlodev.app_android.domain.model.ChatMessage;
+import com.marlodev.app_android.ui.delivery.chat.MensajeriaAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -28,24 +29,37 @@ public class DeliveryMensajeriaFragment extends Fragment {
     private RecyclerView recyclerChat;
     private EditText edtMensaje;
     private ImageButton btnEnviar;
+    private TextView txtNombreChat;
 
-    private ChatAdapter chatAdapter;
+    private MensajeriaAdapter chatAdapter;
     private final List<ChatMessage> mensajes = new ArrayList<>();
 
-    // Variables que indican el tipo de chat (delivery con tienda o cliente)
     private String remitenteActual = "delivery";
-    private String destinoChat = "cliente"; // valor por defecto
+    private String destinoChat = "cliente";
+    private String nombreChat = null;
+    private String idChat = null;
 
-    public DeliveryMensajeriaFragment() {
-        // Constructor vacío obligatorio
-    }
+    public DeliveryMensajeriaFragment() { }
 
-    public static DeliveryMensajeriaFragment newInstance(String tipoChat) {
+    public static DeliveryMensajeriaFragment newInstance(String tipoChat, String nombreChat, String idChat) {
         DeliveryMensajeriaFragment fragment = new DeliveryMensajeriaFragment();
         Bundle args = new Bundle();
         args.putString("tipoChat", tipoChat);
+        args.putString("nombreChat", nombreChat);
+        args.putString("idChat", idChat);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Recuperar argumentos aquí para que estén disponibles antes de onViewCreated
+        if (getArguments() != null) {
+            destinoChat = getArguments().getString("tipoChat", "cliente");
+            nombreChat = getArguments().getString("nombreChat", null);
+            idChat = getArguments().getString("idChat", null);
+        }
     }
 
     @Override
@@ -56,63 +70,64 @@ public class DeliveryMensajeriaFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
         recyclerChat = view.findViewById(R.id.recyclerChat);
         edtMensaje = view.findViewById(R.id.edtMensaje);
         btnEnviar = view.findViewById(R.id.btnEnviar);
+        txtNombreChat = view.findViewById(R.id.txtNombre); // Debe existir en tu layout header
 
-        // Verificar si se recibió el tipo de chat desde el fragment anterior
-        if (getArguments() != null) {
-            destinoChat = getArguments().getString("tipoChat", "cliente");
+        // Mostrar nombre del chat en el header si viene
+        if (nombreChat != null && txtNombreChat != null) {
+            txtNombreChat.setText(nombreChat);
         }
 
-        chatAdapter = new ChatAdapter(mensajes, remitenteActual);
+        chatAdapter = new MensajeriaAdapter(mensajes, remitenteActual);
         recyclerChat.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerChat.setAdapter(chatAdapter);
 
         btnEnviar.setOnClickListener(v -> enviarMensaje());
 
-        // Mensajes de bienvenida simulados según tipo de chat
+        // Solo cargar mensajes iniciales si la lista está vacía (evitar duplicados)
+        if (mensajes.isEmpty()) {
+            cargarMensajesIniciales();
+        }
+
+        ImageButton btnBack = view.findViewById(R.id.btnBack);
+        btnBack.setOnClickListener(v ->
+                requireActivity().getSupportFragmentManager().popBackStack()
+        );
+    }
+
+    private void cargarMensajesIniciales() {
+        // Si en el futuro guardas mensajes por idChat, aquí debes cargarlos desde el repositorio
+        // mientras tanto, mantengo mensajes de ejemplo sólo si la lista está vacía.
         if (destinoChat.equals("cliente")) {
             mensajes.add(new ChatMessage("cliente", "Hola, ¿ya vienes con mi pedido?", getHoraActual()));
             mensajes.add(new ChatMessage("delivery", "Sí, estoy a unos minutos de tu ubicación.", getHoraActual()));
-        } else if (destinoChat.equals("tienda")) {
+        } else {
             mensajes.add(new ChatMessage("tienda", "Hola, el pedido está listo para recoger.", getHoraActual()));
             mensajes.add(new ChatMessage("delivery", "Perfecto, en 5 minutos llego a la tienda.", getHoraActual()));
         }
 
         chatAdapter.notifyDataSetChanged();
-
-        // Boton para volver a la vista de detalle de cliente
-        ImageButton btnBack = view.findViewById(R.id.btnBack);
-        btnBack.setOnClickListener(v -> {
-            requireActivity()
-                    .getSupportFragmentManager()
-                    .popBackStack(); // Vuelve al fragmento anterior (detalle de pedido del cliente)
-        });
+        recyclerChat.scrollToPosition(mensajes.size() - 1);
     }
 
     private void enviarMensaje() {
         String texto = edtMensaje.getText().toString().trim();
         if (TextUtils.isEmpty(texto)) return;
 
-        // Agregar mensaje del delivery
         mensajes.add(new ChatMessage(remitenteActual, texto, getHoraActual()));
         chatAdapter.notifyItemInserted(mensajes.size() - 1);
         recyclerChat.scrollToPosition(mensajes.size() - 1);
         edtMensaje.setText("");
 
-        // Simular respuesta automática del interlocutor
+        // Simular respuesta automática del interlocutor (puedes quitar esto cuando integres WS/DB)
         recyclerChat.postDelayed(() -> {
-            String respuesta;
-            if (destinoChat.equals("cliente")) {
-                respuesta = "Gracias por avisar, te espero.";
-                mensajes.add(new ChatMessage("cliente", respuesta, getHoraActual()));
-            } else {
-                respuesta = "Perfecto, te esperamos para la entrega.";
-                mensajes.add(new ChatMessage("tienda", respuesta, getHoraActual()));
-            }
+            String respuesta = destinoChat.equals("cliente") ?
+                    "Gracias por avisar, te espero." :
+                    "Perfecto, te esperamos para la entrega.";
+
+            mensajes.add(new ChatMessage(destinoChat, respuesta, getHoraActual()));
             chatAdapter.notifyItemInserted(mensajes.size() - 1);
             recyclerChat.scrollToPosition(mensajes.size() - 1);
         }, 1500);

@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.marlodev.app_android.R;
 import com.marlodev.app_android.domain.model.PedidoEntregado;
-import com.marlodev.app_android.ui.client.order.HistorialAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +22,7 @@ public class DeliveryGananciasFragment extends Fragment {
 
     private TextView txtEntregas, txtGanancias, txtPropinas;
     private RecyclerView recyclerHistorial;
-    private HistorialAdapter adapter;
+    private DetallePedido adapter;
 
     @Nullable
     @Override
@@ -42,7 +41,7 @@ public class DeliveryGananciasFragment extends Fragment {
 
         // Datos simulados
         List<PedidoEntregado> pedidos = cargarPedidosSimulados();
-        adapter = new HistorialAdapter(pedidos);
+        adapter = new DetallePedido(pedidos);
         recyclerHistorial.setAdapter(adapter);
 
         // Calcular resumen

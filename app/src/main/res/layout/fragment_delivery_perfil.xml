@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="false"
     android:background="@color/colorGrey100"
-    tools:context=".ui.client.perfil.ClientPerfilFragment">
+    tools:context=".ui.client.ClientPerfilFragment">
 
     <ScrollView
         android:id="@+id/scrollView"

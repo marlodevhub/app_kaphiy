@@ -21,17 +21,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnLogout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Cerrar sesión"
-                android:layout_gravity="center"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="32dp"/>
-
-
             <!-- LOGO MÁS GRANDE Y BAJADO -->
             <ImageView
                 android:id="@+id/imgLogoLeft"
@@ -73,11 +62,10 @@
 
             <!-- LISTA DE PEDIDOS -->
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/active_orders_recycler"
+                android:id="@+id/recyclerViewPedidos"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
-
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

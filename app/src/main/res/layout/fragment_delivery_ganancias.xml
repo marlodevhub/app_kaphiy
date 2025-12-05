@@ -139,5 +139,5 @@
             android:nestedScrollingEnabled="false"
             android:clipToPadding="false"
             android:paddingBottom="16dp"/>
-        </LinearLayout>
+    </LinearLayout>
 </androidx.core.widget.NestedScrollView>

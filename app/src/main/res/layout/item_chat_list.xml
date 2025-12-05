@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/imgPerfil"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:src="@drawable/icon_perfil"
+        android:background="@drawable/bg_circle_lightgray"
+        android:scaleType="centerCrop"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/txtNombreChat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hugo Silva"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        android:textColor="#000"
+        android:layout_toEndOf="@id/imgPerfil"
+        android:layout_marginStart="12dp" />
+
+    <TextView
+        android:id="@+id/txtUltimoMensaje"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Estoy a 5 min :)"
+        android:textColor="#666"
+        android:textSize="14sp"
+        android:layout_below="@id/txtNombreChat"
+        android:layout_toEndOf="@id/imgPerfil"
+        android:layout_marginStart="12dp" />
+
+    <TextView
+        android:id="@+id/txtHoraChat"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="4:20 PM"
+        android:textColor="#999"
+        android:textSize="12sp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="4dp" />
+
+</RelativeLayout>
