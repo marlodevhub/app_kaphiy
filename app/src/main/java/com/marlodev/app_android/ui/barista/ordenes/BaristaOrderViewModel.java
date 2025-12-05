@@ -291,11 +291,8 @@ public class BaristaOrderViewModel extends ViewModel {
     }
 
     /**
-     * 🔥 CORRECCIÓN CRÍTICA: WebSocket solo actualiza, NO reemplaza
-     * Maneja tres tipos de operaciones:
-     * 1. Nueva orden → Agregar al mapa correspondiente
-     * 2. Orden actualizada → Actualizar en mapa correspondiente
-     * 3. Orden eliminada → Remover de todos los mapas
+     * 🔥 CORRECCIÓN CRÍTICA: El problema está aquí
+     * Cuando llega una nueva orden por WebSocket, no se estaba agregando si NO estaba en ningún mapa
      */
     private void handleWebSocketUpdate(List<Order> newOrders, OrderStatus expectedStatus) {
         Log.d(TAG, "📡 WS Update - Estado: " + expectedStatus +
@@ -320,16 +317,30 @@ public class BaristaOrderViewModel extends ViewModel {
             Long orderId = order.getId();
             OrderStatus actualStatus = order.getStatus();
 
-            // 🔥 PASO 1: Remover de TODOS los mapas primero
+            // 🔥 PASO 1: Verificar si es una orden NUEVA
+            boolean isExistingOrder = pendingOrders.containsKey(orderId) ||
+                    inPreparationOrders.containsKey(orderId) ||
+                    readyOrders.containsKey(orderId);
+
+            // 🔥 PASO 2: Si NO existe, es una orden NUEVA - agregar directamente
+            if (!isExistingOrder) {
+                Map<Long, Order> correctMap = getMapForStatus(actualStatus);
+                correctMap.put(orderId, order);
+                hasChanges = true;
+                Log.d(TAG, "🆕 NUEVA orden #" + orderId + " agregada a " + actualStatus);
+                continue;
+            }
+
+            // 🔥 PASO 3: Si EXISTE, mover entre mapas según su nuevo estado
             boolean wasInPending = pendingOrders.remove(orderId) != null;
             boolean wasInPreparation = inPreparationOrders.remove(orderId) != null;
             boolean wasInReady = readyOrders.remove(orderId) != null;
 
-            // 🔥 PASO 2: Agregar al mapa correcto según su estado ACTUAL
+            // Agregar al mapa correcto según su estado ACTUAL
             Map<Long, Order> correctMap = getMapForStatus(actualStatus);
             correctMap.put(orderId, order);
 
-            // Si la orden estaba en algún mapa o cambió de estado, hay cambios
+            // Si la orden estaba en algún mapa, hay cambios
             if (wasInPending || wasInPreparation || wasInReady) {
                 hasChanges = true;
 
@@ -342,19 +353,20 @@ public class BaristaOrderViewModel extends ViewModel {
             }
         }
 
-        // 🔥 CORRECCIÓN CRÍTICA: Actualizar contadores SIEMPRE
+        // 🔥 ACTUALIZAR SIEMPRE los contadores
         updateAllCounters();
 
-        // 🔥 CORRECCIÓN CRÍTICA: Actualizar UI SIEMPRE si hubo cambios
-        // NO importa si el filtro actual coincide con expectedStatus
+        // 🔥 ACTUALIZAR UI SIEMPRE si hubo cambios
         if (hasChanges) {
-            updateVisibleOrders();  // ✅ ACTUALIZAR SIEMPRE
+            updateVisibleOrders();
+            Log.d(TAG, "✅ UI actualizada por WebSocket");
         }
 
-        Log.d(TAG, "✅ Estado final - Pending: " + pendingOrders.size() +
+        Log.d(TAG, "📊 Estado final - Pending: " + pendingOrders.size() +
                 " | Preparation: " + inPreparationOrders.size() +
                 " | Ready: " + readyOrders.size());
     }
+
     private Map<Long, Order> getMapForStatus(OrderStatus status) {
         switch (status) {
             case EN_ESPERA:
@@ -374,7 +386,7 @@ public class BaristaOrderViewModel extends ViewModel {
         readyCount.setValue(readyOrders.size());
     }
 
-    // ---- LÓGICA INTERNA ----
+    // ---- LÓGICA INTERNAL ----
     private void updateVisibleOrders() {
         OrderStatus filter = currentFilter.getValue();
         if (filter == null) filter = OrderStatus.EN_ESPERA;
@@ -388,6 +400,9 @@ public class BaristaOrderViewModel extends ViewModel {
         orderList.sort(Comparator.comparing(Order::getUpdatedAt).reversed());
 
         visibleOrders.setValue(orderList);
+
+        // Log para depuración
+        Log.d(TAG, "👁️ Mostrando " + orderList.size() + " órdenes para filtro: " + filter);
     }
 
     private void updatePageInfo() {
@@ -429,5 +444,6 @@ public class BaristaOrderViewModel extends ViewModel {
         pendingOrders.clear();
         inPreparationOrders.clear();
         readyOrders.clear();
+        Log.d(TAG, "🧹 ViewModel limpiado");
     }
 }
