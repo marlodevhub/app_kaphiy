@@ -64,7 +64,7 @@ public class BaristaOrderDetailActivity extends AppCompatActivity {
             viewModel.setOrder(order);
         }
 
-        // Observar cambios en la orden
+        // Observar cambios en la orden para actualizar RecyclerView
         viewModel.getOrder().observe(this, order -> {
             if (order != null) {
                 adapter.submitList(order.getItems());
@@ -82,22 +82,10 @@ public class BaristaOrderDetailActivity extends AppCompatActivity {
             }
         });
 
-
-        // Observar errores
-        viewModel.getErrorMessage().observe(this, event -> {
-            if (event != null) {
-                String message = event.getContentIfNotHandled();
-                if (message != null && !message.isEmpty()) {
-                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-
         // Botón finalizar
         btnFinishOrder.setOnClickListener(v -> {
             btnFinishOrder.setEnabled(false); // evitar doble click
-            viewModel.finishOrderAndRemove();
+            viewModel.finishOrder(); // método limpio sin manejo de errores
         });
     }
 }
