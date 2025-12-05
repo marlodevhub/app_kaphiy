@@ -8,26 +8,16 @@ import com.marlodev.app_android.utils.Result;
 import java.util.List;
 
 /**
- * Caso de uso para que un barista obtenga el historial de sus órdenes.
+ * Mis ordenes (Falta verificar implemnetacion)
  */
 public class GetBaristaOrderHistoryUseCase {
 
     private final OrderRepository repository;
 
-    /**
-     * Constructor que inyecta la interfaz del repositorio de órdenes.
-     *
-     * @param repository El repositorio de órdenes (interfaz).
-     */
     public GetBaristaOrderHistoryUseCase(OrderRepository repository) {
         this.repository = repository;
     }
 
-    /**
-     * Ejecuta la acción de obtener el historial de órdenes del barista.
-     *
-     * @return LiveData con el resultado de la operación (lista de órdenes).
-     */
     public LiveData<Result<List<Order>>> execute() {
         return repository.getMyOrdersBarista();
     }

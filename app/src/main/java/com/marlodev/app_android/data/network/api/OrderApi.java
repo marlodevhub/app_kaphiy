@@ -35,14 +35,14 @@ public interface OrderApi {
 
     //    BARISTA
     // Pedidos en espera (EN_ESPERA)
-    @GET("barista/orders/queue")
+    @GET("barista/orders/queue")//✅
     Call<PageResponse<OrderResponse>> getQueueBarista(
             @Query("page") int page,
             @Query("size") int size
     );
     // Pedidos en preparación del barista autenticado
 
-    @GET("barista/orders/in-preparation")
+    @GET("barista/orders/in-preparation")//✅
     Call<PageResponse<OrderResponse>> getInPreparationBarista(
             @Query("page") int page,
             @Query("size") int size
@@ -63,7 +63,7 @@ public interface OrderApi {
 
 
     // Cambiar un pedido a EN_PREPARACION
-    @PUT("barista/orders/{orderId}/start")
+    @PUT("barista/orders/{orderId}/start")//✅
     Call<OrderResponse> startPreparationBarista(@Path("orderId") long orderId);
 
 
@@ -106,4 +106,5 @@ public interface OrderApi {
     // Marca un pedido como entregado (ENTREGADO) usando al delivery autenticado.
     @PUT("delivery/orders{orderId}/finish")
     Call<OrderResponse> finishOrderDelivery(@Path("orderId") long orderId);
+
 }

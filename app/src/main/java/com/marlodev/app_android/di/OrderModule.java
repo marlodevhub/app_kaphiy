@@ -4,11 +4,11 @@ import com.marlodev.app_android.data.repository.OrderRepositoryImpl;
 import com.marlodev.app_android.domain.usecase.order.OrderUseCases;
 import com.marlodev.app_android.domain.usecase.order.barista.AcceptOrderUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.GetBaristaOrderHistoryUseCase;
-import com.marlodev.app_android.domain.usecase.order.barista.GetBaristaOrdersPageUseCase;
+import com.marlodev.app_android.domain.usecase.order.barista.paginacion.GetBaristaOrdersPageUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.GetInPreparationOrdersUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.GetPendingOrdersUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.GetReadyOrdersBaristaUseCase;
-import com.marlodev.app_android.domain.usecase.order.barista.GetinPreparationOrdersInPreparationUseCase;
+import com.marlodev.app_android.domain.usecase.order.barista.paginacion.GetinPreparationOrdersInPreparationUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.SetOrderReadyUseCase;
 import com.marlodev.app_android.domain.usecase.order.cliente.GetActiveOrdersUseCase;
 

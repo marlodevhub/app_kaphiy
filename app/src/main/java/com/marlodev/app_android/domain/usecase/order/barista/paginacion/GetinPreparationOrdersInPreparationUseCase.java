@@ -1,4 +1,4 @@
-package com.marlodev.app_android.domain.usecase.order.barista;
+package com.marlodev.app_android.domain.usecase.order.barista.paginacion;
 
 import androidx.lifecycle.LiveData;
 
@@ -7,8 +7,9 @@ import com.marlodev.app_android.domain.model.Order;
 import com.marlodev.app_android.domain.repository.OrderRepository;
 import com.marlodev.app_android.utils.Result;
 
-import java.util.List;
-
+/**
+ *  (Paginacion) lista  de órdenes en preparación. //🔵
+ */
 public class GetinPreparationOrdersInPreparationUseCase {
     private final OrderRepository repository;
 

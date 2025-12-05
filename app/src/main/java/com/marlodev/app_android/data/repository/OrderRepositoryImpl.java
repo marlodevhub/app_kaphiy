@@ -310,7 +310,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     // Métodos públicos - Barista (CORREGIDOS)
     // ---------------------------------------------------
 
-    @Override
+    @Override// ✅
     public LiveData<Result<List<Order>>> getQueueBarista() {
         // Retornar solo las órdenes EN_ESPERA desde WebSocket
         MediatorLiveData<Result<List<Order>>> resultLiveData = new MediatorLiveData<>();
@@ -323,7 +323,7 @@ public class OrderRepositoryImpl implements OrderRepository {
         return resultLiveData;
     }
 
-    @Override
+    @Override // ✅
     public LiveData<Result<List<Order>>> getInPreparationBarista() {
         // Retornar solo las órdenes EN_PREPARACION desde WebSocket
         MediatorLiveData<Result<List<Order>>> resultLiveData = new MediatorLiveData<>();
@@ -336,7 +336,7 @@ public class OrderRepositoryImpl implements OrderRepository {
         return resultLiveData;
     }
 
-    @Override
+    @Override// ✅
     public LiveData<Result<List<Order>>> getReadyOrdersBarista() {
         // Retornar solo las órdenes LISTO_PARA_ENTREGA desde WebSocket
         MediatorLiveData<Result<List<Order>>> resultLiveData = new MediatorLiveData<>();
@@ -415,7 +415,7 @@ public class OrderRepositoryImpl implements OrderRepository {
         );
     }
 
-    @Override
+    @Override // ✅
     public LiveData<Result<Order>> startPreparationBarista(long orderId) {
         return performCallGeneric(api.startPreparationBarista(orderId),
                 "iniciar preparación del pedido (barista)",

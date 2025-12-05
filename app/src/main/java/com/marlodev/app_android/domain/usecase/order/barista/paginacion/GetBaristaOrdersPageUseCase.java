@@ -1,4 +1,4 @@
-package com.marlodev.app_android.domain.usecase.order.barista;
+package com.marlodev.app_android.domain.usecase.order.barista.paginacion;
 import androidx.lifecycle.LiveData;
 
 import com.marlodev.app_android.data.network.model.PageResponse;
@@ -7,7 +7,7 @@ import com.marlodev.app_android.domain.repository.OrderRepository;
 import com.marlodev.app_android.utils.Result;
 
 /**
- * Caso de uso para obtener órdenes del barista por páginas (paginación).
+ *  (Paginacion). Lista órdenes en espera. // 🔵
  */
 public class GetBaristaOrdersPageUseCase {
 

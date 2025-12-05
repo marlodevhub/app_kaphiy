@@ -8,9 +8,7 @@ import com.marlodev.app_android.utils.Result;
 
 import java.util.List;
 
-/**
- * Caso de uso para obtener todas las órdenes que están en preparación por el barista autenticado.
- */
+  // Lista de órdenes en preparación ✅
 public class GetInPreparationOrdersUseCase {
 
     private final OrderRepository repository;

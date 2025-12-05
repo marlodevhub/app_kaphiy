@@ -9,7 +9,7 @@ import com.marlodev.app_android.utils.Result;
 import java.util.List;
 
 /**
- * Caso de uso para obtener todas las órdenes que ya están listas para entrega.
+ * Listar todas las órdenes que ya están listas para entrega.
  */
 public class GetReadyOrdersBaristaUseCase {
 

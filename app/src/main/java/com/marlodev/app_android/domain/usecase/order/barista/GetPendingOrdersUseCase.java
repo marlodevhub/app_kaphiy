@@ -8,9 +8,9 @@ import com.marlodev.app_android.utils.Result;
 
 import java.util.List;
 
-/**
- * Caso de uso para que un barista obtenga las órdenes pendientes (EN_ESPERA).
- */
+
+//   Lista de órdenes que van llegando ✅
+
 public class GetPendingOrdersUseCase {
 
     private final OrderRepository repository;
