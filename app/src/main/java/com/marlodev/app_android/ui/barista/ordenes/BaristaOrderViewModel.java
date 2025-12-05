@@ -22,6 +22,8 @@ import java.util.Map;
 
 public class BaristaOrderViewModel extends ViewModel {
 
+    private static final String TAG = "BaristaOrderVM";
+
     private final OrderUseCases orderUseCases;
 
     // Mapas para cada filtro
@@ -69,17 +71,14 @@ public class BaristaOrderViewModel extends ViewModel {
     public LiveData<Integer> getPreparationCount() { return preparationCount; }
     public LiveData<Integer> getReadyCount() { return readyCount; }
 
-    // Flag para saber si es primera carga
-    private boolean isFirstLoad = true;
-
     public BaristaOrderViewModel(OrderUseCases orderUseCases) {
         this.orderUseCases = orderUseCases;
 
-        // Observar WebSocket para actualizaciones en tiempo real
-        observeWebSocketUpdates();
-
         // Cargar primera página
         loadPage(0, currentFilter.getValue());
+
+        // Después de cargar datos iniciales, conectar WebSocket
+        observeWebSocketUpdates();
     }
 
     // ---- FILTROS ----
@@ -88,22 +87,16 @@ public class BaristaOrderViewModel extends ViewModel {
         currentFilter.setValue(filter);
 
         // Cargar la página actual del filtro seleccionado
-        if (filter == OrderStatus.EN_ESPERA) {
-            loadPage(pendingCurrentPage, filter);
-        } else if (filter == OrderStatus.EN_PREPARACION) {
-            loadPage(preparationCurrentPage, filter);
-        } else if (filter == OrderStatus.LISTO_PARA_ENTREGA) {
-            loadPage(readyCurrentPage, filter);
-        }
+        int pageToLoad = getCurrentPageForFilter(filter);
+        loadPage(pageToLoad, filter);
     }
 
-    // ---- PAGINACIÓN (SOLO PARA CARGA INICIAL) ----
+    // ---- PAGINACIÓN (CARGA INICIAL) ----
     public void loadPage(int page, OrderStatus filter) {
         if (page < 0) page = 0;
 
         isLoading.setValue(true);
 
-        // Variable final para usar en lambda
         final int finalPage = page;
         final OrderStatus finalFilter = filter;
 
@@ -114,7 +107,6 @@ public class BaristaOrderViewModel extends ViewModel {
         } else if (finalFilter == OrderStatus.EN_PREPARACION) {
             liveData = orderUseCases.barista.getOrdersPreparationPage.execute(finalPage, pageSize);
         } else if (finalFilter == OrderStatus.LISTO_PARA_ENTREGA) {
-            // Si tu UseCase se llama diferente, ajústalo aquí
             liveData = orderUseCases.barista.getBaristaOrdersReadyPage.execute(finalPage, pageSize);
         } else {
             isLoading.setValue(false);
@@ -127,8 +119,8 @@ public class BaristaOrderViewModel extends ViewModel {
                 pendingCurrentPage = data.number;
                 pendingTotalPages = data.totalPages;
 
-                // Limpiar y agregar nuevas órdenes (solo en primera carga o refresh)
-                if (finalPage == 0 || isFirstLoad) {
+                // Solo limpiar si es página 0 (nueva búsqueda)
+                if (finalPage == 0) {
                     pendingOrders.clear();
                 }
                 for (Order order : data.content) {
@@ -138,7 +130,7 @@ public class BaristaOrderViewModel extends ViewModel {
                 preparationCurrentPage = data.number;
                 preparationTotalPages = data.totalPages;
 
-                if (finalPage == 0 || isFirstLoad) {
+                if (finalPage == 0) {
                     inPreparationOrders.clear();
                 }
                 for (Order order : data.content) {
@@ -148,7 +140,7 @@ public class BaristaOrderViewModel extends ViewModel {
                 readyCurrentPage = data.number;
                 readyTotalPages = data.totalPages;
 
-                if (finalPage == 0 || isFirstLoad) {
+                if (finalPage == 0) {
                     readyOrders.clear();
                 }
                 for (Order order : data.content) {
@@ -158,8 +150,9 @@ public class BaristaOrderViewModel extends ViewModel {
 
             updateVisibleOrders();
             updatePageInfo();
+            updateAllCounters();
             isLoading.setValue(false);
-            isFirstLoad = false;
+
         }, error -> {
             errorMessage.setValue(new Event<>("Error al cargar órdenes: " + error));
             isLoading.setValue(false);
@@ -191,7 +184,8 @@ public class BaristaOrderViewModel extends ViewModel {
         if (filter == null) filter = OrderStatus.EN_ESPERA;
 
         int currentPage = getCurrentPageForFilter(filter);
-        loadPage(currentPage, filter);
+        // Forzar recarga desde página 0
+        loadPage(0, filter);
     }
 
     private int getCurrentPageForFilter(OrderStatus filter) {
@@ -240,8 +234,7 @@ public class BaristaOrderViewModel extends ViewModel {
                     isLoading.setValue(false);
 
                     if (result != null && result.isSuccess()) {
-                        // ✅ WebSocket actualizará automáticamente los mapas
-                        // No necesitamos hacer nada aquí
+                        Log.d(TAG, "✅ Preparación iniciada para orden: " + orderId);
                     } else {
                         String error = result != null && result.message != null
                                 ? result.message
@@ -259,8 +252,7 @@ public class BaristaOrderViewModel extends ViewModel {
                     isLoading.setValue(false);
 
                     if (result != null && result.isSuccess()) {
-                        // ✅ WebSocket actualizará automáticamente los mapas
-                        // No necesitamos hacer nada aquí
+                        Log.d(TAG, "✅ Orden marcada como lista: " + orderId);
                     } else {
                         String error = result != null && result.message != null
                                 ? result.message
@@ -274,7 +266,7 @@ public class BaristaOrderViewModel extends ViewModel {
         _openOrderDetail.setValue(new Event<>(orderId));
     }
 
-    // ---- ACTUALIZACIÓN EN TIEMPO REAL (WebSocket) ----
+    // ---- WEB SOCKET (SOLO ACTUALIZACIONES) ----
     private void observeWebSocketUpdates() {
         // Observar nuevas órdenes en espera
         observeResult(
@@ -298,40 +290,71 @@ public class BaristaOrderViewModel extends ViewModel {
         );
     }
 
+    /**
+     * 🔥 CORRECCIÓN CRÍTICA: WebSocket solo actualiza, NO reemplaza
+     * Maneja tres tipos de operaciones:
+     * 1. Nueva orden → Agregar al mapa correspondiente
+     * 2. Orden actualizada → Actualizar en mapa correspondiente
+     * 3. Orden eliminada → Remover de todos los mapas
+     */
     private void handleWebSocketUpdate(List<Order> newOrders, OrderStatus expectedStatus) {
-        Log.d("BaristaVM", "📡 WS Update - Estado: " + expectedStatus +
+        Log.d(TAG, "📡 WS Update - Estado: " + expectedStatus +
                 " | Cantidad: " + (newOrders != null ? newOrders.size() : 0) +
                 " | Filtro actual: " + currentFilter.getValue());
 
         if (newOrders == null) return;
-        if (newOrders == null) return; // 🔥 Cambia esto: permite listas vacías
 
-        // Determinar qué mapa usar según el estado
-        Map<Long, Order> targetMap = getMapForStatus(expectedStatus);
+        boolean hasChanges = false;
 
-        // 🔥 CORRECCIÓN: Filtrar solo órdenes en el estado esperado
-        List<Order> filteredOrders = new ArrayList<>();
+        // DEPURACIÓN: Ver qué órdenes llegan
         for (Order order : newOrders) {
-            if (order.getStatus() == expectedStatus) {
-                filteredOrders.add(order);
+            Log.d(TAG, "🔍 Orden #" + order.getId() +
+                    " - Estado actual: " + order.getStatus() +
+                    " - Estado esperado: " + expectedStatus);
+        }
+
+        // Procesar cada orden recibida
+        for (Order order : newOrders) {
+            if (order == null || order.getId() == null) continue;
+
+            Long orderId = order.getId();
+            OrderStatus actualStatus = order.getStatus();
+
+            // 🔥 PASO 1: Remover de TODOS los mapas primero
+            boolean wasInPending = pendingOrders.remove(orderId) != null;
+            boolean wasInPreparation = inPreparationOrders.remove(orderId) != null;
+            boolean wasInReady = readyOrders.remove(orderId) != null;
+
+            // 🔥 PASO 2: Agregar al mapa correcto según su estado ACTUAL
+            Map<Long, Order> correctMap = getMapForStatus(actualStatus);
+            correctMap.put(orderId, order);
+
+            // Si la orden estaba en algún mapa o cambió de estado, hay cambios
+            if (wasInPending || wasInPreparation || wasInReady) {
+                hasChanges = true;
+
+                Log.d(TAG, "🔄 Orden #" + orderId +
+                        " movida de " +
+                        (wasInPending ? "PENDING" :
+                                wasInPreparation ? "PREPARATION" :
+                                        wasInReady ? "READY" : "NINGUNO") +
+                        " a " + actualStatus);
             }
         }
 
-        // 🔥 CORRECCIÓN: Actualizar contador con las órdenes FILTRADAS
-        updateCountForStatus(expectedStatus, filteredOrders.size());
+        // 🔥 CORRECCIÓN CRÍTICA: Actualizar contadores SIEMPRE
+        updateAllCounters();
 
-        // 🔥 IMPORTANTE: Siempre limpiar y actualizar el mapa, incluso si está vacío
-        targetMap.clear();
-        for (Order order : filteredOrders) {
-            targetMap.put(order.getId(), order);
+        // 🔥 CORRECCIÓN CRÍTICA: Actualizar UI SIEMPRE si hubo cambios
+        // NO importa si el filtro actual coincide con expectedStatus
+        if (hasChanges) {
+            updateVisibleOrders();  // ✅ ACTUALIZAR SIEMPRE
         }
 
-        // 🔥 CORRECCIÓN: Si estamos viendo este filtro, actualizar la UI SIEMPRE
-        if (currentFilter.getValue() == expectedStatus) {
-            updateVisibleOrders();
-        }
+        Log.d(TAG, "✅ Estado final - Pending: " + pendingOrders.size() +
+                " | Preparation: " + inPreparationOrders.size() +
+                " | Ready: " + readyOrders.size());
     }
-
     private Map<Long, Order> getMapForStatus(OrderStatus status) {
         switch (status) {
             case EN_ESPERA:
@@ -345,18 +368,10 @@ public class BaristaOrderViewModel extends ViewModel {
         }
     }
 
-    private void updateCountForStatus(OrderStatus status, int count) {
-        switch (status) {
-            case EN_ESPERA:
-                pendingCount.setValue(count);
-                break;
-            case EN_PREPARACION:
-                preparationCount.setValue(count);
-                break;
-            case LISTO_PARA_ENTREGA:
-                readyCount.setValue(count);
-                break;
-        }
+    private void updateAllCounters() {
+        pendingCount.setValue(pendingOrders.size());
+        preparationCount.setValue(inPreparationOrders.size());
+        readyCount.setValue(readyOrders.size());
     }
 
     // ---- LÓGICA INTERNA ----
