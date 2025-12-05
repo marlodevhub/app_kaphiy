@@ -1,6 +1,8 @@
 package com.marlodev.app_android.ui.barista.mas;
 
 import android.os.Bundle;
+import android.widget.Toast;
+
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
@@ -8,12 +10,16 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.button.MaterialButton;
+import com.marlodev.app_android.MainApplication;
 import com.marlodev.app_android.R;
+import com.marlodev.app_android.di.AppContainer;
 import com.marlodev.app_android.domain.dtoParcelable.OrderParcelable;
 import com.marlodev.app_android.domain.mappers_parceables.OrderMapper;
 import com.marlodev.app_android.domain.model.Order;
 import com.marlodev.app_android.ui.barista.mas.components.OrderItemAdapter;
+import com.marlodev.app_android.domain.usecase.order.OrderUseCases;
 
 public class BaristaOrderDetailActivity extends AppCompatActivity {
 
@@ -36,29 +42,62 @@ public class BaristaOrderDetailActivity extends AppCompatActivity {
             return insets;
         });
 
+        // RecyclerView
         recycler = findViewById(R.id.recycle_items_detail_orden);
         adapter = new OrderItemAdapter();
         recycler.setLayoutManager(new LinearLayoutManager(this));
         recycler.setAdapter(adapter);
 
+        // Botón finalizar preparación
         btnFinishOrder = findViewById(R.id.btnFinalizarPreparacion);
 
-        viewModel = new ViewModelProvider(this).get(BaristaOrderDetailViewModel.class);
+        // DI: OrderUseCases
+        AppContainer di = ((MainApplication) getApplication()).appContainer;
+        viewModel = new ViewModelProvider(this,
+                new BaristaOrderDetailViewModelFactory(di.orderUseCases))
+                .get(BaristaOrderDetailViewModel.class);
 
-        // Recibir la orden desde Fragment
+        // Recibir la orden desde Fragment/Intent
         OrderParcelable parcelableOrder = getIntent().getParcelableExtra("ORDER");
         if (parcelableOrder != null) {
-            Order order = OrderMapper.fromParcelable(parcelableOrder); // Convierte a modelo de dominio
+            Order order = OrderMapper.fromParcelable(parcelableOrder);
             viewModel.setOrder(order);
-        }        // Observa cambios de la orden
-        viewModel.getOrder().observe(this, o -> {
-            if (o != null) adapter.submitList(o.getItems());
+        }
+
+        // Observar cambios en la orden
+        viewModel.getOrder().observe(this, order -> {
+            if (order != null) {
+                adapter.submitList(order.getItems());
+            }
         });
+
+        // Observar finalización de orden
+        viewModel.orderFinished.observe(this, event -> {
+            if (event != null) {
+                Long orderId = event.getContentIfNotHandled();
+                if (orderId != null) {
+                    Toast.makeText(this, "Orden finalizada", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }
+        });
+
+
+        // Observar errores
+        viewModel.getErrorMessage().observe(this, event -> {
+            if (event != null) {
+                String message = event.getContentIfNotHandled();
+                if (message != null && !message.isEmpty()) {
+                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
 
         // Botón finalizar
         btnFinishOrder.setOnClickListener(v -> {
-            viewModel.finishOrder();
-            btnFinishOrder.setEnabled(false);
+            btnFinishOrder.setEnabled(false); // evitar doble click
+            viewModel.finishOrderAndRemove();
         });
     }
 }
