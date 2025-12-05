@@ -294,77 +294,120 @@ public class BaristaOrderViewModel extends ViewModel {
      * 🔥 CORRECCIÓN CRÍTICA: El problema está aquí
      * Cuando llega una nueva orden por WebSocket, no se estaba agregando si NO estaba en ningún mapa
      */
-    private void handleWebSocketUpdate(List<Order> newOrders, OrderStatus expectedStatus) {
-        Log.d(TAG, "📡 WS Update - Estado: " + expectedStatus +
-                " | Cantidad: " + (newOrders != null ? newOrders.size() : 0) +
-                " | Filtro actual: " + currentFilter.getValue());
+//    private void handleWebSocketUpdate(List<Order> newOrders, OrderStatus expectedStatus) {
+//        Log.d(TAG, "📡 WS Update - Estado: " + expectedStatus +
+//                " | Cantidad: " + (newOrders != null ? newOrders.size() : 0) +
+//                " | Filtro actual: " + currentFilter.getValue());
+//
+//        if (newOrders == null) return;
+//
+//        boolean hasChanges = false;
+//
+//        // DEPURACIÓN: Ver qué órdenes llegan
+//        for (Order order : newOrders) {
+//            Log.d(TAG, "🔍 Orden #" + order.getId() +
+//                    " - Estado actual: " + order.getStatus() +
+//                    " - Estado esperado: " + expectedStatus);
+//        }
+//
+//        // Procesar cada orden recibida
+//        for (Order order : newOrders) {
+//            if (order == null || order.getId() == null) continue;
+//
+//            Long orderId = order.getId();
+//            OrderStatus actualStatus = order.getStatus();
+//
+//            // 🔥 PASO 1: Verificar si es una orden NUEVA
+//            boolean isExistingOrder = pendingOrders.containsKey(orderId) ||
+//                    inPreparationOrders.containsKey(orderId) ||
+//                    readyOrders.containsKey(orderId);
+//
+//            // 🔥 PASO 2: Si NO existe, es una orden NUEVA - agregar directamente
+//            if (!isExistingOrder) {
+//                Map<Long, Order> correctMap = getMapForStatus(actualStatus);
+//                correctMap.put(orderId, order);
+//                hasChanges = true;
+//                Log.d(TAG, "🆕 NUEVA orden #" + orderId + " agregada a " + actualStatus);
+//                continue;
+//            }
+//
+//            // 🔥 PASO 3: Si EXISTE, mover entre mapas según su nuevo estado
+//            boolean wasInPending = pendingOrders.remove(orderId) != null;
+//            boolean wasInPreparation = inPreparationOrders.remove(orderId) != null;
+//            boolean wasInReady = readyOrders.remove(orderId) != null;
+//
+//            // Agregar al mapa correcto según su estado ACTUAL
+//            Map<Long, Order> correctMap = getMapForStatus(actualStatus);
+//            correctMap.put(orderId, order);
+//
+//            // Si la orden estaba en algún mapa, hay cambios
+//            if (wasInPending || wasInPreparation || wasInReady) {
+//                hasChanges = true;
+//
+//                Log.d(TAG, "🔄 Orden #" + orderId +
+//                        " movida de " +
+//                        (wasInPending ? "PENDING" :
+//                                wasInPreparation ? "PREPARATION" :
+//                                        wasInReady ? "READY" : "NINGUNO") +
+//                        " a " + actualStatus);
+//            }
+//        }
+//
+//        // 🔥 ACTUALIZAR SIEMPRE los contadores
+//        updateAllCounters();
+//
+//        // 🔥 ACTUALIZAR UI SIEMPRE si hubo cambios
+//        if (hasChanges) {
+//            updateVisibleOrders();
+//            Log.d(TAG, "✅ UI actualizada por WebSocket");
+//        }
+//
+//        Log.d(TAG, "📊 Estado final - Pending: " + pendingOrders.size() +
+//                " | Preparation: " + inPreparationOrders.size() +
+//                " | Ready: " + readyOrders.size());
+//    }
 
+
+    private void handleWebSocketUpdate(List<Order> newOrders, OrderStatus expectedStatus) {
         if (newOrders == null) return;
 
         boolean hasChanges = false;
 
-        // DEPURACIÓN: Ver qué órdenes llegan
-        for (Order order : newOrders) {
-            Log.d(TAG, "🔍 Orden #" + order.getId() +
-                    " - Estado actual: " + order.getStatus() +
-                    " - Estado esperado: " + expectedStatus);
-        }
-
-        // Procesar cada orden recibida
         for (Order order : newOrders) {
             if (order == null || order.getId() == null) continue;
-
             Long orderId = order.getId();
             OrderStatus actualStatus = order.getStatus();
 
-            // 🔥 PASO 1: Verificar si es una orden NUEVA
             boolean isExistingOrder = pendingOrders.containsKey(orderId) ||
                     inPreparationOrders.containsKey(orderId) ||
                     readyOrders.containsKey(orderId);
 
-            // 🔥 PASO 2: Si NO existe, es una orden NUEVA - agregar directamente
+            Map<Long, Order> correctMap = getMapForStatus(actualStatus);
+
             if (!isExistingOrder) {
-                Map<Long, Order> correctMap = getMapForStatus(actualStatus);
                 correctMap.put(orderId, order);
                 hasChanges = true;
-                Log.d(TAG, "🆕 NUEVA orden #" + orderId + " agregada a " + actualStatus);
-                continue;
-            }
-
-            // 🔥 PASO 3: Si EXISTE, mover entre mapas según su nuevo estado
-            boolean wasInPending = pendingOrders.remove(orderId) != null;
-            boolean wasInPreparation = inPreparationOrders.remove(orderId) != null;
-            boolean wasInReady = readyOrders.remove(orderId) != null;
-
-            // Agregar al mapa correcto según su estado ACTUAL
-            Map<Long, Order> correctMap = getMapForStatus(actualStatus);
-            correctMap.put(orderId, order);
-
-            // Si la orden estaba en algún mapa, hay cambios
-            if (wasInPending || wasInPreparation || wasInReady) {
+            } else {
+                // Remover de cualquier mapa donde estuviera antes
+                pendingOrders.remove(orderId);
+                inPreparationOrders.remove(orderId);
+                readyOrders.remove(orderId);
+                correctMap.put(orderId, order);
                 hasChanges = true;
-
-                Log.d(TAG, "🔄 Orden #" + orderId +
-                        " movida de " +
-                        (wasInPending ? "PENDING" :
-                                wasInPreparation ? "PREPARATION" :
-                                        wasInReady ? "READY" : "NINGUNO") +
-                        " a " + actualStatus);
             }
         }
 
-        // 🔥 ACTUALIZAR SIEMPRE los contadores
+        // 🔹 ACTUALIZAR CONTADORES
         updateAllCounters();
 
-        // 🔥 ACTUALIZAR UI SIEMPRE si hubo cambios
+        // 🔹 ACTUALIZAR totalPages dinámicamente según el tamaño de cada mapa
+        recalculateTotalPages();
+
+        // 🔹 ACTUALIZAR UI si hubo cambios
         if (hasChanges) {
             updateVisibleOrders();
-            Log.d(TAG, "✅ UI actualizada por WebSocket");
+            updatePageInfo();
         }
-
-        Log.d(TAG, "📊 Estado final - Pending: " + pendingOrders.size() +
-                " | Preparation: " + inPreparationOrders.size() +
-                " | Ready: " + readyOrders.size());
     }
 
     private Map<Long, Order> getMapForStatus(OrderStatus status) {
@@ -432,6 +475,20 @@ public class BaristaOrderViewModel extends ViewModel {
             }
         });
     }
+
+    /** Recalcula el total de páginas para cada filtro según pageSize */
+    private void recalculateTotalPages() {
+        pendingTotalPages = Math.max(1, (int) Math.ceil(pendingOrders.size() / (double) pageSize));
+        preparationTotalPages = Math.max(1, (int) Math.ceil(inPreparationOrders.size() / (double) pageSize));
+        readyTotalPages = Math.max(1, (int) Math.ceil(readyOrders.size() / (double) pageSize));
+
+        // ⚠️ Ajustar currentPage si supera totalPages - 1
+        if (pendingCurrentPage >= pendingTotalPages) pendingCurrentPage = pendingTotalPages - 1;
+        if (preparationCurrentPage >= preparationTotalPages) preparationCurrentPage = preparationTotalPages - 1;
+        if (readyCurrentPage >= readyTotalPages) readyCurrentPage = readyTotalPages - 1;
+    }
+
+
 
     private <T> void observeResult(LiveData<Result<T>> liveData, Consumer<T> onSuccess) {
         observeResult(liveData, onSuccess, null);
