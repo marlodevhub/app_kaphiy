@@ -6,6 +6,7 @@ import com.marlodev.app_android.domain.usecase.order.barista.paginacion.GetBaris
 import com.marlodev.app_android.domain.usecase.order.barista.GetInPreparationOrdersUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.GetPendingOrdersUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.GetReadyOrdersBaristaUseCase;
+import com.marlodev.app_android.domain.usecase.order.barista.paginacion.GetBaristaOrdersReadyPageUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.paginacion.GetinPreparationOrdersInPreparationUseCase;
 import com.marlodev.app_android.domain.usecase.order.barista.SetOrderReadyUseCase;
 import com.marlodev.app_android.domain.usecase.order.cliente.GetActiveOrdersUseCase;
@@ -43,6 +44,7 @@ public class OrderUseCases {
         public final GetReadyOrdersBaristaUseCase getReadyOrders;
         public final SetOrderReadyUseCase setOrderReady;
         public final GetinPreparationOrdersInPreparationUseCase getOrdersPreparationPage;
+        public final GetBaristaOrdersReadyPageUseCase getBaristaOrdersReadyPage;
 
         public Barista(
                 AcceptOrderUseCase acceptOrder,
@@ -52,7 +54,8 @@ public class OrderUseCases {
                 GetPendingOrdersUseCase getPendingOrders,
                 GetReadyOrdersBaristaUseCase getReadyOrders,
                 SetOrderReadyUseCase setOrderReady,
-                GetinPreparationOrdersInPreparationUseCase getOrdersPreparationPage
+                GetinPreparationOrdersInPreparationUseCase getOrdersPreparationPage,
+                GetBaristaOrdersReadyPageUseCase getBaristaOrdersReadyPage
         ) {
             this.acceptOrder = acceptOrder;
             this.getOrdersPage = getOrdersPage;
@@ -62,6 +65,7 @@ public class OrderUseCases {
             this.getReadyOrders = getReadyOrders;
             this.setOrderReady = setOrderReady;
             this.getOrdersPreparationPage = getOrdersPreparationPage;
+            this.getBaristaOrdersReadyPage = getBaristaOrdersReadyPage;
         }
     }
 }
