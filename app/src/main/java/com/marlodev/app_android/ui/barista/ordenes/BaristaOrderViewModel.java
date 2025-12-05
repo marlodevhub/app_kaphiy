@@ -1,5 +1,7 @@
 package com.marlodev.app_android.ui.barista.ordenes;
 
+import android.util.Log;
+
 import androidx.core.util.Consumer;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -297,40 +299,36 @@ public class BaristaOrderViewModel extends ViewModel {
     }
 
     private void handleWebSocketUpdate(List<Order> newOrders, OrderStatus expectedStatus) {
-        if (newOrders == null || newOrders.isEmpty()) return;
+        Log.d("BaristaVM", "📡 WS Update - Estado: " + expectedStatus +
+                " | Cantidad: " + (newOrders != null ? newOrders.size() : 0) +
+                " | Filtro actual: " + currentFilter.getValue());
+
+        if (newOrders == null) return;
+        if (newOrders == null) return; // 🔥 Cambia esto: permite listas vacías
 
         // Determinar qué mapa usar según el estado
         Map<Long, Order> targetMap = getMapForStatus(expectedStatus);
 
-        // Actualizar contador
-        updateCountForStatus(expectedStatus, newOrders.size());
+        // 🔥 CORRECCIÓN: Filtrar solo órdenes en el estado esperado
+        List<Order> filteredOrders = new ArrayList<>();
+        for (Order order : newOrders) {
+            if (order.getStatus() == expectedStatus) {
+                filteredOrders.add(order);
+            }
+        }
 
-        // Si estamos viendo este filtro, actualizar la lista visible
+        // 🔥 CORRECCIÓN: Actualizar contador con las órdenes FILTRADAS
+        updateCountForStatus(expectedStatus, filteredOrders.size());
+
+        // 🔥 IMPORTANTE: Siempre limpiar y actualizar el mapa, incluso si está vacío
+        targetMap.clear();
+        for (Order order : filteredOrders) {
+            targetMap.put(order.getId(), order);
+        }
+
+        // 🔥 CORRECCIÓN: Si estamos viendo este filtro, actualizar la UI SIEMPRE
         if (currentFilter.getValue() == expectedStatus) {
-            // Para WebSocket, reemplazamos todo el mapa cuando recibimos actualizaciones
-            targetMap.clear();
-            for (Order order : newOrders) {
-                targetMap.put(order.getId(), order);
-            }
-
             updateVisibleOrders();
-        } else {
-            // Si no estamos viendo este filtro, solo actualizamos el mapa
-            // pero mantenemos el orden de las órdenes existentes
-            for (Order newOrder : newOrders) {
-                if (targetMap.containsKey(newOrder.getId())) {
-                    // Actualizar orden existente
-                    targetMap.put(newOrder.getId(), newOrder);
-                } else if (newOrder.getStatus() == expectedStatus) {
-                    // Agregar nueva orden (al inicio)
-                    targetMap.put(newOrder.getId(), newOrder);
-                }
-            }
-
-            // Remover órdenes que ya no están en este estado
-            targetMap.entrySet().removeIf(entry ->
-                    entry.getValue().getStatus() != expectedStatus
-            );
         }
     }
 
