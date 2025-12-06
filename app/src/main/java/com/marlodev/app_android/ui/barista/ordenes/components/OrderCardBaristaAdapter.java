@@ -1,7 +1,5 @@
 package com.marlodev.app_android.ui.barista.ordenes.components;
 
-
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +20,8 @@ import com.marlodev.app_android.domain.model.OrderStatus;
 
 import java.util.List;
 
-public class OrderCardBaristaAdapter extends ListAdapter<Order, OrderCardBaristaAdapter.OrderViewHolder> {
+public class OrderCardBaristaAdapter
+        extends ListAdapter<Order, OrderCardBaristaAdapter.OrderViewHolder> {
 
     private OnItemClickListener listener;
 
@@ -52,13 +51,23 @@ public class OrderCardBaristaAdapter extends ListAdapter<Order, OrderCardBarista
         holder.bind(getItem(position));
     }
 
+    // ───────────────────────────────
+    // ✅ VIEW HOLDER
+    // ───────────────────────────────
     class OrderViewHolder extends RecyclerView.ViewHolder {
-        private final TextView txtOrderNumber, txtClientName;
+
+        private final TextView txtOrderTitle;
+        private final TextView txtCantidad;
+        private final TextView txtOrderNumber;
+        private final TextView txtClientName;
         private final ImageView imgeOrder;
         private final Button btnPreparar;
 
         public OrderViewHolder(@NonNull View itemView) {
             super(itemView);
+
+            txtOrderTitle = itemView.findViewById(R.id.textTitleOrder);
+            txtCantidad = itemView.findViewById(R.id.txtCantidad);
             txtOrderNumber = itemView.findViewById(R.id.txtOrderNumber);
             txtClientName = itemView.findViewById(R.id.txtClientName);
             imgeOrder = itemView.findViewById(R.id.imgeOrder);
@@ -78,35 +87,79 @@ public class OrderCardBaristaAdapter extends ListAdapter<Order, OrderCardBarista
         }
 
         public void bind(Order order) {
+
+            // Número y cliente
             txtOrderNumber.setText("#00" + order.getId());
             txtClientName.setText(order.getUsername());
 
+            // Estado / botón
             OrderStatus status = order.getStatus();
             if (status != null) {
                 switch (status) {
                     case EN_ESPERA:
-                        btnPreparar.setText("Tomar orden"); btnPreparar.setEnabled(true);
+                        btnPreparar.setText("Tomar orden");
+                        btnPreparar.setEnabled(true);
                         break;
                     case EN_PREPARACION:
-                        btnPreparar.setText("Preparar"); btnPreparar.setEnabled(true);
+                        btnPreparar.setText("Preparar");
+                        btnPreparar.setEnabled(true);
                         break;
                     default:
-                        btnPreparar.setText("Acción"); btnPreparar.setEnabled(false);
+                        btnPreparar.setText("Acción");
+                        btnPreparar.setEnabled(false);
                         break;
                 }
             }
 
-            // Imagen
-            List<String> imageUrls = null;
+            // ───────────────────────────────
+            // ✅ TÍTULO: nombres de productos
+            // ───────────────────────────────
             List<CartItem> items = order.getItems();
+
             if (items != null && !items.isEmpty()) {
-                CartItem lastItem = items.get(items.size() - 1);
-                if (lastItem != null && lastItem.getProduct() != null)
-                    imageUrls = lastItem.getProduct().getImageUrls();
+                StringBuilder namesBuilder = new StringBuilder();
+
+                for (int i = 0; i < items.size(); i++) {
+                    CartItem item = items.get(i);
+                    if (item.getProduct() != null) {
+                        namesBuilder.append(item.getProduct().getName());
+                        if (i < items.size() - 1) {
+                            namesBuilder.append(", ");
+                        }
+                    }
+                }
+
+                txtOrderTitle.setText(namesBuilder.toString());
+            } else {
+                txtOrderTitle.setText("Sin productos");
             }
-            String url = (imageUrls != null && !imageUrls.isEmpty()) ? imageUrls.get(0) : null;
+
+            // ───────────────────────────────
+            // ✅ CANTIDAD TOTAL (| +N)
+            // ───────────────────────────────
+            int totalItems = order.getTotalItemCount();
+            if (totalItems > 1) {
+                txtCantidad.setVisibility(View.VISIBLE);
+                txtCantidad.setText("| +" + totalItems);
+            } else {
+                txtCantidad.setVisibility(View.GONE);
+            }
+
+            // ───────────────────────────────
+            // ✅ IMAGEN (primer producto)
+            // ───────────────────────────────
+            String imageUrl = null;
+            if (items != null && !items.isEmpty()) {
+                CartItem firstItem = items.get(0);
+                if (firstItem.getProduct() != null &&
+                        firstItem.getProduct().getImageUrls() != null &&
+                        !firstItem.getProduct().getImageUrls().isEmpty()) {
+                    imageUrl = firstItem.getProduct().getImageUrls().get(0);
+                }
+            }
+
             Glide.with(itemView.getContext())
-                    .load(url)
+                    .load(imageUrl)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .placeholder(R.drawable.ic_image_placeholder)
                     .error(R.drawable.ic_image_placeholder)

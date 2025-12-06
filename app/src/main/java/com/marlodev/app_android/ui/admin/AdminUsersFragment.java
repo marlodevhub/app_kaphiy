@@ -57,7 +57,6 @@ public class AdminUsersFragment extends Fragment {
         if (rolesFilter != null) {
             // Para cambiar el fondo de un TextView que usa un drawable, le cambiamos el tinte.
             // Esto conserva la forma (bordes redondeados) pero cambia el color.
-            rolesFilter.getBackground().setTint(lightGreyColor);
         }
     }
 }

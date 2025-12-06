@@ -25,17 +25,17 @@ android {
             isMinifyEnabled = false
 
             // URL de desarrollo para celular en la misma red Wi-Fi comadno: ipconfig getifaddr en0
-            buildConfigField("String", "BASE_URL", "\"http://192.168.0.4:8080/api/\"")
-            buildConfigField("String", "WS_URL", "\"ws://192.168.0.4:8080/ws-products\"")
-
+//            buildConfigField("String", "BASE_URL", "\"http://192.168.0.4:8080/api/\"")
+//            buildConfigField("String", "WS_URL", "\"ws://192.168.0.4:8080/ws-products\"")
 
 
             // --- URL PARA DESARROLLO/LOCAL ---
-////            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/api/\"")
+//            buildConfigField("String", "BASE_URL", "\"http://10.0.2.2:8080/api/\"")
 //            buildConfigField("String", "WS_URL", "\"ws://10.0.2.2:8080/ws-products\"")
+
             //producion
-//            buildConfigField("String", "BASE_URL", "\"https://ecommerce-backend-o9y5.onrender.com/api/\"")
-//            buildConfigField("String", "WS_URL", "\"wss://ecommerce-backend-o9y5.onrender.com/ws-products\"")
+            buildConfigField("String", "BASE_URL", "\"https://ecommerce-backend-o9y5.onrender.com/api/\"")
+            buildConfigField("String", "WS_URL", "\"wss://ecommerce-backend-o9y5.onrender.com/ws-products\"")
         }
         getByName("release") {
             isMinifyEnabled = false
