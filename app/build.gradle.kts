@@ -71,6 +71,8 @@ dependencies {
     // --- Google Play Services (solo si usas otros servicios) ---
     implementation(libs.play.services.maps)
     implementation(libs.play.services.cast.framework)
+    implementation(libs.navigation.fragment)
+    implementation(libs.navigation.ui)
 
 
     // --- Testing ---
@@ -125,6 +127,9 @@ dependencies {
 
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.3")
+
+    //Grafico de barras
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
 }
 

@@ -41,12 +41,14 @@
 
                 <!--        Contenedor de fondo verde-->
 
+                <!--        Contenedor de fondo gris-->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/colorGreen1"
-                    android:padding="10dp"
                     android:orientation="vertical"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="20dp"
                     >
 
                     <!--      Saludo e iconos-->
@@ -54,8 +56,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
 
-                        android:orientation="horizontal"
-                        >
+                        android:orientation="horizontal">
 
                         <!--      Saludo -->
 
@@ -81,11 +82,11 @@
                                 android:id="@+id/tvUserName"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Buenas tardes, Nicol"
-                                android:textSize="18sp"
                                 android:layout_marginTop="10dp"
+                                android:text="Buenas tardes, Nicol"
                                 android:textColor="@color/colorBlack"
-                                android:textStyle="bold"/>
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
 
                         </LinearLayout>
 
@@ -104,11 +105,11 @@
                                 android:id="@+id/btnNotificaciones"
                                 android:layout_width="48dp"
                                 android:layout_height="48dp"
+                                android:layout_marginRight="10dp"
                                 android:background="@drawable/bg_greenlight"
                                 android:clickable="true"
                                 android:focusable="true"
                                 android:foreground="?attr/selectableItemBackground"
-                                android:layout_marginRight="10dp"
                                 android:padding="6dp">
 
                                 <ImageView
@@ -123,16 +124,16 @@
                                     android:layout_width="20dp"
                                     android:layout_height="20dp"
                                     android:layout_gravity="end|top"
-                                    android:layout_marginEnd="-4dp"
                                     android:layout_marginTop="-4dp"
+                                    android:layout_marginEnd="-4dp"
 
 
                                     android:background="@drawable/badge_redondo"
+                                    android:gravity="center"
+                                    android:padding="2dp"
                                     android:text="3"
                                     android:textColor="#FFFFFF"
-                                    android:textSize="10sp"
-                                    android:gravity="center"
-                                    android:padding="2dp" />
+                                    android:textSize="10sp" />
 
                             </FrameLayout>
 
@@ -177,16 +178,16 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="nicol@gmail.com"
-                                android:textSize="11sp"
-                                android:textColor="@color/colorBlack" />
+                                android:textColor="@color/colorBlack"
+                                android:textSize="11sp" />
 
                             <TextView
                                 android:id="@+id/tvUserRole"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Administradora Kaphiy Perú"
-                                android:textSize="11sp"
-                                android:textColor="@color/colorBlack" />
+                                android:textColor="@color/colorBlack"
+                                android:textSize="11sp" />
                         </LinearLayout>
 
                         <!-- Botón más pequeño -->
@@ -197,25 +198,20 @@
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnLogout"
                                 android:layout_width="wrap_content"
+                                android:layout_marginStart="150dp"
                                 android:layout_height="wrap_content"
                                 android:text="Cerrar sesión"
                                 android:textSize="10sp"
-                                android:paddingStart="10dp"
-                                android:paddingEnd="10dp"
-                                android:paddingTop="8dp"
-                                android:paddingBottom="6dp"
-                                android:layout_gravity="center"
-                                android:layout_marginTop="4dp"
-                                android:layout_marginLeft="170dp"
-                                android:layout_marginBottom="5dp"/>
+                                app:iconGravity="textStart"
+                                android:paddingHorizontal="12dp"
+                                android:paddingVertical="6dp"/>
+
                         </LinearLayout>
                     </LinearLayout>
 
 
-
                 </LinearLayout>
 
-                <!--        Contenedor de fondo gris-->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -235,7 +231,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="10dp"
-                        android:layout_weight="3"
+                        android:layout_weight="5"
                         android:layout_marginBottom="10dp"
                         android:orientation="horizontal"
                         android:gravity="center_horizontal"
@@ -422,8 +418,8 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="35dp"
-                        android:layout_weight="3"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
                         android:layout_marginBottom="10dp"
                         android:orientation="horizontal"
                         android:gravity="center_horizontal"
@@ -433,21 +429,21 @@
                         <LinearLayout
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
+                            android:layout_marginEnd="15dp"
                             android:layout_weight="2"
                             android:background="@drawable/b_white_layout"
-                            android:orientation="vertical"
                             android:gravity="center"
-                            android:padding="10dp"
-                            android:layout_marginEnd="15dp">
+                            android:orientation="vertical"
+                            android:padding="10dp">
 
                             <!-- Título -->
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/ventas_hora"
-                                android:textSize="10sp"
                                 android:layout_marginTop="15dp"
-                                android:layout_marginRight="40dp" />
+                                android:layout_marginRight="40dp"
+                                android:text="@string/ventas_hora"
+                                android:textSize="10sp" />
 
                             <!--                        &lt;!&ndash; Imagen del gráfico &ndash;&gt;-->
                             <!--                        <ImageView-->
@@ -459,7 +455,7 @@
                             <com.github.mikephil.charting.charts.BarChart
                                 android:id="@+id/barChart"
                                 android:layout_width="match_parent"
-                                android:layout_height="90dp"
+                                android:layout_height="120dp"
                                 android:layout_marginTop="4dp" />
 
 
@@ -509,8 +505,7 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="20dp"
-                        android:layout_weight="4"
+                        android:layout_height="wrap_content"
                         android:layout_marginBottom="10dp"
                         android:orientation="horizontal"
                         android:gravity="center_horizontal"
@@ -519,11 +514,11 @@
                         <!-- Tarjeta: Ventas por Categoría -->
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:background="@drawable/b_white_layout"
-                            android:orientation="vertical"
                             android:gravity="center"
-                            android:padding="10dp">
+                            android:orientation="vertical"
+                            android:padding="5dp">
 
                             <!-- Título -->
 
@@ -537,35 +532,21 @@
                                 android:text="@string/ventas_categoria"
                                 android:textSize="10sp" />
 
-                            <!--                        <ImageView-->
-                            <!--                            android:layout_width="160dp"-->
-                            <!--                            android:layout_height="80dp"-->
-                            <!--                            android:layout_marginRight="60dp"-->
-                            <!--                            android:layout_marginTop="-0dp"-->
-                            <!--                            android:scaleType="fitCenter"-->
-                            <!--                            android:contentDescription="Gráfico de ventas por categoría" />-->
-
-
 
                             <com.github.mikephil.charting.charts.PieChart
                                 android:id="@+id/pieChart"
-                                android:layout_width="160dp"
-                                android:layout_height="80dp"
-                                android:layout_marginRight="60dp"
+                                android:layout_width="200dp"
+                                android:layout_height="140dp"
                                 android:layout_marginTop="-0dp"
-                                android:scaleType="fitCenter"
-                                />
-
-
-
-
+                                android:layout_marginRight="60dp"
+                                android:scaleType="fitCenter" />
 
                             <LinearLayout
                                 android:layout_width="120dp"
                                 android:layout_height="100dp"
+                                android:layout_marginLeft="110dp"
+                                android:layout_marginTop="-120dp"
                                 android:gravity="center_horizontal"
-                                android:layout_marginLeft="90dp"
-                                android:layout_marginTop="-100dp"
                                 android:orientation="vertical"
                                 android:padding="10dp">
 
@@ -630,8 +611,7 @@
                                         android:layout_width="10dp"
                                         android:layout_height="10dp"
                                         android:layout_marginEnd="6dp"
-                                        android:background="@drawable/dot_green"
-                                        />
+                                        android:background="@drawable/dot_green" />
 
                                     <TextView
                                         android:layout_width="wrap_content"
@@ -652,8 +632,7 @@
                                         android:layout_width="10dp"
                                         android:layout_height="10dp"
                                         android:layout_marginEnd="6dp"
-                                        android:background="@drawable/dot_brown"
-                                        />
+                                        android:background="@drawable/dot_brown" />
 
                                     <TextView
                                         android:layout_width="wrap_content"

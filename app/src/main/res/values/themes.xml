@@ -22,7 +22,8 @@
         <!-- Configuración para las barras del sistema -->
         <!-- El sistema determinará automáticamente el color de los iconos basado en el contraste -->
         <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:windowLightStatusBar">true</item> <!-- Iconos oscuros para tema claro -->
+        <item name="android:windowLightStatusBar">true
+        </item> <!-- Iconos oscuros para tema claro -->
     </style>
 
     <!-- Tema principal de la app -->
