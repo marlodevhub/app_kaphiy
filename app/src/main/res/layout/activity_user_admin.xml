@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorWhite">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center_horizontal">
+
+        <!-- Imagen de perfil circular -->
+        <ImageView
+            android:id="@+id/imgPerfilUsuario"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/icon_user"
+            android:scaleType="centerCrop"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/circle_background"
+            android:padding="2dp" />
+
+        <!-- Nombre -->
+        <TextView
+            android:id="@+id/tvNombreUsuario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nicol"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Correo -->
+        <TextView
+            android:id="@+id/tvCorreoUsuario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="nicol@example.com"
+            android:textSize="16sp"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Rol -->
+        <TextView
+            android:id="@+id/tvRolUsuario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Rol: Administradora"
+            android:textSize="16sp"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Botón cerrar sesión -->
+        <Button
+            android:id="@+id/btnCerrarSesion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cerrar"
+            android:backgroundTint="@color/colorGreen1"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+</ScrollView>

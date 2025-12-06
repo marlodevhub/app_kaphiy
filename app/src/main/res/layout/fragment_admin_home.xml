@@ -1,1053 +1,1070 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools"
-android:id="@+id/main"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:fitsSystemWindows="true"
->
-
-<!-- CONTENEDOR SCROLL PRINCIPAL -->
-<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fitsSystemWindows="true"
+    >
 
-    <LinearLayout
-        android:orientation="vertical"
+    <!-- CONTENEDOR SCROLL PRINCIPAL -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-
-
-
-        <!--        mi codigo-->
-
-        <!--    <ScrollView-->
-        <!--        android:id="@+id/scrollView"-->
-        <!--        android:layout_width="match_parent"-->
-        <!--        android:layout_height="match_parent"-->
-        <!--        android:fillViewport="true"-->
-        <!--        android:background="@color/colorGrey100">-->
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:gravity="center"
-            >
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-            <!--        Contenedor de fondo verde-->
+
+
+
+            <!--        mi codigo-->
+
+            <!--    <ScrollView-->
+            <!--        android:id="@+id/scrollView"-->
+            <!--        android:layout_width="match_parent"-->
+            <!--        android:layout_height="match_parent"-->
+            <!--        android:fillViewport="true"-->
+            <!--        android:background="@color/colorGrey100">-->
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/colorGreen1"
-                android:paddingHorizontal="20dp"
-                android:paddingVertical="15dp"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
+                android:gravity="center"
                 >
 
-                <!--      Saludo e iconos-->
+                <!--        Contenedor de fondo verde-->
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-
-                    android:orientation="horizontal"
+                    android:background="@color/colorGreen1"
+                    android:padding="10dp"
+                    android:orientation="vertical"
                     >
 
-                    <!--      Saludo -->
-
+                    <!--      Saludo e iconos-->
                     <LinearLayout
-
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:orientation="horizontal">
-
-<!--                        <TextView-->
-<!--                            android:id="@+id/tvUserName"-->
-<!--                            android:layout_width="wrap_content"-->
-<!--                            android:layout_height="match_parent"-->
-<!--                            android:text="@string/welcome_admin"-->
-<!--                            android:textColor="@color/colorBlack"-->
-<!--                            android:gravity="center_vertical"-->
-<!--                            android:textSize="18sp">-->
-
-<!--                        </TextView>-->
-<!--                        -->
-
-                        <TextView
-                            android:id="@+id/tvUserName"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Buenas tardes, Carla"
-                            android:textSize="18sp"
-                            android:layout_marginTop="10dp"
-                            android:textColor="@color/colorBlack"
-                            android:textStyle="bold"/>
-
-                    </LinearLayout>
-
-
-                    <!--      Iconos -->
-
-                    <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="end|center_vertical"
+
                         android:orientation="horizontal"
-                        android:spacing="8dp">
+                        >
 
-                        <FrameLayout
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:background="@drawable/bg_greenlight"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:foreground="?attr/selectableItemBackground"
-                            android:layout_marginRight="10dp"
-                            android:padding="6dp">
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_gravity="center"
-                                android:src="@drawable/notify"
-                                app:tint="@color/colorBlack" />
-
-                            <TextView
-                                android:id="@+id/badgeNumero"
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:layout_gravity="end|top"
-                                android:layout_marginEnd="-4dp"
-                                android:layout_marginTop="-4dp"
-
-
-                                android:background="@drawable/badge_redondo"
-                                android:text="3"
-                                android:textColor="#FFFFFF"
-                                android:textSize="10sp"
-                                android:gravity="center"
-                                android:padding="2dp" />
-
-                        </FrameLayout>
-
-                        <FrameLayout
-                            android:layout_width="48dp"
-                            android:layout_height="48dp"
-                            android:background="@drawable/bg_greenlight"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:foreground="?attr/selectableItemBackground"
-                            android:padding="6dp">
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="20dp"
-                                android:layout_gravity="center"
-                                android:contentDescription="@string/user_icon_description"
-                                android:src="@drawable/icon_user"
-                                app:tint="@color/colorBlack" />
-                        </FrameLayout>
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-<!--                Descripcion admi-->
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <!-- Email y rol en columna -->
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:id="@+id/tvUserEmail"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="carla10@gmail.com"
-                            android:textSize="11sp"
-                            android:textColor="@color/colorBlack" />
-
-                        <TextView
-                            android:id="@+id/tvUserRole"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Administradora Kaphiy Perú"
-                            android:textSize="11sp"
-                            android:textColor="@color/colorBlack" />
-                    </LinearLayout>
-
-                    <!-- Botón más pequeño -->
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content">
-
-                    </LinearLayout>
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/btnLogout"
-                        android:layout_width="115dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginLeft="110dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="5dp"
-                        android:paddingStart="13dp"
-                        android:paddingTop="8dp"
-                        android:paddingEnd="10dp"
-                        android:paddingBottom="6dp"
-                        android:text="Cerrar sesión"
-                        android:textSize="10sp" />
-                </LinearLayout>
-
-
-
-            </LinearLayout>
-
-            <!--        Contenedor de fondo gris-->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="9"
-                android:background="@color/colorGrey400"
-                android:gravity="center"
-
-                android:paddingStart="20dp"
-                android:paddingTop="20dp"
-                android:paddingEnd="20dp"
-                android:paddingBottom="20dp"
-                android:orientation="vertical">
-
-
-
-                <!--    Estadisticas-->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="10dp"
-                    android:layout_weight="3"
-                    android:layout_marginBottom="10dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_horizontal"
-                    android:paddingHorizontal="10dp">
-
-                    <!-- Tarjeta: Hoy -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@drawable/b_white_layout"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="10dp"
-                        android:layout_marginEnd="10dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/text_hoy"
-                            android:textSize="10sp"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/hoy_soles"
-                            android:textSize="12sp"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/hoy_pedidos"
-                            android:textSize="9sp"
-                            android:layout_marginBottom="4dp" />
-
+                        <!--      Saludo -->
 
                         <LinearLayout
+
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
+                            android:layout_height="match_parent"
+                            android:orientation="horizontal">
 
-                            <!-- Ícono de flecha -->
-                            <ImageView
-                                android:layout_width="12dp"
-                                android:layout_height="12dp"
-                                android:src="@drawable/flechaup"
-                                android:layout_marginEnd="4dp"
-                                android:contentDescription="Flecha arriba" />
+                            <!--                        <TextView-->
+                            <!--                            android:id="@+id/tvUserName"-->
+                            <!--                            android:layout_width="wrap_content"-->
+                            <!--                            android:layout_height="match_parent"-->
+                            <!--                            android:text="@string/welcome_admin"-->
+                            <!--                            android:textColor="@color/colorBlack"-->
+                            <!--                            android:gravity="center_vertical"-->
+                            <!--                            android:textSize="18sp">-->
 
-                            <!-- Texto del porcentaje -->
+                            <!--                        </TextView>-->
+                            <!--                        -->
+
                             <TextView
+                                android:id="@+id/tvUserName"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/hoy_porcentajes"
-                                android:textSize="8sp" />
-                        </LinearLayout>
+                                android:text="Buenas tardes, Nicol"
+                                android:textSize="18sp"
+                                android:layout_marginTop="10dp"
+                                android:textColor="@color/colorBlack"
+                                android:textStyle="bold"/>
 
-                    </LinearLayout>
-
-                    <!-- Tarjeta: Semana -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@drawable/b_white_layout"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="10dp"
-                        android:layout_marginEnd="10dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/text_semanal"
-                            android:textSize="10sp"
-                            android:textAlignment="center"
-                            android:textColor="#FFA500"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/semanal_soles"
-                            android:textSize="12sp"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/semanal_pedidos"
-                            android:textSize="9sp"
-                            android:layout_marginBottom="4dp" />
-
-
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical">
-
-                            <!-- Ícono de flecha -->
-                            <ImageView
-                                android:layout_width="12dp"
-                                android:layout_height="12dp"
-                                android:src="@drawable/flechaup"
-                                android:layout_marginEnd="4dp"
-                                android:contentDescription="Flecha arriba" />
-
-                            <!-- Texto del porcentaje -->
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/semanal_porcentajes"
-                                android:textSize="8sp" />
                         </LinearLayout>
 
 
-                    </LinearLayout>
-
-                    <!-- Tarjeta: Mes -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@drawable/b_white_layout"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="10dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/text_mes"
-                            android:textSize="10sp"
-                            android:textColor="#FFA500"
-                            android:layout_marginBottom="4dp" />
-
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/mes_soles"
-                            android:textSize="12sp"
-                            android:layout_marginBottom="4dp" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/mes_pedidos"
-                            android:textSize="9sp"
-                            android:layout_marginBottom="4dp" />
+                        <!--      Iconos -->
 
                         <LinearLayout
-                            android:layout_width="wrap_content"
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end|center_vertical"
                             android:orientation="horizontal"
-                            android:gravity="center_vertical">
+                            android:spacing="8dp">
 
-                            <!-- Ícono de flecha -->
-                            <ImageView
-                                android:layout_width="12dp"
-                                android:layout_height="12dp"
-                                android:src="@drawable/flechaup"
-                                android:layout_marginEnd="4dp"
-                                android:contentDescription="Flecha arriba" />
+                            <FrameLayout
+                                android:id="@+id/btnNotificaciones"
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:background="@drawable/bg_greenlight"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:layout_marginRight="10dp"
+                                android:padding="6dp">
 
-                            <!-- Texto del porcentaje -->
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/mes_porcentajes"
-                                android:textSize="8sp" />
-                        </LinearLayout>
-
-                    </LinearLayout>
-                </LinearLayout>
-
-
-                <!-- Ventas por hora y Stock-->
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="35dp"
-                    android:layout_weight="2"
-                    android:layout_marginBottom="10dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_horizontal"
-                    android:paddingHorizontal="10dp">
-
-                    <!-- Tarjeta: Ventas por hora -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="2"
-                        android:background="@drawable/b_white_layout"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="10dp"
-                        android:layout_marginEnd="15dp">
-
-                        <!-- Título -->
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/ventas_hora"
-                            android:textSize="10sp"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginRight="40dp" />
-
-<!--                        &lt;!&ndash; Imagen del gráfico &ndash;&gt;-->
-                        <ImageView
-                            android:layout_width="120dp"
-                            android:layout_height="65dp"
-                            android:scaleType="fitCenter"
-                            android:contentDescription="Gráfico de ventas por hora" />
-
-
-
-
-
-                    </LinearLayout>
-
-                    <!-- Tarjeta: Stock -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@drawable/b_white_layout"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="10dp">
-
-                        <!-- Ícono de stock -->
-                        <ImageView
-                            android:layout_width="40dp"
-                            android:layout_height="40dp"
-                            android:src="@drawable/stock"
-                            android:scaleType="centerInside"
-                            android:layout_marginBottom="6dp"
-                            android:layout_marginTop="-5dp"
-                            android:contentDescription="Icono de stock" />
-
-                        <!-- Texto: Stock productos -->
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="@string/stock"
-                            android:textSize="10sp"
-                            android:textAlignment="center"
-                            android:layout_marginTop="-10dp"
-                            android:textColor="#000000"
-                            android:layout_marginBottom="4dp" />
-
-                        <!-- Cantidad -->
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="450"
-                            android:textSize="10sp"
-                            android:textColor="#00AA00"
-                            android:textStyle="bold" />
-                    </LinearLayout>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="20dp"
-                    android:layout_weight="3"
-                    android:layout_marginBottom="10dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_horizontal"
-                    android:paddingHorizontal="10dp">
-
-                    <!-- Tarjeta: Ventas por Categoría -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/b_white_layout"
-                        android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="10dp">
-
-                        <!-- Título -->
-
-                        <!-- Gráfico circular -->
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="20dp"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginRight="80dp"
-                            android:text="@string/ventas_categoria"
-                            android:textSize="10sp" />
-
-                        <ImageView
-                            android:layout_width="160dp"
-                            android:layout_height="80dp"
-                            android:layout_marginRight="60dp"
-                            android:layout_marginTop="-0dp"
-                            android:scaleType="fitCenter"
-                            android:contentDescription="Gráfico de ventas por categoría" />
-
-
-                        <LinearLayout
-                            android:layout_width="100dp"
-                            android:layout_height="85dp"
-                            android:gravity="center_horizontal"
-                            android:layout_marginLeft="90dp"
-                            android:layout_marginTop="-90dp"
-                            android:orientation="vertical"
-                            android:padding="10dp">
-
-                            <!-- Café -->
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="4dp"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
-
-                                <View
-                                    android:layout_width="10dp"
-                                    android:layout_height="10dp"
-                                    android:layout_marginTop="2dp"
-                                    android:layout_marginEnd="6dp"
-                                    android:layout_marginBottom="2dp"
-                                    android:background="@drawable/dot_orange"
-
-                                    />
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/notify"
+                                    app:tint="@color/colorBlack" />
 
                                 <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Café - 45%"
-                                    android:textColor="#000000"
-                                    android:textSize="10sp" />
-                            </LinearLayout>
-
-                            <!-- Panes -->
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="4dp"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
-
-                                <View
-                                    android:layout_width="10dp"
-                                    android:layout_height="10dp"
-                                    android:layout_marginEnd="6dp"
-                                    android:background="@drawable/dot_skyblue"
-                                    android:backgroundTint="#2196F3" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Panes - 25%"
-                                    android:textColor="#000000"
-                                    android:textSize="10sp" />
-                            </LinearLayout>
-
-                            <!-- Frappes -->
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginBottom="4dp"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
-
-                                <View
-                                    android:layout_width="10dp"
-                                    android:layout_height="10dp"
-                                    android:layout_marginEnd="6dp"
-                                    android:background="@drawable/dot_green"
-                                    />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Frappes - 20%"
-                                    android:textColor="#000000"
-                                    android:textSize="10sp" />
-                            </LinearLayout>
-
-                            <!-- Postres -->
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:gravity="center_vertical"
-                                android:orientation="horizontal">
-
-                                <View
-                                    android:layout_width="10dp"
-                                    android:layout_height="10dp"
-                                    android:layout_marginEnd="6dp"
-                                    android:background="@drawable/dot_brown"
-                                    />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Postres - 10%"
-                                    android:textColor="#000000"
-                                    android:textSize="10sp" />
-                            </LinearLayout>
-                        </LinearLayout>
-
-                    </LinearLayout>
-                </LinearLayout>
+                                    android:id="@+id/badgeNumero"
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_gravity="end|top"
+                                    android:layout_marginEnd="-4dp"
+                                    android:layout_marginTop="-4dp"
 
 
+                                    android:background="@drawable/badge_redondo"
+                                    android:text="3"
+                                    android:textColor="#FFFFFF"
+                                    android:textSize="10sp"
+                                    android:gravity="center"
+                                    android:padding="2dp" />
 
-                <!-- Productos más vendidos -->
+                            </FrameLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="6"
-                    android:layout_marginBottom="10dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_horizontal"
-                    android:paddingHorizontal="10dp">
-
-                    <!-- Tarjeta: Productos más vendidos -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/b_white_layout"
-                        android:orientation="vertical"
-                        android:padding="10dp">
-
-                        <!-- Encabezado con título y botón Hoy -->
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginBottom="5dp">
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:orientation="horizontal">
-                                <!-- Título -->
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="match_parent"
-                                    android:text="@string/productos_vendidos"
-                                    android:gravity="center_vertical"
-                                    android:textSize="11sp"
-                                    />
-
-                            </LinearLayout>
-
-
-                            <!-- Botón Hoy -->
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
-                                android:layout_marginLeft="90dp"
-                                android:background="@drawable/b_gray_layout"
-                                android:orientation="horizontal"
-                                android:padding="3dp"
-
-                                >
-
+                            <FrameLayout
+                                android:id="@+id/btnPerfilUsuario"
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:background="@drawable/bg_greenlight"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?attr/selectableItemBackground"
+                                android:padding="6dp">
 
                                 <ImageView
                                     android:layout_width="wrap_content"
-                                    android:layout_height="match_parent"
-                                    android:layout_marginEnd="5dp"
-                                    android:src="@drawable/star_black" />
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="Hoy"
-                                    android:textColor="#000000"
-                                    android:textSize="10sp"
-                                    android:textStyle="bold" />
-
-
-                            </LinearLayout>
-                        </LinearLayout>
-
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:gravity="center_vertical"
-                            android:background="@android:color/white">
-
-                            <!-- Sección izquierda: ranking, ícono, nombre, categoría, unidades -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="2"
-                                android:orientation="horizontal"
-                                android:layout_marginBottom="15dp"
-                                android:gravity="center_vertical">
-
-                                <!-- Ranking -->
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:background="@drawable/dot_gray"
-                                    android:padding="6dp"
-                                    android:layout_marginEnd="6dp"
-                                    android:gravity="center">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="#1"
-                                        android:textColor="#000000"
-                                        android:textSize="10sp"
-                                        android:textStyle="bold" />
-                                </LinearLayout>
-
-                                <!-- Ícono -->
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="30dp"
-                                    android:layout_marginEnd="8dp"
-                                    android:background="@drawable/gray_layout"
-                                    android:gravity="center"
-                                    android:padding="4dp">
-
-                                    <ImageView
-                                        android:layout_width="24dp"
-                                        android:layout_height="24dp"
-                                        android:scaleType="centerInside"
-                                        android:src="@drawable/capuccino" />
-                                </LinearLayout>
-
-                                <!-- Texto: nombre, categoría, unidades -->
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="vertical">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Capuccino Grande"
-                                        android:textColor="#000000"
-                                        android:textSize="10sp"
-                                        android:textStyle="bold" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Cafés"
-                                        android:textColor="#000000"
-                                        android:textSize="8sp" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Vendidos: 68 unidades"
-                                        android:textColor="#000000"
-                                        android:textSize="9sp" />
-                                </LinearLayout>
-                            </LinearLayout>
-
-                            <!-- Sección derecha: ingresos, crecimiento, precio unitario -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:layout_marginBottom="5dp"
-                                android:gravity="end">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="S/ 8.50 c/u"
-                                    android:textColor="#000000"
-                                    android:textSize="9sp"
-                                    android:textStyle="bold" />
-
-
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="horizontal"
-                                    android:gravity="center_vertical">
-
-                                    <!-- Ícono de flecha -->
-                                    <ImageView
-                                        android:layout_width="12dp"
-                                        android:layout_height="12dp"
-                                        android:src="@drawable/flecha"
-                                        android:layout_marginEnd="4dp"
-                                        android:contentDescription="Flecha arriba" />
-
-                                    <!-- Texto del porcentaje -->
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="+15.2%"
-                                        android:textSize="8sp" />
-                                </LinearLayout>
-
-
-
-
-
-
-
-
-
-
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="S/ 578.00"
-                                    android:textColor="#000000"
-                                    android:textSize="9sp" />
-
-                                <ProgressBar
-                                    android:id="@+id/progresoVentas"
-                                    style="?android:attr/progressBarStyleHorizontal"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="6dp"
-                                    android:layout_marginTop="8dp"
-                                    android:progress="15"
-                                    android:max="100"
-                                    android:progressDrawable="@drawable/progress_green" />
-
-
-                                <!-- Línea gris inferior -->
-                                <View
-                                    android:layout_width="match_parent"
-                                    android:layout_height="1dp"
-                                    android:layout_marginTop="4dp"
-                                    android:background="#DDDDDD" />
-
-                            </LinearLayout>
+                                    android:layout_height="20dp"
+                                    android:layout_gravity="center"
+                                    android:contentDescription="@string/user_icon_description"
+                                    android:src="@drawable/icon_user"
+                                    app:tint="@color/colorBlack" />
+                            </FrameLayout>
 
                         </LinearLayout>
-
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:padding="8dp"
-                            android:gravity="center_vertical"
-                            android:background="@android:color/white">
-
-                            <!-- Sección izquierda: ranking, ícono, nombre, categoría, unidades -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="2"
-                                android:orientation="horizontal"
-
-                                android:gravity="center_vertical">
-
-                                <!-- Ranking -->
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:background="@drawable/dot_gray"
-                                    android:padding="6dp"
-                                    android:layout_marginEnd="6dp"
-                                    android:gravity="center">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="#2"
-                                        android:textSize="10sp"
-                                        android:textStyle="bold"
-                                        android:textColor="#000000" />
-                                </LinearLayout>
-
-                                <!-- Ícono -->
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="30dp"
-                                    android:layout_marginEnd="8dp"
-                                    android:background="@drawable/gray_layout"
-                                    android:gravity="center"
-                                    android:padding="4dp">
-
-                                    <ImageView
-                                        android:layout_width="24dp"
-                                        android:layout_height="24dp"
-                                        android:scaleType="centerInside"
-                                        android:src="@drawable/croissant" />
-                                </LinearLayout>
-
-                                <!-- Texto: nombre, categoría, unidades -->
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="vertical">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Croissant de Mantequilla"
-                                        android:textColor="#000000"
-                                        android:textSize="10sp"
-                                        android:textStyle="bold" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Panes"
-                                        android:textColor="#000000"
-                                        android:textSize="8sp" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Vendidos: 50 unidades"
-                                        android:textColor="#000000"
-                                        android:textSize="9sp" />
-                                </LinearLayout>
-                            </LinearLayout>
-
-                            <!-- Sección derecha: ingresos, crecimiento, precio unitario -->
-                            <LinearLayout
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:orientation="vertical"
-                                android:gravity="end">
-
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="S/ 5.50"
-                                    android:textColor="#000000"
-                                    android:textSize="9sp"
-                                    android:textStyle="bold" />
-
-                                <LinearLayout
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:orientation="horizontal"
-                                    android:gravity="center_vertical">
-
-                                    <!-- Ícono de flecha -->
-                                    <ImageView
-                                        android:layout_width="12dp"
-                                        android:layout_height="12dp"
-                                        android:src="@drawable/flecha"
-                                        android:layout_marginEnd="4dp"
-                                        android:contentDescription="Flecha arriba" />
-
-                                    <!-- Texto del porcentaje -->
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="+11.4%"
-                                        android:textSize="8sp" />
-                                </LinearLayout>
-
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="S/ 275.00"
-                                    android:textColor="#000000"
-                                    android:textSize="9sp" />
-
-                                <ProgressBar
-                                    android:id="@+id/progresoVentas2"
-                                    style="?android:attr/progressBarStyleHorizontal"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="6dp"
-                                    android:layout_marginTop="8dp"
-                                    android:progress="15"
-                                    android:max="100"
-                                    android:progressDrawable="@drawable/progress_black_gray" />
-
-
-                                <!-- Línea gris inferior -->
-                                <View
-                                    android:layout_width="match_parent"
-                                    android:layout_height="1dp"
-                                    android:layout_marginTop="4dp"
-                                    android:background="#DDDDDD" />
-
-                            </LinearLayout>
-
-                        </LinearLayout>
-
 
                     </LinearLayout>
+
+                    <!--                Descripcion admi-->
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <!-- Email y rol en columna -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tvUserEmail"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="nicol@gmail.com"
+                                android:textSize="11sp"
+                                android:textColor="@color/colorBlack" />
+
+                            <TextView
+                                android:id="@+id/tvUserRole"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Administradora Kaphiy Perú"
+                                android:textSize="11sp"
+                                android:textColor="@color/colorBlack" />
+                        </LinearLayout>
+
+                        <!-- Botón más pequeño -->
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnLogout"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Cerrar sesión"
+                                android:textSize="10sp"
+                                android:paddingStart="10dp"
+                                android:paddingEnd="10dp"
+                                android:paddingTop="8dp"
+                                android:paddingBottom="6dp"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginLeft="170dp"
+                                android:layout_marginBottom="5dp"/>
+                        </LinearLayout>
+                    </LinearLayout>
+
+
+
+                </LinearLayout>
+
+                <!--        Contenedor de fondo gris-->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="9"
+                    android:background="@color/colorGrey400"
+                    android:gravity="center"
+
+                    android:paddingStart="10dp"
+                    android:paddingTop="20dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="20dp"
+                    android:orientation="vertical">
+
+
+
+                    <!--    Estadisticas-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="10dp"
+                        android:layout_weight="3"
+                        android:layout_marginBottom="10dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_horizontal"
+                        android:paddingHorizontal="10dp">
+
+                        <!-- Tarjeta: Hoy -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/b_white_layout"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:padding="10dp"
+                            android:layout_marginEnd="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/text_hoy"
+                                android:textSize="10sp"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/hoy_soles"
+                                android:textSize="12sp"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/hoy_pedidos"
+                                android:textSize="9sp"
+                                android:layout_marginBottom="4dp" />
+
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <!-- Ícono de flecha -->
+                                <ImageView
+                                    android:layout_width="12dp"
+                                    android:layout_height="12dp"
+                                    android:src="@drawable/flechaup"
+                                    android:layout_marginEnd="4dp"
+                                    android:contentDescription="Flecha arriba" />
+
+                                <!-- Texto del porcentaje -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/hoy_porcentajes"
+                                    android:textSize="8sp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <!-- Tarjeta: Semana -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/b_white_layout"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:padding="10dp"
+                            android:layout_marginEnd="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/text_semanal"
+                                android:textSize="10sp"
+                                android:textAlignment="center"
+                                android:textColor="#FFA500"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/semanal_soles"
+                                android:textSize="12sp"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/semanal_pedidos"
+                                android:textSize="9sp"
+                                android:layout_marginBottom="4dp" />
+
+
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <!-- Ícono de flecha -->
+                                <ImageView
+                                    android:layout_width="12dp"
+                                    android:layout_height="12dp"
+                                    android:src="@drawable/flechaup"
+                                    android:layout_marginEnd="4dp"
+                                    android:contentDescription="Flecha arriba" />
+
+                                <!-- Texto del porcentaje -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/semanal_porcentajes"
+                                    android:textSize="8sp" />
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+
+                        <!-- Tarjeta: Mes -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/b_white_layout"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:padding="10dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/text_mes"
+                                android:textSize="10sp"
+                                android:textColor="#FFA500"
+                                android:layout_marginBottom="4dp" />
+
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/mes_soles"
+                                android:textSize="12sp"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/mes_pedidos"
+                                android:textSize="9sp"
+                                android:layout_marginBottom="4dp" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical">
+
+                                <!-- Ícono de flecha -->
+                                <ImageView
+                                    android:layout_width="12dp"
+                                    android:layout_height="12dp"
+                                    android:src="@drawable/flechaup"
+                                    android:layout_marginEnd="4dp"
+                                    android:contentDescription="Flecha arriba" />
+
+                                <!-- Texto del porcentaje -->
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/mes_porcentajes"
+                                    android:textSize="8sp" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+
+                    <!-- Ventas por hora y Stock-->
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="35dp"
+                        android:layout_weight="3"
+                        android:layout_marginBottom="10dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_horizontal"
+                        android:paddingHorizontal="10dp">
+
+                        <!-- Tarjeta: Ventas por hora -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="2"
+                            android:background="@drawable/b_white_layout"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:padding="10dp"
+                            android:layout_marginEnd="15dp">
+
+                            <!-- Título -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/ventas_hora"
+                                android:textSize="10sp"
+                                android:layout_marginTop="15dp"
+                                android:layout_marginRight="40dp" />
+
+                            <!--                        &lt;!&ndash; Imagen del gráfico &ndash;&gt;-->
+                            <!--                        <ImageView-->
+                            <!--                            android:layout_width="120dp"-->
+                            <!--                            android:layout_height="65dp"-->
+                            <!--                            android:scaleType="fitCenter"-->
+                            <!--                            android:contentDescription="Gráfico de ventas por hora" />-->
+
+                            <com.github.mikephil.charting.charts.BarChart
+                                android:id="@+id/barChart"
+                                android:layout_width="match_parent"
+                                android:layout_height="90dp"
+                                android:layout_marginTop="4dp" />
+
+
+                        </LinearLayout>
+
+                        <!-- Tarjeta: Stock -->
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/b_white_layout"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:padding="10dp">
+
+                            <!-- Ícono de stock -->
+                            <ImageView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                android:src="@drawable/stock"
+                                android:scaleType="centerInside"
+                                android:layout_marginBottom="6dp"
+                                android:layout_marginTop="-5dp"
+                                android:contentDescription="Icono de stock" />
+
+                            <!-- Texto: Stock productos -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/stock"
+                                android:textSize="10sp"
+                                android:textAlignment="center"
+                                android:layout_marginTop="-10dp"
+                                android:textColor="#000000"
+                                android:layout_marginBottom="4dp" />
+
+                            <!-- Cantidad -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="450"
+                                android:textSize="10sp"
+                                android:textColor="#00AA00"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="20dp"
+                        android:layout_weight="4"
+                        android:layout_marginBottom="10dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_horizontal"
+                        android:paddingHorizontal="10dp">
+
+                        <!-- Tarjeta: Ventas por Categoría -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/b_white_layout"
+                            android:orientation="vertical"
+                            android:gravity="center"
+                            android:padding="10dp">
+
+                            <!-- Título -->
+
+                            <!-- Gráfico circular -->
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="20dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginRight="80dp"
+                                android:text="@string/ventas_categoria"
+                                android:textSize="10sp" />
+
+                            <!--                        <ImageView-->
+                            <!--                            android:layout_width="160dp"-->
+                            <!--                            android:layout_height="80dp"-->
+                            <!--                            android:layout_marginRight="60dp"-->
+                            <!--                            android:layout_marginTop="-0dp"-->
+                            <!--                            android:scaleType="fitCenter"-->
+                            <!--                            android:contentDescription="Gráfico de ventas por categoría" />-->
+
+
+
+                            <com.github.mikephil.charting.charts.PieChart
+                                android:id="@+id/pieChart"
+                                android:layout_width="160dp"
+                                android:layout_height="80dp"
+                                android:layout_marginRight="60dp"
+                                android:layout_marginTop="-0dp"
+                                android:scaleType="fitCenter"
+                                />
+
+
+
+
+
+                            <LinearLayout
+                                android:layout_width="120dp"
+                                android:layout_height="100dp"
+                                android:gravity="center_horizontal"
+                                android:layout_marginLeft="90dp"
+                                android:layout_marginTop="-100dp"
+                                android:orientation="vertical"
+                                android:padding="10dp">
+
+                                <!-- Café -->
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <View
+                                        android:layout_width="10dp"
+                                        android:layout_height="10dp"
+                                        android:layout_marginTop="2dp"
+                                        android:layout_marginEnd="6dp"
+                                        android:layout_marginBottom="2dp"
+                                        android:background="@drawable/dot_orange"
+
+                                        />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Café - 45%"
+                                        android:textColor="#000000"
+                                        android:textSize="10sp" />
+                                </LinearLayout>
+
+                                <!-- Panes -->
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <View
+                                        android:layout_width="10dp"
+                                        android:layout_height="10dp"
+                                        android:layout_marginEnd="6dp"
+                                        android:background="@drawable/dot_skyblue"
+                                        android:backgroundTint="#2196F3" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Panes - 25%"
+                                        android:textColor="#000000"
+                                        android:textSize="10sp" />
+                                </LinearLayout>
+
+                                <!-- Frappes -->
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="4dp"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <View
+                                        android:layout_width="10dp"
+                                        android:layout_height="10dp"
+                                        android:layout_marginEnd="6dp"
+                                        android:background="@drawable/dot_green"
+                                        />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Frappes - 20%"
+                                        android:textColor="#000000"
+                                        android:textSize="10sp" />
+                                </LinearLayout>
+
+                                <!-- Postres -->
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <View
+                                        android:layout_width="10dp"
+                                        android:layout_height="10dp"
+                                        android:layout_marginEnd="6dp"
+                                        android:background="@drawable/dot_brown"
+                                        />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Postres - 10%"
+                                        android:textColor="#000000"
+                                        android:textSize="10sp" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+
+
+                    <!-- Productos más vendidos -->
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="6"
+                        android:layout_marginBottom="10dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_horizontal"
+                        android:paddingHorizontal="10dp">
+
+                        <!-- Tarjeta: Productos más vendidos -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/b_white_layout"
+                            android:orientation="vertical"
+                            android:padding="10dp">
+
+                            <!-- Encabezado con título y botón Hoy -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="5dp"
+                                android:orientation="horizontal">
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:orientation="horizontal">
+                                    <!-- Título -->
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="match_parent"
+                                        android:gravity="center_vertical"
+                                        android:text="@string/productos_vendidos"
+                                        android:textSize="11sp" />
+
+                                </LinearLayout>
+
+
+                                <!-- Botón Hoy -->
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="160dp"
+                                    android:background="@drawable/b_gray_layout"
+                                    android:orientation="horizontal"
+                                    android:padding="3dp"
+
+                                    >
+
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="match_parent"
+                                        android:layout_marginEnd="5dp"
+                                        android:src="@drawable/star_black" />
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Hoy"
+                                        android:textColor="#000000"
+                                        android:textSize="10sp"
+                                        android:textStyle="bold" />
+
+
+                                </LinearLayout>
+                            </LinearLayout>
+
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@android:color/white"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <!-- Sección izquierda: ranking, ícono, nombre, categoría, unidades -->
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="15dp"
+                                    android:layout_weight="2"
+                                    android:gravity="center_vertical"
+                                    android:orientation="horizontal">
+
+                                    <!-- Ranking -->
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginEnd="6dp"
+                                        android:background="@drawable/dot_gray"
+                                        android:gravity="center"
+                                        android:padding="6dp">
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="#1"
+                                            android:textColor="#000000"
+                                            android:textSize="10sp"
+                                            android:textStyle="bold" />
+                                    </LinearLayout>
+
+                                    <!-- Ícono -->
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="30dp"
+                                        android:layout_marginEnd="8dp"
+                                        android:background="@drawable/gray_layout"
+                                        android:gravity="center"
+                                        android:padding="4dp">
+
+                                        <ImageView
+                                            android:layout_width="24dp"
+                                            android:layout_height="24dp"
+                                            android:scaleType="centerInside"
+                                            android:src="@drawable/capuccino" />
+                                    </LinearLayout>
+
+                                    <!-- Texto: nombre, categoría, unidades -->
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:orientation="vertical">
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Capuccino Grande"
+                                            android:textColor="#000000"
+                                            android:textSize="10sp"
+                                            android:textStyle="bold" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Cafés"
+                                            android:textColor="#000000"
+                                            android:textSize="8sp" />
+
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="Vendidos: 68 unidades"
+                                            android:textColor="#000000"
+                                            android:textSize="9sp" />
+                                    </LinearLayout>
+                                </LinearLayout>
+
+                                <!-- Sección derecha: ingresos, crecimiento, precio unitario -->
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginBottom="5dp"
+                                    android:layout_weight="1"
+                                    android:gravity="end"
+                                    android:orientation="vertical">
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="S/ 8.50 c/u"
+                                        android:textColor="#000000"
+                                        android:textSize="9sp"
+                                        android:textStyle="bold" />
+
+
+                                    <LinearLayout
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center_vertical"
+                                        android:orientation="horizontal">
+
+                                        <!-- Ícono de flecha -->
+                                        <ImageView
+                                            android:layout_width="12dp"
+                                            android:layout_height="12dp"
+                                            android:layout_marginEnd="4dp"
+                                            android:contentDescription="Flecha arriba"
+                                            android:src="@drawable/flecha" />
+
+                                        <!-- Texto del porcentaje -->
+                                        <TextView
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:text="+15.2%"
+                                            android:textSize="8sp" />
+                                    </LinearLayout>
+
+
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="S/ 578.00"
+                                        android:textColor="#000000"
+                                        android:textSize="9sp" />
+
+                                    <ProgressBar
+                                        android:id="@+id/progresoVentas"
+                                        style="?android:attr/progressBarStyleHorizontal"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="6dp"
+                                        android:layout_marginTop="8dp"
+                                        android:max="100"
+                                        android:progress="15"
+                                        android:progressDrawable="@drawable/progress_green" />
+
+
+                                    <!-- Línea gris inferior -->
+                                    <View
+                                        android:layout_width="match_parent"
+                                        android:layout_height="1dp"
+                                        android:layout_marginTop="4dp"
+                                        android:background="#DDDDDD" />
+
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+
+                            <!--                        <LinearLayout-->
+                            <!--                            android:layout_width="match_parent"-->
+                            <!--                            android:layout_height="wrap_content"-->
+                            <!--                            android:orientation="horizontal"-->
+                            <!--                            android:padding="8dp"-->
+                            <!--                            android:gravity="center_vertical"-->
+                            <!--                            android:background="@android:color/white">-->
+
+                            <!--                            &lt;!&ndash; Sección izquierda: ranking, ícono, nombre, categoría, unidades &ndash;&gt;-->
+                            <!--                            <LinearLayout-->
+                            <!--                                android:layout_width="0dp"-->
+                            <!--                                android:layout_height="wrap_content"-->
+                            <!--                                android:layout_weight="2"-->
+                            <!--                                android:orientation="horizontal"-->
+
+                            <!--                                android:gravity="center_vertical">-->
+
+                            <!--                                &lt;!&ndash; Ranking &ndash;&gt;-->
+                            <!--                                <LinearLayout-->
+                            <!--                                    android:layout_width="wrap_content"-->
+                            <!--                                    android:layout_height="wrap_content"-->
+                            <!--                                    android:background="@drawable/dot_gray"-->
+                            <!--                                    android:padding="6dp"-->
+                            <!--                                    android:layout_marginEnd="6dp"-->
+                            <!--                                    android:gravity="center">-->
+
+                            <!--                                    <TextView-->
+                            <!--                                        android:layout_width="wrap_content"-->
+                            <!--                                        android:layout_height="wrap_content"-->
+                            <!--                                        android:text="#2"-->
+                            <!--                                        android:textSize="10sp"-->
+                            <!--                                        android:textStyle="bold"-->
+                            <!--                                        android:textColor="#000000" />-->
+                            <!--                                </LinearLayout>-->
+
+                            <!--                                &lt;!&ndash; Ícono &ndash;&gt;-->
+                            <!--                                <LinearLayout-->
+                            <!--                                    android:layout_width="wrap_content"-->
+                            <!--                                    android:layout_height="30dp"-->
+                            <!--                                    android:layout_marginEnd="8dp"-->
+                            <!--                                    android:background="@drawable/gray_layout"-->
+                            <!--                                    android:gravity="center"-->
+                            <!--                                    android:padding="4dp">-->
+
+                            <!--                                    <ImageView-->
+                            <!--                                        android:layout_width="24dp"-->
+                            <!--                                        android:layout_height="24dp"-->
+                            <!--                                        android:scaleType="centerInside"-->
+                            <!--                                        android:src="@drawable/croissant" />-->
+                            <!--                                </LinearLayout>-->
+
+                            <!--                                &lt;!&ndash; Texto: nombre, categoría, unidades &ndash;&gt;-->
+                            <!--                                <LinearLayout-->
+                            <!--                                    android:layout_width="wrap_content"-->
+                            <!--                                    android:layout_height="wrap_content"-->
+                            <!--                                    android:orientation="vertical">-->
+
+                            <!--                                    <TextView-->
+                            <!--                                        android:layout_width="wrap_content"-->
+                            <!--                                        android:layout_height="wrap_content"-->
+                            <!--                                        android:text="Croissant de Mantequilla"-->
+                            <!--                                        android:textColor="#000000"-->
+                            <!--                                        android:textSize="10sp"-->
+                            <!--                                        android:textStyle="bold" />-->
+
+                            <!--                                    <TextView-->
+                            <!--                                        android:layout_width="wrap_content"-->
+                            <!--                                        android:layout_height="wrap_content"-->
+                            <!--                                        android:text="Panes"-->
+                            <!--                                        android:textColor="#000000"-->
+                            <!--                                        android:textSize="8sp" />-->
+
+                            <!--                                    <TextView-->
+                            <!--                                        android:layout_width="wrap_content"-->
+                            <!--                                        android:layout_height="wrap_content"-->
+                            <!--                                        android:text="Vendidos: 50 unidades"-->
+                            <!--                                        android:textColor="#000000"-->
+                            <!--                                        android:textSize="9sp" />-->
+                            <!--                                </LinearLayout>-->
+                            <!--                            </LinearLayout>-->
+
+                            <!--                            &lt;!&ndash; Sección derecha: ingresos, crecimiento, precio unitario &ndash;&gt;-->
+                            <!--                            <LinearLayout-->
+                            <!--                                android:layout_width="0dp"-->
+                            <!--                                android:layout_height="wrap_content"-->
+                            <!--                                android:layout_weight="1"-->
+                            <!--                                android:orientation="vertical"-->
+                            <!--                                android:gravity="end">-->
+
+
+                            <!--                                <TextView-->
+                            <!--                                    android:layout_width="wrap_content"-->
+                            <!--                                    android:layout_height="wrap_content"-->
+                            <!--                                    android:text="S/ 5.50"-->
+                            <!--                                    android:textColor="#000000"-->
+                            <!--                                    android:textSize="9sp"-->
+                            <!--                                    android:textStyle="bold" />-->
+
+                            <!--                                <LinearLayout-->
+                            <!--                                    android:layout_width="wrap_content"-->
+                            <!--                                    android:layout_height="wrap_content"-->
+                            <!--                                    android:orientation="horizontal"-->
+                            <!--                                    android:gravity="center_vertical">-->
+
+                            <!--                                    &lt;!&ndash; Ícono de flecha &ndash;&gt;-->
+                            <!--                                    <ImageView-->
+                            <!--                                        android:layout_width="12dp"-->
+                            <!--                                        android:layout_height="12dp"-->
+                            <!--                                        android:src="@drawable/flecha"-->
+                            <!--                                        android:layout_marginEnd="4dp"-->
+                            <!--                                        android:contentDescription="Flecha arriba" />-->
+
+                            <!--                                    &lt;!&ndash; Texto del porcentaje &ndash;&gt;-->
+                            <!--                                    <TextView-->
+                            <!--                                        android:layout_width="wrap_content"-->
+                            <!--                                        android:layout_height="wrap_content"-->
+                            <!--                                        android:text="+11.4%"-->
+                            <!--                                        android:textSize="8sp" />-->
+                            <!--                                </LinearLayout>-->
+
+
+                            <!--                                <TextView-->
+                            <!--                                    android:layout_width="wrap_content"-->
+                            <!--                                    android:layout_height="wrap_content"-->
+                            <!--                                    android:text="S/ 275.00"-->
+                            <!--                                    android:textColor="#000000"-->
+                            <!--                                    android:textSize="9sp" />-->
+
+                            <!--                                <ProgressBar-->
+                            <!--                                    android:id="@+id/progresoVentas2"-->
+                            <!--                                    style="?android:attr/progressBarStyleHorizontal"-->
+                            <!--                                    android:layout_width="match_parent"-->
+                            <!--                                    android:layout_height="6dp"-->
+                            <!--                                    android:layout_marginTop="8dp"-->
+                            <!--                                    android:progress="15"-->
+                            <!--                                    android:max="100"-->
+                            <!--                                    android:progressDrawable="@drawable/progress_black_gray" />-->
+
+
+                            <!--                                &lt;!&ndash; Línea gris inferior &ndash;&gt;-->
+                            <!--                                <View-->
+                            <!--                                    android:layout_width="match_parent"-->
+                            <!--                                    android:layout_height="1dp"-->
+                            <!--                                    android:layout_marginTop="4dp"-->
+                            <!--                                    android:background="#DDDDDD" />-->
+
+                            <!--                            </LinearLayout>-->
+
+                            <!--                        </LinearLayout>-->
+
+
+                            <!-- Aquí podrías usar un RecyclerView para productos -->
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/recycler_variantes"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                tools:itemCount="1"
+                                tools:listitem="@layout/item_admin_home" />
+
+
+                        </LinearLayout>
+                    </LinearLayout>
+
+
                 </LinearLayout>
 
 
             </LinearLayout>
+            <!--    </ScrollView>-->
+
 
 
         </LinearLayout>
-        <!--    </ScrollView>-->
-
-
-
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

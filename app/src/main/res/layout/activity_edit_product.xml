@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.admin.NewProductActivity">
+    tools:context=".ui.admin.EditProductActivity">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -19,10 +19,10 @@
 
             <!-- Título -->
             <TextView
-                android:id="@+id/tvTituloNuevo"
+                android:id="@+id/tvTituloEditar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Crear Nuevo Producto"
+                android:text="Editar Producto"
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="16dp" />
@@ -34,7 +34,7 @@
                 android:hint="Nombre del producto">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etNombreNuevo"
+                    android:id="@+id/etNombreProducto"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="text" />
@@ -42,7 +42,7 @@
 
             <!-- Categoría -->
             <Spinner
-                android:id="@+id/spinnerCategoriaNuevo"
+                android:id="@+id/spinnerCategoria"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="12dp"
@@ -56,7 +56,7 @@
                 android:hint="Descripción">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etDescripcionNuevo"
+                    android:id="@+id/etDescripcionProducto"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textMultiLine"
@@ -70,7 +70,7 @@
                 android:hint="Precio Normal">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPrecioNormalNuevo"
+                    android:id="@+id/etPrecioNormal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal" />
@@ -83,7 +83,7 @@
                 android:hint="Precio Oferta (Opcional)">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etPrecioOfertaNuevo"
+                    android:id="@+id/etPrecioOferta"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal" />
@@ -96,7 +96,7 @@
                 android:hint="Stock Inicial">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etStockInicialNuevo"
+                    android:id="@+id/etStockInicial"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="number" />
@@ -109,7 +109,7 @@
                 android:hint="Stock Mínimo">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etStockMinimoNuevo"
+                    android:id="@+id/etStockMinimo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="number" />
@@ -117,7 +117,7 @@
 
             <!-- Imágenes -->
             <TextView
-                android:id="@+id/tvImagenesNuevo"
+                android:id="@+id/tvImagenesTitulo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Imágenes del Producto"
@@ -125,7 +125,7 @@
                 android:layout_marginTop="16dp" />
 
             <Button
-                android:id="@+id/btnSeleccionarImagenesNuevo"
+                android:id="@+id/btnSeleccionarImagenes"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Seleccionar imágenes"
@@ -140,16 +140,16 @@
                 android:layout_marginTop="24dp">
 
                 <Button
-                    android:id="@+id/btnCancelarNuevo"
+                    android:id="@+id/btnCancelarEdicion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Cancelar" />
 
                 <Button
-                    android:id="@+id/btnCrearNuevo"
+                    android:id="@+id/btnGuardarEdicion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Crear Producto"
+                    android:text="Editar Producto"
                     android:layout_marginStart="16dp" />
             </LinearLayout>
         </LinearLayout>

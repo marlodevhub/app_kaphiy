@@ -91,6 +91,7 @@
                             android:spacing="8dp">
 
                             <FrameLayout
+                                android:id="@+id/btnNotificaciones"
                                 android:layout_width="48dp"
                                 android:layout_height="48dp"
                                 android:background="@drawable/bg_greenlight"
@@ -129,6 +130,7 @@
                             </FrameLayout>
 
                             <FrameLayout
+                                android:id="@+id/btnPerfilUsuario"
                                 android:layout_width="48dp"
                                 android:layout_height="48dp"
                                 android:background="@drawable/bg_greenlight"
@@ -145,6 +147,9 @@
                                     android:src="@drawable/icon_user"
                                     app:tint="@color/colorBlack" />
                             </FrameLayout>
+
+
+
 
                         </LinearLayout>
 
@@ -209,9 +214,9 @@
                     android:background="@color/colorGrey400"
                     android:gravity="center"
 
-                    android:paddingStart="30dp"
+                    android:paddingStart="10dp"
                     android:paddingTop="20dp"
-                    android:paddingEnd="30dp"
+                    android:paddingEnd="10dp"
                     android:paddingBottom="20dp"
                     android:orientation="vertical">
 
@@ -241,7 +246,7 @@
 
 
 
-<!--                             Gestión de productos -->
+                            <!--                             Gestión de productos -->
                             <LinearLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -296,11 +301,10 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:minHeight="48dp"
-
-
-                                    android:background="@drawable/b_gray_layout"
                                     android:padding="8dp"
+                                    android:background="@drawable/gray_spinner"
                                     android:layout_marginBottom="8dp" />
+
 
                                 <!-- Filtro: Stock -->
                                 <Spinner
@@ -308,20 +312,21 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:minHeight="48dp"
-                                    android:background="@drawable/b_gray_layout"
                                     android:padding="8dp"
+                                    android:background="@drawable/gray_spinner"
                                     android:layout_marginBottom="8dp" />
 
                                 <!-- Botón: Nuevo producto -->
+
+                                <!-- Encabezado de tabla -->
                                 <Button
                                     android:id="@+id/btnNuevoProducto"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
+                                    android:layout_marginBottom="12dp"
                                     android:text=" + Nuevo producto"
-                                    android:textSize="10sp"
-                                    android:layout_marginBottom="12dp" />
+                                    android:textSize="10sp" />
 
-                                <!-- Encabezado de tabla -->
                                 <LinearLayout
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
@@ -359,8 +364,9 @@
                                     android:id="@+id/recycler_variantes"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="8dp" />
-
+                                    tools:listitem="@layout/item_admin_product"
+                                    tools:itemCount="1"
+                                    android:layout_marginTop="5dp" />
 
 
                             </LinearLayout>
